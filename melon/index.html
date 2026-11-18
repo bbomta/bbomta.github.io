@@ -301,6 +301,52 @@
   @keyframes eq{0%,100%{height:4px}50%{height:14px}}
   .ending .snd,.ending .gate{display:none!important}
   @media (prefers-reduced-motion: reduce){ .bgm.on .eq i{animation:none;height:10px} }
+
+  /* 바짓가랑이 붙잡기 */
+  .grab-sec{background:var(--mist);padding-bottom:110px}
+  .scene{position:relative;width:min(1000px,100%);margin:0 auto;height:380px;border-radius:28px;overflow:hidden;
+    background:linear-gradient(#fdfdfd 0%,#f1efe9 72%,#e3ded2 72%,#e8e3d8 100%);user-select:none;-webkit-user-select:none;touch-action:none}
+  .scene .wall-l{position:absolute;left:24px;top:28px;font-size:13px;color:#86868b}
+  .door{position:absolute;right:34px;bottom:28%;width:86px;height:150px;border-radius:8px 8px 0 0;background:#2d7a3e;box-shadow:inset 0 0 0 5px #24622f}
+  .door::after{content:'';position:absolute;right:12px;top:78px;width:9px;height:9px;border-radius:50%;background:#ffd36b}
+  .door b{position:absolute;left:50%;top:-30px;transform:translateX(-50%);background:#1d1d1f;color:#fff;font-size:12px;padding:4px 10px;border-radius:6px;white-space:nowrap}
+  .melonman{position:absolute;bottom:calc(28% - 6px);width:120px;height:250px;will-change:transform}
+  .melonman .face{position:absolute;left:50%;top:0;width:118px;transform:translateX(-50%);filter:drop-shadow(0 4px 6px rgba(0,0,0,.18));z-index:2;animation:headbob .5s ease-in-out infinite}
+  @keyframes headbob{50%{transform:translateX(-50%) translateY(-3px) rotate(-2deg)}}
+  .melonman svg{position:absolute;left:0;bottom:0;width:120px;height:170px;overflow:visible}
+  .melonman .legA,.melonman .legB{transform-box:fill-box;transform-origin:50% 0}
+  .melonman.walk .legA{animation:legA .5s ease-in-out infinite}
+  .melonman.walk .legB{animation:legB .5s ease-in-out infinite}
+  .melonman.struggle .legA{animation:legA .22s ease-in-out infinite}
+  .melonman.struggle .legB{animation:none;transform:rotate(-24deg) scaleY(1.12)}
+  .melonman.struggle .body{transform:rotate(12deg);transform-box:fill-box;transform-origin:50% 100%}
+  .melonman.slip .legA,.melonman.slip .legB{animation:legA .14s ease-in-out infinite}
+  @keyframes legA{0%,100%{transform:rotate(18deg)}50%{transform:rotate(-18deg)}}
+  @keyframes legB{0%,100%{transform:rotate(-18deg)}50%{transform:rotate(18deg)}}
+  .bubble{position:absolute;top:6px;left:calc(50% + 50px);background:#fff;color:#1d1d1f;font-size:15px;font-weight:700;padding:9px 14px;border-radius:16px;white-space:nowrap;
+    box-shadow:0 6px 18px rgba(0,0,0,.12);opacity:0;transition:opacity .25s}
+  .bubble.on{opacity:1}
+  .bubble::after{content:'';position:absolute;left:-7px;top:12px;border:8px solid transparent;border-right-color:#fff;border-left:0}
+  .arm{position:absolute;left:0;bottom:calc(28% + 30px);height:26px;width:0;border-radius:0 14px 14px 0;background:#f2c9a5;box-shadow:inset 0 -5px 0 rgba(0,0,0,.08);opacity:0;transition:opacity .15s}
+  .arm.on{opacity:1}
+  .arm::before{content:'';position:absolute;left:0;top:-6px;width:70px;height:38px;border-radius:0 10px 10px 0;background:#4a6fa5}
+  .arm i{position:absolute;right:-16px;top:-8px;font-size:34px;font-style:normal;transform:scaleX(-1) rotate(10deg)}
+  .gone-msg{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);font-size:clamp(20px,3vw,28px);font-weight:800;letter-spacing:-.03em;opacity:0;transition:opacity .4s;text-align:center;pointer-events:none}
+  .gone-msg.on{opacity:1}
+  .hold{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);border:0;border-radius:999px;padding:16px 30px;font-size:18px;font-weight:700;background:#1d1d1f;color:#fff;cursor:pointer;
+    box-shadow:0 8px 24px rgba(0,0,0,.2);touch-action:none;transition:transform .1s;white-space:nowrap}
+  .hold.on{transform:translateX(-50%) scale(.95);background:#d8432a}
+  .grab-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;width:min(1000px,100%);margin:22px auto 0}
+  .grab-stats > div{background:#fff;border-radius:22px;padding:22px 24px}
+  .grab-stats .k{font-size:15px;font-weight:600;color:var(--ink-2)}
+  .grab-stats .v{font-size:clamp(28px,3.6vw,40px);font-weight:800;letter-spacing:-.04em;margin-top:8px;font-variant-numeric:tabular-nums;line-height:1.1}
+  .grab-stats ol{list-style:none;margin-top:10px}
+  .grab-stats li{display:flex;justify-content:space-between;gap:8px;font-size:15px;padding:4px 0;font-variant-numeric:tabular-nums}
+  .grab-stats li b{font-weight:600}
+  .grab-name{width:min(1000px,100%);margin:14px auto 0;display:flex;gap:10px;align-items:center;font-size:15px;color:var(--mute)}
+  .grab-name .field{max-width:260px;padding:10px 14px;font-size:15px}
+  @media (max-width:760px){ .scene{height:340px} .grab-stats{grid-template-columns:1fr} .melonman{width:90px;height:190px} .melonman .face{width:88px} .melonman svg{width:90px;height:128px} .door{right:14px;width:62px;height:112px} .bubble{left:calc(50% + 36px);font-size:13px;padding:7px 11px} .hold{padding:14px 24px;font-size:17px} }
+  .play.single{grid-template-columns:1fr;max-width:680px;margin:0 auto}
 </style>
 </head>
 <body>
@@ -311,7 +357,7 @@
   <a class="nav" href="#gallery">갤러리</a>
   <a class="nav" href="#wall">포스트잇</a>
   <a class="nav opt" href="#numbers">숫자로 보기</a>
-  <a class="nav opt" href="#play">놀이터</a>
+  <a class="nav opt" href="#grab">붙잡기</a>
 </div></header>
 
 <section class="hero" id="top">
@@ -445,14 +491,45 @@
   </div>
 </section>
 
-<section id="play">
-  <div class="wrap play">
-    <div class="card">
-      <h3>멜론님 붙잡기.</h3>
-      <p>버튼을 눌러보세요. 가능하다면요.</p>
-      <div class="arena" id="arena"><button id="catchBtn">제발 가지 마세요</button></div>
-      <div class="catch-log" id="catchLog">시도 0번, 성공 0번</div>
+<section class="grab-sec" id="grab">
+  <div class="wrap">
+    <div class="s-head">
+      <h2>퇴근하는 멜론님을 붙잡아 주세요.</h2>
+      <p>버튼을 꾹 누르고 있는 동안만 멜론님이 못 가요. 손을 떼는 순간… 아시죠?</p>
     </div>
+    <div class="scene" id="scene">
+      <div class="wall-l">사무실</div>
+      <div class="door"><b>퇴근 →</b></div>
+      <div class="arm" id="arm"><i>✋</i></div>
+      <div class="melonman walk" id="mm">
+        <div class="bubble" id="bubble"></div>
+        <img class="face" src="face.png" alt="멜론님 얼굴">
+        <svg viewBox="0 0 120 170" aria-hidden="true">
+          <g class="body">
+            <rect x="34" y="6" width="52" height="74" rx="18" fill="#7fb069"/>
+            <rect x="22" y="14" width="16" height="54" rx="8" fill="#6a9a58" transform="rotate(12 30 14)"/>
+            <rect x="82" y="14" width="16" height="54" rx="8" fill="#6a9a58" transform="rotate(-28 90 14)"/>
+            <circle cx="104" cy="62" r="8" fill="#f2c9a5"/>
+            <rect x="80" y="40" width="30" height="22" rx="4" fill="#3a3a3c"/>
+          </g>
+          <g class="legB"><rect x="40" y="72" width="18" height="78" rx="8" fill="#2f3e5c"/><rect x="34" y="144" width="30" height="14" rx="7" fill="#1d1d1f"/></g>
+          <g class="legA"><rect x="62" y="72" width="18" height="78" rx="8" fill="#3a4b6e"/><rect x="58" y="144" width="30" height="14" rx="7" fill="#1d1d1f"/></g>
+        </svg>
+      </div>
+      <div class="gone-msg" id="goneMsg">멜론님이 퇴근했습니다 🏃💨<br><span style="font-size:.6em;color:#6e6e73;font-weight:600">곧 다시 출근합니다 (아마도)</span></div>
+      <button class="hold" id="holdBtn">꾹 눌러서 붙잡기</button>
+    </div>
+    <div class="grab-name"><span>붙잡는 사람</span><input class="field" id="grabName" maxlength="20" placeholder="이름 (비워두면 익명)"></div>
+    <div class="grab-stats">
+      <div><div class="k">방금 내가 붙잡은 시간</div><div class="v" id="gMine">0.0초</div></div>
+      <div><div class="k">모두가 붙잡은 시간</div><div class="v" id="gTotal">0초</div></div>
+      <div><div class="k">가장 오래 붙잡은 동료</div><ol id="gTop"><li><span>아직 없어요</span></li></ol></div>
+    </div>
+  </div>
+</section>
+
+<section id="play">
+  <div class="wrap play single">
     <div class="card">
       <h3>퇴사 전 버킷리스트.</h3>
       <p>체크는 내 브라우저에만 남아요.</p>
@@ -801,16 +878,85 @@ function showQuote(){ const q=$('quote'), s=$('quoteSrc'); q.style.opacity=0; s.
   setTimeout(()=>{ q.textContent=quotes[qi][0]; s.textContent=quotes[qi][1]; q.style.opacity=1; s.style.opacity=1; },600); }
 showQuote(); setInterval(()=>{ qi=(qi+1)%quotes.length; showQuote(); }, 9000);
 
-// ===== 붙잡기 =====
-let tries=0; const cb=$('catchBtn'), arena=$('arena');
-const excuses=['“아, 저 반차라서요~”','“그건 후임자분께…”','“(이미 짐 쌌음)”','“연봉 두 배면 생각해볼게요”','“네네, 다음에 밥 한번 해요~”','“지금 마음은 제주도라서요”'];
-function dodge(){ const r=arena.getBoundingClientRect(), b=cb.getBoundingClientRect();
-  cb.style.left=(Math.random()*(r.width-b.width)+b.width/2)+'px'; cb.style.top=(Math.random()*(r.height-b.height)+b.height/2)+'px';
-  tries++; $('catchLog').textContent=`시도 ${tries}번, 성공 0번`;
-  if(tries%3===0) toast('멜론님: '+excuses[Math.floor(Math.random()*excuses.length)]);
-  if(tries===20) toast('그 마음, 포스트잇으로 남겨주세요'); }
-cb.addEventListener('mouseenter',dodge); cb.addEventListener('click',e=>{e.preventDefault(); dodge();});
-cb.addEventListener('touchstart',e=>{e.preventDefault(); dodge();},{passive:false});
+// ===== 바짓가랑이 붙잡기 =====
+(function(){
+  const scene = $('scene'), mm = $('mm'), arm = $('arm'), bubble = $('bubble'), btn = $('holdBtn');
+  const lines = ['아 좀 놔주세요~', '저 진짜 가야 돼요', '바지 늘어나요!!', '퇴근 시간이에요…', '이거 산재 아닌가요?', '연봉 두 배면 생각해볼게요', '내일도 안 와요 ㅎㅎ', '제 바지 비싼 거예요'];
+  let x = 40, holding = false, holdStart = 0, slipUntil = 0, gone = false, li = 0, lastLine = 0, mineTotal = 0;
+  let grabs = [], last = performance.now();
+  try { $('grabName').value = localStorage.getItem('melon-author') || ''; } catch(e){}
+
+  const doorX = () => scene.clientWidth - (scene.clientWidth < 600 ? 120 : 150);
+  const sp = () => Math.max(.4, Math.min(1, scene.clientWidth / 1000));
+  function say(t){ bubble.textContent = t; bubble.classList.add('on'); }
+  function hush(){ bubble.classList.remove('on'); }
+
+  function down(e){ if (e) e.preventDefault(); if (holding || gone) return; holding = true; holdStart = performance.now(); btn.classList.add('on'); btn.textContent = '붙잡는 중…'; li = Math.floor(Math.random() * lines.length); say(lines[li]); lastLine = performance.now(); }
+  function up(){
+    if (!holding) return; holding = false; btn.classList.remove('on'); btn.textContent = '꾹 눌러서 붙잡기';
+    const sec = Math.min(120, (performance.now() - holdStart) / 1000);
+    slipUntil = performance.now() + 900; say('그럼 이만~ 👋'); setTimeout(hush, 1100);
+    if (sec >= .3) record(sec);
+  }
+  btn.addEventListener('pointerdown', down);
+  ['pointerup','pointercancel','pointerleave'].forEach(ev => btn.addEventListener(ev, up));
+  btn.addEventListener('contextmenu', e => e.preventDefault());
+  btn.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat){ e.preventDefault(); down(); } });
+  btn.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); up(); } });
+
+  function frame(now){
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    if (!gone){
+      let v;
+      if (holding){ v = -28 * sp(); if (now - lastLine > 2200){ li = (li + 1) % lines.length; say(lines[li]); lastLine = now; } }
+      else if (now < slipUntil) v = 340 * sp();
+      else v = 46 * sp();
+      x = Math.max(10, x + v * dt);
+      mm.className = 'melonman ' + (holding ? 'struggle' : now < slipUntil ? 'slip' : 'walk');
+      mm.style.transform = `translateX(${x}px)`;
+      arm.style.width = Math.max(0, x + 34) + 'px';
+      arm.classList.toggle('on', holding);
+      if (holding) $('gMine').textContent = ((now - holdStart) / 1000).toFixed(1) + '초';
+      if (x >= doorX()){
+        gone = true; hush(); mm.style.opacity = 0; $('goneMsg').classList.add('on'); if (holding) up();
+        setTimeout(() => { x = 10; mm.style.transition = 'none'; mm.style.transform = `translateX(${x}px)`; requestAnimationFrame(() => { mm.style.opacity = 1; }); $('goneMsg').classList.remove('on'); gone = false; }, 2400);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  mm.style.transition = 'opacity .5s';
+  requestAnimationFrame(frame);
+
+  const fmtDur = t => { t = Math.round(t); const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), s = t % 60; return h ? `${h}시간 ${m}분` : m ? `${m}분 ${s}초` : `${s}초`; };
+  function renderGrab(){
+    const total = grabs.reduce((a, g) => a + (+g.seconds || 0), 0);
+    $('gTotal').textContent = fmtDur(total);
+    const by = {}; grabs.forEach(g => { if (g.author) by[g.author] = (by[g.author] || 0) + (+g.seconds || 0); });
+    const top = Object.entries(by).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const ol = $('gTop'); ol.innerHTML = '';
+    if (!top.length){ const li = document.createElement('li'); li.textContent = '아직 없어요'; ol.appendChild(li); return; }
+    top.forEach(([n, t], i) => { const li = document.createElement('li'); const a = document.createElement('b'); a.textContent = `${i + 1}. ${n}`; const b = document.createElement('span'); b.textContent = fmtDur(t); li.append(a, b); ol.appendChild(li); });
+  }
+  async function loadGrabs(){
+    if (!sb) return;
+    const { data, error } = await sb.from('grabs').select('id,author,seconds').limit(20000);
+    if (error){ console.error(error); $('gTotal').textContent = '—'; return; }
+    grabs = data; renderGrab();
+  }
+  async function record(sec){
+    mineTotal += sec; $('gMine').textContent = sec.toFixed(1) + '초';
+    const author = $('grabName').value.trim().slice(0, 20) || null;
+    try { localStorage.setItem('melon-author', author || ''); } catch(e){}
+    grabs.push({ id: 'local' + Date.now(), author, seconds: +sec.toFixed(1) }); renderGrab();
+    if (!sb) return;
+    const { error } = await sb.from('grabs').insert({ author, seconds: +sec.toFixed(1) });
+    if (error) console.error(error);
+  }
+  if (sb){
+    loadGrabs();
+    sb.channel('grabs-live').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'grabs' }, () => loadGrabs()).subscribe();
+  }
+})();
 
 // ===== 버킷리스트 =====
 const todos=['법인카드로 마지막 점심 플렉스','회의 중 “그건 제 알 바 아닌데요” 속으로만 말하기','인수인계 문서 끝에 “화이팅!” 한 줄 추가','탕비실 간식 마지막 털이',
