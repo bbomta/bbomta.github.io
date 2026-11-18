@@ -88,16 +88,15 @@
   /* 갤러리 무대 */
   .gallery-sec{background:var(--night);color:#f5f5f7;padding-bottom:110px}
   .gallery-sec .s-head p{color:#a1a1a6}
-  .stage{position:relative;width:min(1200px,calc(100% - 44px));margin:0 auto;aspect-ratio:16/9;border-radius:28px;overflow:hidden;background:#1d1d1f}
-  @media (max-width:700px){ .stage{aspect-ratio:4/5;border-radius:20px} }
+  .stage{position:relative;width:min(1080px,calc(100% - 44px));margin:0 auto;aspect-ratio:3/2;max-height:78vh;border-radius:28px;overflow:hidden;background:#1d1d1f}
+  @media (max-width:700px){ .stage{aspect-ratio:1/1;border-radius:20px} }
   .slide{position:absolute;inset:0;opacity:0;transition:opacity 1.8s var(--ease)}
   .slide.show{opacity:1}
-  .slide img{width:100%;height:100%;object-fit:cover;transform:scale(1);will-change:transform}
+  .slide img{position:relative;width:100%;height:100%;object-fit:contain;transform:scale(1);will-change:transform}
   .slide.show img{animation:kb 9s linear forwards}
-  @keyframes kb{from{transform:scale(1) translate(0,0)}to{transform:scale(1.12) translate(var(--kx,1%),var(--ky,-1%))}}
-  .slide .bg{position:absolute;inset:-40px;background-size:cover;background-position:center;filter:blur(40px) brightness(.55);transform:scale(1.1)}
-  .slide img.contain{position:relative;object-fit:contain}
-  .stage .shade{position:absolute;inset:auto 0 0 0;height:45%;background:linear-gradient(transparent,rgba(0,0,0,.72));pointer-events:none;z-index:2}
+  @keyframes kb{from{transform:scale(1)}to{transform:scale(1.035)}}
+  .slide .bg{position:absolute;inset:-60px;background-size:cover;background-position:center;filter:blur(48px) brightness(.5) saturate(1.2)}
+  .stage .shade{position:absolute;inset:auto 0 0 0;height:32%;background:linear-gradient(transparent,rgba(0,0,0,.72));pointer-events:none;z-index:2}
   .stage .cap{position:absolute;left:32px;right:32px;bottom:28px;z-index:3;transition:opacity .8s var(--ease)}
   .stage .cap b{display:block;font-size:clamp(20px,2.6vw,30px);font-weight:700;letter-spacing:-.02em;line-height:1.3}
   .stage .cap span{display:block;margin-top:6px;font-size:15px;color:rgba(255,255,255,.75)}
@@ -112,7 +111,7 @@
   .progress i.done{background:rgba(255,255,255,.7)}
   .progress.paused i.on::after{animation-play-state:paused}
   @keyframes fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-  .thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;width:min(1200px,calc(100% - 44px));margin:36px auto 0}
+  .thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;width:min(1080px,calc(100% - 44px));margin:36px auto 0}
   .thumbs button{aspect-ratio:1;border:0;padding:0;border-radius:12px;overflow:hidden;cursor:pointer;background:#1d1d1f;opacity:.62;transition:opacity .3s}
   .thumbs button:hover,.thumbs button.on{opacity:1}
   .thumbs img{width:100%;height:100%;object-fit:cover}
@@ -533,10 +532,7 @@ function show(i, user){
   el.innerHTML='';
   const bg=document.createElement('div'); bg.className='bg'; bg.style.backgroundImage=`url("${url(p.path)}")`;
   const im=document.createElement('img'); im.alt=p.caption||'멜론님 사진'; im.src=url(p.path);
-  im.onload=()=>{ const portrait=im.naturalHeight>im.naturalWidth*1.05, wideStage=$('stage').clientWidth>$('stage').clientHeight;
-    if(portrait&&wideStage){ im.classList.add('contain'); el.prepend(bg); } };
-  im.style.setProperty('--kx', (Math.random()*4-2).toFixed(1)+'%'); im.style.setProperty('--ky', (Math.random()*4-2).toFixed(1)+'%');
-  el.appendChild(im);
+  el.append(bg, im);
   requestAnimationFrame(()=>{ el.classList.add('show'); old.classList.remove('show'); });
   front=next;
   const cap=$('stageCap'); cap.style.opacity=0;
