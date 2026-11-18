@@ -240,6 +240,35 @@
   .finale{margin-top:90px}
   .finale .date{font-size:clamp(34px,5.6vw,64px)}
   .finale .lead{color:var(--ink-2)}
+
+  /* 엔딩 */
+  .ending{position:fixed;inset:0;z-index:500;background:#000;color:#f5f5f7;display:none;overflow:hidden}
+  .ending.open{display:block}
+  .ending .stage-t{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;z-index:3;pointer-events:none}
+  .ending .t{font-size:clamp(26px,4vw,44px);font-weight:700;letter-spacing:-.03em;line-height:1.3;color:#d2d2d7;position:absolute;opacity:0;transform:translateY(14px);filter:blur(8px);
+    transition:opacity 1.4s var(--ease),transform 1.4s var(--ease),filter 1.4s var(--ease)}
+  .ending .t.big{font-size:clamp(40px,7vw,88px);font-weight:800;letter-spacing:-.05em;color:#fff;line-height:1.1}
+  .ending .t.in{opacity:1;transform:none;filter:none}
+  .ending .t.out{opacity:0;transform:translateY(-14px);filter:blur(8px)}
+  .ending .field-n{position:absolute;inset:0;z-index:1}
+  .fall{position:absolute;width:190px;padding:18px 16px;border-radius:4px 4px 16px 4px;color:#1d1d1f;font-size:15px;line-height:1.5;font-weight:500;
+    box-shadow:0 20px 40px rgba(0,0,0,.5);transition:transform 2.2s cubic-bezier(.2,.8,.25,1),opacity 1s var(--ease);opacity:0;will-change:transform}
+  .fall span{display:block;margin-top:8px;font-size:12px;font-weight:700;color:rgba(0,0,0,.55)}
+  .fall.pol{background:#fff;padding:8px 8px 10px;width:170px}
+  .fall.pol img{width:100%;aspect-ratio:1;object-fit:cover}
+  .fall.pol span{margin-top:6px;color:#424245;font-weight:600}
+  @media (max-width:600px){ .fall{width:140px;font-size:13px;padding:12px} .fall.pol{width:120px} }
+  .ending .scrim{position:absolute;inset:0;z-index:2;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(0,0,0,.86),rgba(0,0,0,.45));opacity:0;transition:opacity 2s var(--ease);pointer-events:none}
+  .ending .scrim.in{opacity:1}
+  .ending .final{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;opacity:0;transition:opacity 2s var(--ease);pointer-events:none}
+  .ending .final.in{opacity:1;pointer-events:auto}
+  .ending .final h2{font-size:clamp(40px,7.4vw,92px);font-weight:800;letter-spacing:-.05em;line-height:1.08}
+  .ending .final p{margin-top:18px;font-size:clamp(17px,2.2vw,22px);color:#d2d2d7;max-width:28em}
+  .ending .final .acts{display:flex;gap:10px;margin-top:34px;flex-wrap:wrap;justify-content:center}
+  .ending .final .btn{background:#f5f5f7;color:#1d1d1f}
+  .ending .final .btn.dim{background:rgba(255,255,255,.14);color:#fff}
+  .ending .close{position:absolute;top:16px;right:16px;z-index:6;width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:18px;cursor:pointer}
+  .ending .skip{position:absolute;bottom:20px;right:20px;z-index:6;border:0;background:none;color:#86868b;font-size:14px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -405,6 +434,18 @@
 
 <footer>멜론님의 앞날을 진심으로 응원하며, 약간 질투합니다. 🍈</footer>
 
+<div class="ending" id="ending" role="dialog" aria-modal="true" aria-label="멜론님께 보내는 마지막 인사">
+  <div class="field-n" id="fieldN"></div>
+  <div class="scrim" id="scrim"></div>
+  <div class="stage-t" id="endT"></div>
+  <div class="final" id="final">
+    <h2>멜론님,<br>수고 많으셨어요.</h2>
+    <p id="finalP"></p>
+    <div class="acts"><button class="btn" id="endReplay">처음부터 다시 보기</button><button class="btn dim" id="endClose">페이지로 돌아가기</button></div>
+  </div>
+  <button class="close" id="endX" aria-label="닫기">✕</button>
+  <button class="skip" id="endSkip">건너뛰기</button>
+</div>
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="사진 크게 보기">
   <button class="x" id="lbX" aria-label="닫기">✕</button>
   <button class="p" id="lbP" aria-label="이전 사진">‹</button>
@@ -754,6 +795,104 @@ function confetti(n){ if(REDUCED) return; const em=['🍈','🎉','✨','💚','
 tick(); setInterval(tick,1000);
 intro();
 live();
+
+// ===== 엔딩: 마지막 퇴근 순간 =====
+let endTimers = [], endPlaying = false;
+const later = (fn, ms) => endTimers.push(setTimeout(fn, REDUCED ? Math.min(ms, 300) : ms));
+function clearEnding(){ endTimers.forEach(clearTimeout); endTimers = []; $('fieldN').innerHTML = ''; $('endT').innerHTML = ''; $('scrim').classList.remove('in'); $('final').classList.remove('in'); }
+function shuffle(a){ for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function playEnding(){
+  clearEnding(); endPlaying = true;
+  const ov = $('ending'); ov.classList.add('open'); document.body.style.overflow = 'hidden';
+  clearTimeout(timer);
+  const n = togetherNumbers();
+  $('finalP').textContent = `${n.days.toLocaleString()}일 동안 함께해서 고마웠어요. 어디서든 지금처럼 빛나길, 동료들이 응원할게요.`;
+
+  // 1) 문장이 차례로
+  const lines = [
+    ['2023년 1월 9일, 오전 11시 22분.', '', 0, 3000],
+    ['“앞으로 잘부탁드리겠습니다! 😁”', '', 3400, 3000],
+    [`그 뒤로 ${n.days.toLocaleString()}일.`, '', 6800, 2800],
+    [`함께 출근한 날 약 ${n.work.toLocaleString()}일, 함께 맞이한 금요일 ${n.fridays}번.`, '', 9900, 3200],
+    ['그리고 오늘, 마지막 퇴근.', 'big', 13500, 3400],
+  ];
+  const box = $('endT');
+  lines.forEach(([text, cls, at, dur]) => {
+    const el = document.createElement('div'); el.className = 't ' + cls; el.textContent = text; box.appendChild(el);
+    later(() => el.classList.add('in'), at);
+    later(() => { el.classList.remove('in'); el.classList.add('out'); }, at + dur);
+  });
+
+  // 2) 포스트잇과 사진이 하나씩 내려와 쌓임
+  const items = [...notes.values()].map(x => ({ kind: 'note', x }));
+  photos.slice(0, 12).forEach(x => items.push({ kind: 'photo', x }));
+  shuffle(items);
+  const list = items.slice(0, innerWidth < 600 ? 24 : 44);
+  const W = innerWidth, H = innerHeight, cw = W < 600 ? 150 : 210, chh = W < 600 ? 150 : 200;
+  const cols = Math.max(2, Math.floor(W / cw)), rows = Math.max(2, Math.ceil(list.length / cols));
+  const slots = shuffle([...Array(cols * rows).keys()]);
+  const startAt = 17200, gap = list.length > 30 ? 380 : 620;
+  list.forEach((it, i) => {
+    const el = document.createElement('div');
+    if (it.kind === 'note'){
+      el.className = 'fall'; el.style.background = colorOf(it.x);
+      const t = String(it.x.text || ''); el.textContent = t.length > 90 ? t.slice(0, 90) + '…' : t;
+      const a = document.createElement('span'); a.textContent = it.x.author || '익명의 동료'; el.appendChild(a);
+    } else {
+      el.className = 'fall pol';
+      const im = document.createElement('img'); im.alt = ''; im.src = url(it.x.path); el.appendChild(im);
+      const c = document.createElement('span'); c.textContent = it.x.caption || '🍈'; el.appendChild(c);
+    }
+    const slot = slots[i % slots.length], cx = slot % cols, cy = Math.floor(slot / cols) % rows;
+    const x = (cx + .5) * (W / cols) - (W < 600 ? 70 : 100) + (Math.random() * 40 - 20);
+    const y = (cy + .5) * (H / rows) - (W < 600 ? 60 : 80) + (Math.random() * 40 - 20);
+    const rot = (Math.random() * 14 - 7).toFixed(1);
+    el.style.left = x + 'px'; el.style.top = y + 'px'; el.dataset.final = `translateY(0) rotate(${rot}deg)`;
+    el.style.transform = `translateY(${-H - 300}px) rotate(${rot * 3}deg)`;
+    $('fieldN').appendChild(el);
+    later(() => { el.style.opacity = 1; el.style.transform = `translateY(0) rotate(${rot}deg)`; }, startAt + i * gap);
+  });
+
+  // 3) 마지막 인사
+  const finAt = startAt + Math.max(1, list.length) * gap + 2600;
+  later(() => $('scrim').classList.add('in'), finAt);
+  later(() => { $('final').classList.add('in'); confetti(60); $('endSkip').style.display = 'none'; }, finAt + 900);
+  $('endSkip').style.display = '';
+}
+function skipEnding(){
+  endTimers.forEach(clearTimeout); endTimers = [];
+  $('endT').innerHTML = '';
+  document.querySelectorAll('#fieldN .fall').forEach(el => { el.style.transition = 'none'; el.style.opacity = 1; el.style.transform = el.dataset.final; });
+  $('scrim').classList.add('in'); $('final').classList.add('in'); $('endSkip').style.display = 'none';
+}
+function closeEnding(){
+  clearEnding(); endPlaying = false; $('ending').classList.remove('open'); document.body.style.overflow = '';
+  if (location.hash === '#ending' || location.hash === '#for-melon') history.replaceState(null, '', location.pathname);
+  schedule();
+}
+$('endX').onclick = closeEnding; $('endClose').onclick = closeEnding; $('endSkip').onclick = skipEnding;
+$('endReplay').onclick = () => playEnding();
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && endPlaying) closeEnding(); });
+
+// 언제 재생할까: 마지막 퇴근 순간(페이지를 열어둔 경우), 퇴근 후 첫 방문, 또는 #for-melon 링크
+let endArmed = Date.now() < endDate().getTime();
+function maybeEnding(){
+  if (endArmed && Date.now() >= endDate().getTime()){ endArmed = false; playEnding(); }
+}
+setInterval(maybeEnding, 1000);
+function startEndingWhenReady(){
+  // 포스트잇과 사진을 불러온 뒤 시작 (최대 4초 대기)
+  let waited = 0;
+  const go = () => { if ((notes.size || photos.length) || waited >= 4000 || !sb) playEnding(); else { waited += 250; setTimeout(go, 250); } };
+  go();
+}
+if (location.hash === '#ending' || location.hash === '#for-melon') startEndingWhenReady();
+else if (Date.now() >= endDate().getTime()){
+  let seen = false; try { seen = sessionStorage.getItem('melon-ending-seen') === '1'; sessionStorage.setItem('melon-ending-seen', '1'); } catch(e){}
+  if (!seen) startEndingWhenReady();
+}
+window.addEventListener('hashchange', () => { if (location.hash === '#ending' || location.hash === '#for-melon') startEndingWhenReady(); });
 </script>
 </body>
 </html>
