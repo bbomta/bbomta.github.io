@@ -52,7 +52,7 @@
   /* 게시판 */
   .compose{background:var(--flesh-light);border:2px solid var(--ink);border-radius:16px;padding:18px}
   .compose textarea{width:100%;min-height:96px;resize:vertical;font:inherit;font-size:17px;line-height:1.6;padding:12px 14px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink)}
-  .compose textarea:focus,.settings input:focus{outline:3px solid var(--flesh);outline-offset:1px}
+  .compose textarea:focus,#author:focus,.settings input:focus{outline:3px solid var(--flesh);outline-offset:1px}
   .compose-row{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:12px}
   .colors{display:flex;gap:8px;align-items:center}
   .colors span{font-size:15px;color:var(--muted);margin-right:2px}
@@ -129,6 +129,7 @@
     .note p{font-size:16px}
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div class="ticker" aria-hidden="true"><span id="ticker"></span></div>
@@ -163,14 +164,15 @@
 
   <section class="card" id="board">
     <h2>📝 멜론님께 포스트잇 붙이기</h2>
-    <p class="desc">하고 싶은 말을 남겨주세요. 감사, 추억, 폭로(적당히), 저주(귀엽게) 모두 환영합니다.<br><b>붙이는 방법:</b> 아래에 쓰고 버튼을 누르면 GitHub 창이 열려요 → 초록색 <b>Create</b> 버튼 클릭 → 이 페이지로 돌아와 🔄 새로고침. (GitHub 계정 필요)</p>
+    <p class="desc">하고 싶은 말을 남겨주세요. 감사, 추억, 폭로(적당히), 저주(귀엽게) 모두 환영합니다.<br>로그인 필요 없어요. 붙이면 모두의 화면에 바로 나타나요.</p>
     <form class="compose" id="compose">
       <label for="noteText" class="visually-hidden" style="position:absolute;left:-9999px">메시지</label>
       <textarea id="noteText" maxlength="200" placeholder="예) 멜론님 덕분에 회의가 덜 지루했어요. 근데 제 마우스는 언제 돌려주시나요?"></textarea>
+      <input id="author" maxlength="20" placeholder="이름 (선택, 비우면 익명)" style="margin-top:10px;width:100%;font:inherit;font-size:16px;padding:10px 14px;border:2px solid var(--ink);border-radius:12px;background:#fff">
       <div class="compose-row">
         <div class="colors" id="colors"><span>색상</span></div>
                 <span class="count" id="count">0 / 200</span>
-        <button class="btn" type="submit" id="postBtn">GitHub에서 붙이기 📌</button>
+        <button class="btn" type="submit" id="postBtn">붙이기 📌</button>
       </div>
     </form>
     <div class="board-head">
@@ -315,9 +317,9 @@ function renderStats(workdays, days){
   });
 }
 
-// ===== 포스트잇 게시판 (GitHub Issues) =====
-const REPO = 'bbomta/bbomta.github.io';
-const PREFIX = '🍈 포스트잇';
+// ===== 포스트잇 게시판 (Supabase) =====
+const SUPABASE_URL = 'https://mtxzrcaixncoedxymzjp.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_fNrLK8o8hgja9leQKo4KAw_K4ntHTq5';
 const COLORS = ['#fff3a3','#ffd1dc','#c9f0d0','#cfe6ff','#ffdcb3'];
 let color = COLORS[0];
 COLORS.forEach((c,i) => {
@@ -327,33 +329,27 @@ COLORS.forEach((c,i) => {
   $('colors').appendChild(b);
 });
 $('noteText').addEventListener('input', e => $('count').textContent = e.target.value.length + ' / 200');
+try { $('author').value = localStorage.getItem('melon-author') || ''; } catch(e){}
 
-let notes = [];
+let sb = null, notes = new Map(), posting = false, lastPost = 0;
 function boardMsg(t){ $('boardMsg').textContent = t; $('boardMsg').style.display = t ? 'block' : 'none'; }
 
-function parseIssue(it){
-  const body = it.body || '';
-  const m = body.match(/<!--\s*color:(#[0-9a-fA-F]{6})\s*-->/);
-  const text = body.replace(/<!--[\s\S]*?-->/g, '').trim();
-  return { text: text || (it.title || '').replace(PREFIX, '').replace(/^[:\s]+/, ''), color: m && COLORS.includes(m[1].toLowerCase()) ? m[1].toLowerCase() : COLORS[it.number % COLORS.length],
-    who: it.user ? it.user.login : '익명', avatar: it.user ? it.user.avatar_url : '', url: it.html_url, ts: new Date(it.created_at).getTime(), n: it.number };
-}
-
 function renderNotes(){
-  const list = [...notes].sort((a,b) => $('sort').value === 'old' ? a.ts - b.ts : b.ts - a.ts);
+  const list = [...notes.values()].sort((a,b) => {
+    const d = new Date(a.created_at) - new Date(b.created_at);
+    return $('sort').value === 'old' ? d : -d;
+  });
   $('boardCount').textContent = '포스트잇 ' + list.length + '장';
   const wrap = $('notes'); wrap.innerHTML = '';
   list.forEach(n => {
     const el = document.createElement('div'); el.className = 'note';
-    el.style.background = n.color;
-    el.style.transform = `rotate(${((n.n % 7) - 3) * 0.8}deg)`;
-    const p = document.createElement('p'); p.textContent = n.text.slice(0, 300);
+    el.style.background = COLORS.includes(n.color) ? n.color : COLORS[0];
+    el.style.transform = `rotate(${((n.id % 7) - 3) * 0.8}deg)`;
+    const p = document.createElement('p'); p.textContent = String(n.text || '').slice(0, 200);
     const meta = document.createElement('div'); meta.className = 'meta';
-    const who = document.createElement('span');
-    if (n.avatar){ const img = document.createElement('img'); img.className = 'av'; img.alt = ''; img.src = n.avatar + '&s=48'; who.appendChild(img); }
-    const b = document.createElement('span'); b.className = 'who'; b.textContent = n.who; who.appendChild(b);
-    const d = new Date(n.ts);
-    const t = document.createElement('a'); t.href = n.url; t.target = '_blank'; t.rel = 'noopener';
+    const who = document.createElement('span'); who.className = 'who'; who.textContent = n.author || '익명의 동료';
+    const d = new Date(n.created_at);
+    const t = document.createElement('span');
     t.textContent = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
     meta.append(who, t); el.append(p, meta); wrap.appendChild(el);
   });
@@ -362,42 +358,41 @@ function renderNotes(){
 $('sort').onchange = renderNotes;
 
 async function loadNotes(){
-  boardMsg('게시판을 불러오는 중…');
-  try {
-    let all = [], page = 1;
-    while (page <= 5){
-      const r = await fetch(`https://api.github.com/repos/${REPO}/issues?state=open&per_page=100&page=${page}`, { headers: { Accept: 'application/vnd.github+json' } });
-      if (!r.ok) throw new Error(r.status === 403 || r.status === 429 ? 'rate' : 'http');
-      const arr = await r.json(); all = all.concat(arr);
-      if (arr.length < 100) break; page++;
-    }
-    notes = all.filter(it => !it.pull_request && (it.title || '').startsWith(PREFIX)).map(parseIssue);
-    try { localStorage.setItem('melon-notes-cache', JSON.stringify(notes)); } catch(e){}
-    renderNotes();
-  } catch(err){
-    try { notes = JSON.parse(localStorage.getItem('melon-notes-cache') || '[]'); } catch(e){ notes = []; }
-    renderNotes();
-    boardMsg(err.message === 'rate' ? 'GitHub 조회 한도에 걸렸어요(시간당 60회). 잠시 후 새로고침해 주세요. 저장해둔 포스트잇을 보여드려요.' : '게시판을 불러오지 못했어요. 잠시 후 새로고침해 주세요.');
-  }
+  if (!sb) return;
+  const { data, error } = await sb.from('notes').select('*').order('created_at', { ascending: false }).limit(500);
+  if (error){ boardMsg('게시판을 불러오지 못했어요. 잠시 후 🔄 새로고침해 주세요.'); console.error(error); return; }
+  notes = new Map(data.map(n => [n.id, n])); renderNotes();
 }
-$('refreshBtn').onclick = loadNotes;
+$('refreshBtn').onclick = () => { boardMsg('불러오는 중…'); loadNotes(); };
 
-$('compose').addEventListener('submit', e => {
+function initBoard(){
+  if (!window.supabase){ boardMsg('게시판을 불러오지 못했어요. 새로고침해 주세요.'); $('postBtn').disabled = true; return; }
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  boardMsg('게시판을 불러오는 중…');
+  loadNotes();
+  sb.channel('notes-live')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notes' }, ({ new: n }) => { notes.set(n.id, n); renderNotes(); })
+    .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'notes' }, ({ old }) => { if (old && notes.delete(old.id)) renderNotes(); })
+    .subscribe();
+  setInterval(loadNotes, 60000); // 실시간 연결이 끊겨도 1분마다 갱신
+}
+
+$('compose').addEventListener('submit', async e => {
   e.preventDefault();
   const text = $('noteText').value.trim();
   if (!text) return toast('내용을 써주세요!');
-  const title = PREFIX + ': ' + (text.length > 30 ? text.slice(0, 30) + '…' : text);
-  const body = text + '\n\n<!-- color:' + color + ' -->';
-  const url = `https://github.com/${REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
-  const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove();
-  toast('GitHub에서 Create 버튼을 누른 뒤, 돌아와서 🔄 새로고침 해주세요!');
-  pendingPost = true;
-});
-let pendingPost = false;
-window.addEventListener('focus', () => {
-  if (!pendingPost) return;
-  pendingPost = false; $('noteText').value = ''; $('count').textContent = '0 / 200';
-  setTimeout(loadNotes, 1500);
+  if (!sb || posting) return;
+  if (Date.now() - lastPost < 10000) return toast('조금만 천천히요! 10초 뒤에 다시 붙여주세요 🐢');
+  const author = $('author').value.trim().slice(0, 20) || null;
+  try { localStorage.setItem('melon-author', author || ''); } catch(e){}
+  posting = true; $('postBtn').disabled = true;
+  const { error } = await sb.from('notes').insert({ text: text.slice(0, 200), color, author });
+  posting = false; $('postBtn').disabled = false;
+  if (error){ console.error(error); return toast('붙이지 못했어요. 잠시 후 다시 시도해 주세요.'); }
+  lastPost = Date.now();
+  loadNotes();
+  $('noteText').value = ''; $('count').textContent = '0 / 200';
+  confetti(14); toast('포스트잇 붙였어요! 📌 모두에게 보여요');
 });
 
 // ===== 명언 =====
@@ -484,7 +479,7 @@ function confetti(n){
 }
 
 tick(); setInterval(tick, 1000);
-loadNotes();
+initBoard();
 </script>
 </body>
 </html>
