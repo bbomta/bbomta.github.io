@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>멜론님 탈출 카운트다운 🍈</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --rind:#2f6b2a; --rind-dark:#1f4a1b; --flesh:#f4a65a; --flesh-light:#fff0dc;
+    --cream:#fbf7ef; --ink:#1f1e1b; --body:#33312c; --muted:#5c574d; --line:#e4dccb; --red:#d8432a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:'Noto Sans KR',system-ui,sans-serif;color:var(--body);background:var(--cream);
+    font-size:17px;line-height:1.65;min-height:100vh;overflow-x:hidden;word-break:keep-all}
+  .wrap{max-width:920px;margin:0 auto;padding:36px 20px 80px}
+
+  .ticker{background:var(--rind-dark);color:#fff;font-family:'Jua';white-space:nowrap;overflow:hidden;padding:9px 0;font-size:16px}
+  .ticker span{display:inline-block;animation:scroll 40s linear infinite;padding-left:100%}
+  @keyframes scroll{to{transform:translateX(-100%)}}
+  @media (prefers-reduced-motion: reduce){ .ticker span,.melon{animation:none} }
+
+  nav{position:sticky;top:0;z-index:20;background:rgba(251,247,239,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  nav .in{max-width:920px;margin:0 auto;padding:10px 20px;display:flex;gap:8px;overflow-x:auto}
+  nav a{font-family:'Jua';font-size:16px;color:var(--rind-dark);text-decoration:none;padding:6px 14px;border-radius:999px;white-space:nowrap;background:#fff;border:1.5px solid var(--line)}
+  nav a:hover{border-color:var(--rind)}
+
+  header{text-align:center;margin-bottom:30px}
+  .melon{font-size:76px;display:inline-block;animation:bob 2.6s ease-in-out infinite;cursor:pointer;user-select:none;background:none;border:0}
+  @keyframes bob{50%{transform:translateY(-8px) rotate(6deg)}}
+  .badge{display:inline-block;background:var(--red);color:#fff;font-family:'Jua';padding:5px 14px;border-radius:999px;font-size:15px}
+  h1{font-family:'Black Han Sans';font-weight:400;font-size:clamp(40px,8vw,68px);line-height:1.1;margin:16px 0 10px;color:var(--rind-dark)}
+  h1 .m{color:var(--rind)}
+  .sub{color:var(--muted);font-size:18px}
+
+  section{scroll-margin-top:70px}
+  .card{background:#fff;border:2px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink);padding:30px 28px;margin-bottom:28px}
+  h2{font-family:'Jua';font-weight:400;font-size:28px;color:var(--ink);margin-bottom:6px;line-height:1.3}
+  .desc{color:var(--muted);font-size:16px;margin-bottom:20px}
+
+  .dday{text-align:center}
+  .dday .label{font-family:'Jua';color:var(--muted);font-size:20px}
+  .dday .big{font-family:'Black Han Sans';font-size:clamp(84px,20vw,160px);line-height:1;color:var(--red);margin:8px 0 10px}
+  .dday .status{font-size:20px;font-weight:700;color:var(--rind-dark)}
+  .dday .when{color:var(--muted);font-size:16px;margin-top:4px}
+  .clock{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}
+  .clock div{background:var(--rind-dark);color:#fff;border-radius:14px;padding:14px 4px;text-align:center}
+  .clock b{display:block;font-family:'Black Han Sans';font-weight:400;font-size:clamp(30px,7vw,48px);line-height:1.15;font-variant-numeric:tabular-nums}
+  .clock small{font-size:15px;font-weight:500}
+
+  /* 게시판 */
+  .compose{background:var(--flesh-light);border:2px solid var(--ink);border-radius:16px;padding:18px}
+  .compose textarea{width:100%;min-height:96px;resize:vertical;font:inherit;font-size:17px;line-height:1.6;padding:12px 14px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink)}
+  .compose textarea:focus,.settings input:focus{outline:3px solid var(--flesh);outline-offset:1px}
+  .compose-row{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:12px}
+  .colors{display:flex;gap:8px;align-items:center}
+  .colors span{font-size:15px;color:var(--muted);margin-right:2px}
+  .swatch{width:32px;height:32px;border-radius:8px;border:2px solid var(--ink);cursor:pointer}
+  .swatch[aria-pressed="true"]{outline:3px solid var(--ink);outline-offset:2px}
+  .anon{display:flex;align-items:center;gap:6px;font-size:16px;cursor:pointer}
+  .anon input{width:18px;height:18px;accent-color:var(--rind)}
+  .count{font-size:14px;color:var(--muted);margin-left:auto}
+  .btn{font-family:'Jua';font-size:17px;padding:10px 20px;border:2px solid var(--ink);border-radius:12px;background:var(--rind);color:#fff;cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
+  .btn.alt{background:var(--flesh);color:var(--ink)}
+  .btn:active{transform:translate(2px,2px);box-shadow:none}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .board-msg{text-align:center;color:var(--muted);padding:28px 10px;font-size:16px}
+  .board-head{display:flex;justify-content:space-between;align-items:baseline;margin:26px 0 14px;gap:10px;flex-wrap:wrap}
+  .board-head b{font-family:'Jua';font-weight:400;font-size:20px;color:var(--ink)}
+  .board-head select{font:inherit;font-size:15px;padding:5px 8px;border:1.5px solid var(--ink);border-radius:8px;background:#fff}
+  .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px}
+  .note{position:relative;padding:22px 18px 14px;min-height:170px;color:#1f1e1b;box-shadow:0 6px 14px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.1);
+    border-radius:3px 3px 18px 3px;display:flex;flex-direction:column;transition:transform .15s}
+  .note:hover{transform:rotate(0deg) scale(1.03)!important;z-index:2}
+  .note::before{content:'';position:absolute;top:-10px;left:50%;transform:translateX(-50%) rotate(-2deg);width:70px;height:20px;background:rgba(255,255,255,.6);border:1px solid rgba(0,0,0,.06)}
+  .note p{font-size:17px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;flex:1;font-weight:500}
+  .note .meta{margin-top:12px;font-size:14px;color:#4a463e;display:flex;justify-content:space-between;align-items:center;gap:6px;border-top:1px dashed rgba(0,0,0,.2);padding-top:8px}
+  .note .who{font-weight:700}
+  .note .av{width:22px;height:22px;border-radius:50%;vertical-align:-6px;margin-right:5px;border:1px solid rgba(0,0,0,.15)}
+  .note a{color:inherit}
+  .note .del{background:none;border:0;font-size:14px;color:#7a2a1c;cursor:pointer;text-decoration:underline;font-family:inherit}
+
+  /* 진행바 */
+  .bar-title{display:flex;justify-content:space-between;font-size:18px;font-weight:700;margin-bottom:8px;color:var(--ink)}
+  .bar{height:26px;background:var(--flesh-light);border:2px solid var(--ink);border-radius:999px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--rind);transition:width 1s}
+  .bar.motiv i{background:var(--red)}
+  .bar-note{font-size:15px;color:var(--muted);margin-top:8px}
+  .gauge-row{margin-top:24px}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+  .stat{background:var(--flesh-light);border-radius:14px;padding:18px}
+  .stat .n{font-family:'Black Han Sans';font-size:40px;line-height:1.1;color:var(--rind-dark)}
+  .stat .t{font-size:17px;font-weight:700;color:var(--ink);margin-top:4px}
+  .stat .d{font-size:15px;color:var(--muted);margin-top:4px;line-height:1.5}
+
+  .quote{text-align:center;font-family:'Jua';font-size:clamp(22px,4vw,28px);line-height:1.5;color:var(--ink);min-height:90px;display:flex;align-items:center;justify-content:center;padding:6px 10px;transition:opacity .4s}
+  .quote-src{text-align:center;color:var(--muted);font-size:16px}
+
+  .arena{position:relative;height:210px;border:2px dashed var(--rind);border-radius:16px;background:#f7fbf3;overflow:hidden}
+  #catchBtn{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);font-family:'Jua';font-size:18px;background:var(--red);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:12px 22px;box-shadow:3px 3px 0 var(--ink);cursor:pointer;transition:left .18s,top .18s;white-space:nowrap}
+  .catch-log{text-align:center;font-size:17px;font-weight:700;margin-top:12px;color:var(--rind-dark)}
+
+  .todo li{list-style:none;display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer;font-size:17px}
+  .todo li:last-child{border:none}
+  .todo .box{flex:0 0 24px;height:24px;border:2px solid var(--ink);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:15px;background:#fff}
+  .todo li.done .txt{text-decoration:line-through;color:var(--muted)}
+  .todo li.done .box{background:var(--rind);color:#fff}
+
+  .settings{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:center}
+  .settings label{display:flex;flex-direction:column;font-size:15px;font-weight:500;gap:4px}
+  .settings input{font:inherit;font-size:16px;padding:8px 10px;border:2px solid var(--ink);border-radius:10px;background:#fff}
+
+  footer{text-align:center;color:var(--muted);font-size:15px;margin-top:30px}
+
+  .confetti{position:fixed;top:-40px;font-size:28px;pointer-events:none;z-index:99;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(140px);background:var(--ink);color:#fff;font-size:16px;font-weight:500;padding:13px 22px;border-radius:14px;transition:transform .35s;z-index:100;max-width:90vw;text-align:center}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .free .dday .big{color:var(--rind)}
+
+  @media (max-width:560px){
+    .card{padding:24px 18px;box-shadow:4px 4px 0 var(--ink)}
+    h2{font-size:24px}
+    .clock{gap:8px}
+    .board{grid-template-columns:1fr 1fr;gap:14px}
+    .note{min-height:140px;padding:18px 12px 10px}
+    .note p{font-size:16px}
+  }
+</style>
+</head>
+<body>
+<div class="ticker" aria-hidden="true"><span id="ticker"></span></div>
+<nav><div class="in">
+  <a href="#countdown">⏱ 카운트다운</a>
+  <a href="#board">📝 롤링페이퍼</a>
+  <a href="#stats">📊 통계</a>
+  <a href="#fun">🙏 붙잡기</a>
+  <a href="#bucket">✅ 버킷리스트</a>
+</div></nav>
+
+<div class="wrap">
+  <header>
+    <button class="melon" id="melon" aria-label="멜론 누르기">🍈</button><br>
+    <span class="badge">⚠️ 긴급 속보</span>
+    <h1><span class="m">멜론</span>님<br>탈출 카운트다운</h1>
+    <p class="sub">회사가 멜론 하나를 잃고, 세상은 자유인 한 명을 얻습니다</p>
+  </header>
+
+  <section class="card dday" id="countdown">
+    <div class="label">자유까지 남은 날</div>
+    <div class="big" id="dday">D-?</div>
+    <div class="status" id="status">계산 중…</div>
+    <div class="when" id="when"></div>
+    <div class="clock" aria-label="남은 시간">
+      <div><b id="d">0</b><small>일</small></div>
+      <div><b id="h">00</b><small>시간</small></div>
+      <div><b id="mi">00</b><small>분</small></div>
+      <div><b id="s">00</b><small>초</small></div>
+    </div>
+  </section>
+
+  <section class="card" id="board">
+    <h2>📝 멜론님께 포스트잇 붙이기</h2>
+    <p class="desc">하고 싶은 말을 남겨주세요. 감사, 추억, 폭로(적당히), 저주(귀엽게) 모두 환영합니다.<br><b>붙이는 방법:</b> 아래에 쓰고 버튼을 누르면 GitHub 창이 열려요 → 초록색 <b>Create</b> 버튼 클릭 → 이 페이지로 돌아와 🔄 새로고침. (GitHub 계정 필요)</p>
+    <form class="compose" id="compose">
+      <label for="noteText" class="visually-hidden" style="position:absolute;left:-9999px">메시지</label>
+      <textarea id="noteText" maxlength="200" placeholder="예) 멜론님 덕분에 회의가 덜 지루했어요. 근데 제 마우스는 언제 돌려주시나요?"></textarea>
+      <div class="compose-row">
+        <div class="colors" id="colors"><span>색상</span></div>
+                <span class="count" id="count">0 / 200</span>
+        <button class="btn" type="submit" id="postBtn">GitHub에서 붙이기 📌</button>
+      </div>
+    </form>
+    <div class="board-head">
+      <b id="boardCount">포스트잇 0장</b>
+      <span style="display:flex;gap:8px;align-items:center"><button class="btn alt" type="button" id="refreshBtn" style="padding:5px 12px;font-size:15px">🔄 새로고침</button><select id="sort" aria-label="정렬"><option value="new">최신순</option><option value="old">오래된순</option></select></span>
+    </div>
+    <div class="board" id="notes"></div>
+    <div class="board-msg" id="boardMsg">게시판을 불러오는 중…</div>
+  </section>
+
+  <section class="card">
+    <div class="bar-title"><span>🏃 탈출 진행률</span><span id="pct">0%</span></div>
+    <div class="bar"><i id="progress" style="width:0%"></i></div>
+    <p class="bar-note">퇴사 발표일부터 마지막 퇴근까지 기준</p>
+    <div class="gauge-row">
+      <div class="bar-title"><span>🔋 잔여 업무 의욕</span><span id="motivPct">100%</span></div>
+      <div class="bar motiv"><i id="motiv" style="width:100%"></i></div>
+      <p class="bar-note" id="motivNote"></p>
+    </div>
+  </section>
+
+  <section class="card" id="stats">
+    <h2>📊 잔여 회사생활 통계</h2>
+    <p class="desc">※ 과학적 근거는 전혀 없습니다.</p>
+    <div class="stats" id="statsGrid"></div>
+  </section>
+
+  <section class="card">
+    <h2>📜 오늘의 퇴사 명언</h2>
+    <div class="quote" id="quote"></div>
+    <div class="quote-src" id="quoteSrc"></div>
+    <div style="text-align:center;margin-top:16px"><button class="btn alt" id="nextQuote">다른 명언 보기</button></div>
+  </section>
+
+  <section class="card" id="fun">
+    <h2>🙏 멜론님 붙잡기 챌린지</h2>
+    <p class="desc">버튼을 눌러 멜론님을 붙잡아 보세요. 가능하다면요.</p>
+    <div class="arena" id="arena"><button id="catchBtn">제발 가지 마세요 😭</button></div>
+    <div class="catch-log" id="catchLog">붙잡기 시도 0회 · 성공 0회</div>
+  </section>
+
+  <section class="card" id="bucket">
+    <h2>✅ 퇴사 전 버킷리스트</h2>
+    <p class="desc">체크 표시는 내 브라우저에만 저장돼요.</p>
+    <ul class="todo" id="todo"></ul>
+  </section>
+
+  <section class="card">
+    <h2 style="font-size:22px">⚙️ 날짜 설정</h2>
+    <p class="desc">여기서 바꾼 날짜는 내 화면에만 적용돼요.</p>
+    <div class="settings">
+      <label>퇴사 발표일 <input type="date" id="startInput"></label>
+      <label>마지막 출근일 <input type="date" id="endInput"></label>
+      <label>퇴근 시각 <input type="time" id="timeInput"></label>
+      <button class="btn alt" id="saveBtn">적용</button>
+    </div>
+  </section>
+
+  <footer>멜론님의 앞날을 진심으로 응원하며, 약간 질투합니다. 🍈</footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const DEFAULTS = { start: '2026-11-18', end: '2026-11-20', time: '15:00' };
+const $ = id => document.getElementById(id);
+let cfg = {...DEFAULTS};
+try { const s = JSON.parse(localStorage.getItem('melon-dday-v2') || 'null'); if (s && s.end) cfg = {...cfg, ...s}; } catch(e){}
+$('startInput').value = cfg.start; $('endInput').value = cfg.end; $('timeInput').value = cfg.time;
+
+const endDate = () => new Date(cfg.end + 'T' + (cfg.time || '18:00') + ':00');
+const startDate = () => new Date(cfg.start + 'T09:00:00');
+const DOW = ['일','월','화','수','목','금','토'];
+
+function workdaysBetween(a, b){
+  let n = 0; const d = new Date(a); d.setHours(0,0,0,0); const e = new Date(b); e.setHours(0,0,0,0);
+  while (d <= e){ const w = d.getDay(); if (w && w !== 6) n++; d.setDate(d.getDate()+1); } return n;
+}
+
+const statusLines = [
+  [60,'아직 멀었습니다. 표정 관리 부탁드립니다.'],
+  [30,'슬슬 책상 서랍이 비어가는 중…'],
+  [14,'"인수인계"라는 단어가 들리기 시작했습니다'],
+  [7,'이제 모든 회의에 "저는 그때 없어서요"가 가능'],
+  [3,'얼굴에서 빛이 나기 시작했습니다 ✨'],
+  [2,'모레면 자유! 벌써 표정에서 퇴사가 묻어납니다'],
+  [1,'내일이면 남입니다. 오늘 커피는 멜론님이 쏘시죠?'],
+  [0,'오늘이 마지막 날!! 마지막 퇴근, 최대한 천천히 하세요'],
+];
+
+function tick(){
+  const now = new Date(), end = endDate(), start = startDate(), diff = end - now;
+  const t0 = new Date(now); t0.setHours(0,0,0,0); const e0 = new Date(end); e0.setHours(0,0,0,0);
+  const dayDiff = Math.round((e0 - t0) / 86400000);
+  $('when').textContent = `마지막 퇴근: ${end.getMonth()+1}월 ${end.getDate()}일 (${DOW[end.getDay()]}) ${end.getHours() >= 12 ? '오후' : '오전'} ${end.getHours() % 12 || 12}시${end.getMinutes() ? ' ' + end.getMinutes() + '분' : ''}`;
+  if (diff <= 0){
+    document.body.classList.add('free');
+    $('dday').textContent = 'D+' + Math.abs(dayDiff);
+    $('status').textContent = '🎉 멜론님은 자유인입니다. 지금쯤 평일 낮잠 중일 예정';
+    ['d','h','mi','s'].forEach(k => $(k).textContent = k === 'd' ? '0' : '00');
+    setBars(100, 0); renderStats(0, 0); return;
+  }
+  document.body.classList.remove('free');
+  $('dday').textContent = dayDiff === 0 ? 'D-DAY' : 'D-' + dayDiff;
+  $('status').textContent = (statusLines.find(([n]) => dayDiff >= n) || statusLines.at(-1))[1];
+  const s = Math.floor(diff/1000);
+  $('d').textContent = Math.floor(s/86400);
+  $('h').textContent = String(Math.floor(s%86400/3600)).padStart(2,'0');
+  $('mi').textContent = String(Math.floor(s%3600/60)).padStart(2,'0');
+  $('s').textContent = String(s%60).padStart(2,'0');
+  const total = end - start;
+  const pct = total > 0 ? Math.min(100, Math.max(0, (now - start) / total * 100)) : 0;
+  setBars(pct, Math.max(0, Math.round(100 - pct * 1.15)));
+  renderStats(workdaysBetween(now, end), dayDiff);
+}
+function setBars(pct, motiv){
+  $('progress').style.width = pct.toFixed(2) + '%';
+  $('pct').textContent = pct.toFixed(3) + '%';
+  $('motiv').style.width = motiv + '%';
+  $('motivPct').textContent = motiv + '%';
+  $('motivNote').textContent = motiv > 70 ? '아직 메일 답장은 하는 단계' : motiv > 40 ? '메일 답장이 "넵"으로 수렴하는 단계'
+    : motiv > 10 ? '슬랙 상태가 "🌴"로 바뀌는 단계' : '측정 불가. 영혼은 이미 퇴사함';
+}
+let lastKey = '';
+function renderStats(workdays, days){
+  const key = workdays + '-' + days; if (key === lastKey) return; lastKey = key;
+  let mondays = 0; { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+1); const e = endDate(); while (d <= e){ if (d.getDay() === 1) mondays++; d.setDate(d.getDate()+1); } }
+  const items = [
+    [workdays,'남은 출근 횟수','주말 제외. 연차 쓰면 더 줄어듦 (권장)'],
+    [workdays,'남은 회사 점심','맛집 리스트 마무리할 마지막 기회'],
+    [Math.round(workdays*2.3),'남은 회의 (추정)','그중 메일로 가능했던 회의 약 ' + Math.round(workdays*2.3*0.8) + '개'],
+    [Math.round(workdays*4.7),'"이것만 봐주실 수 있어요?"','앞으로 들을 예상 횟수'],
+    [Math.round(workdays*3),'남은 회사 커피','카페인 약 ' + Math.round(workdays*3*0.15*1000) + 'mg 예정'],
+    [mondays,'남은 월요병', mondays ? '마지막 월요병은 덜 아플 예정' : '축하합니다. 월요병 졸업 🎓'],
+  ];
+  const g = $('statsGrid'); g.innerHTML = '';
+  items.forEach(([n,t,d]) => {
+    const el = document.createElement('div'); el.className = 'stat';
+    el.innerHTML = '<div class="n"></div><div class="t"></div><div class="d"></div>';
+    el.children[0].textContent = n.toLocaleString(); el.children[1].textContent = t; el.children[2].textContent = d;
+    g.appendChild(el);
+  });
+}
+
+// ===== 포스트잇 게시판 (GitHub Issues) =====
+const REPO = 'bbomta/bbomta.github.io';
+const PREFIX = '🍈 포스트잇';
+const COLORS = ['#fff3a3','#ffd1dc','#c9f0d0','#cfe6ff','#ffdcb3'];
+let color = COLORS[0];
+COLORS.forEach((c,i) => {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'swatch'; b.style.background = c;
+  b.setAttribute('aria-label', '색상 ' + (i+1)); b.setAttribute('aria-pressed', i === 0);
+  b.onclick = () => { color = c; [...document.querySelectorAll('.swatch')].forEach(x => x.setAttribute('aria-pressed', x === b)); };
+  $('colors').appendChild(b);
+});
+$('noteText').addEventListener('input', e => $('count').textContent = e.target.value.length + ' / 200');
+
+let notes = [];
+function boardMsg(t){ $('boardMsg').textContent = t; $('boardMsg').style.display = t ? 'block' : 'none'; }
+
+function parseIssue(it){
+  const body = it.body || '';
+  const m = body.match(/<!--\s*color:(#[0-9a-fA-F]{6})\s*-->/);
+  const text = body.replace(/<!--[\s\S]*?-->/g, '').trim();
+  return { text: text || (it.title || '').replace(PREFIX, '').replace(/^[:\s]+/, ''), color: m && COLORS.includes(m[1].toLowerCase()) ? m[1].toLowerCase() : COLORS[it.number % COLORS.length],
+    who: it.user ? it.user.login : '익명', avatar: it.user ? it.user.avatar_url : '', url: it.html_url, ts: new Date(it.created_at).getTime(), n: it.number };
+}
+
+function renderNotes(){
+  const list = [...notes].sort((a,b) => $('sort').value === 'old' ? a.ts - b.ts : b.ts - a.ts);
+  $('boardCount').textContent = '포스트잇 ' + list.length + '장';
+  const wrap = $('notes'); wrap.innerHTML = '';
+  list.forEach(n => {
+    const el = document.createElement('div'); el.className = 'note';
+    el.style.background = n.color;
+    el.style.transform = `rotate(${((n.n % 7) - 3) * 0.8}deg)`;
+    const p = document.createElement('p'); p.textContent = n.text.slice(0, 300);
+    const meta = document.createElement('div'); meta.className = 'meta';
+    const who = document.createElement('span');
+    if (n.avatar){ const img = document.createElement('img'); img.className = 'av'; img.alt = ''; img.src = n.avatar + '&s=48'; who.appendChild(img); }
+    const b = document.createElement('span'); b.className = 'who'; b.textContent = n.who; who.appendChild(b);
+    const d = new Date(n.ts);
+    const t = document.createElement('a'); t.href = n.url; t.target = '_blank'; t.rel = 'noopener';
+    t.textContent = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    meta.append(who, t); el.append(p, meta); wrap.appendChild(el);
+  });
+  boardMsg(list.length ? '' : '아직 포스트잇이 없어요. 첫 번째로 붙여주세요! 📌');
+}
+$('sort').onchange = renderNotes;
+
+async function loadNotes(){
+  boardMsg('게시판을 불러오는 중…');
+  try {
+    let all = [], page = 1;
+    while (page <= 5){
+      const r = await fetch(`https://api.github.com/repos/${REPO}/issues?state=open&per_page=100&page=${page}`, { headers: { Accept: 'application/vnd.github+json' } });
+      if (!r.ok) throw new Error(r.status === 403 || r.status === 429 ? 'rate' : 'http');
+      const arr = await r.json(); all = all.concat(arr);
+      if (arr.length < 100) break; page++;
+    }
+    notes = all.filter(it => !it.pull_request && (it.title || '').startsWith(PREFIX)).map(parseIssue);
+    try { localStorage.setItem('melon-notes-cache', JSON.stringify(notes)); } catch(e){}
+    renderNotes();
+  } catch(err){
+    try { notes = JSON.parse(localStorage.getItem('melon-notes-cache') || '[]'); } catch(e){ notes = []; }
+    renderNotes();
+    boardMsg(err.message === 'rate' ? 'GitHub 조회 한도에 걸렸어요(시간당 60회). 잠시 후 새로고침해 주세요. 저장해둔 포스트잇을 보여드려요.' : '게시판을 불러오지 못했어요. 잠시 후 새로고침해 주세요.');
+  }
+}
+$('refreshBtn').onclick = loadNotes;
+
+$('compose').addEventListener('submit', e => {
+  e.preventDefault();
+  const text = $('noteText').value.trim();
+  if (!text) return toast('내용을 써주세요!');
+  const title = PREFIX + ': ' + (text.length > 30 ? text.slice(0, 30) + '…' : text);
+  const body = text + '\n\n<!-- color:' + color + ' -->';
+  const url = `https://github.com/${REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+  const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove();
+  toast('GitHub에서 Create 버튼을 누른 뒤, 돌아와서 🔄 새로고침 해주세요!');
+  pendingPost = true;
+});
+let pendingPost = false;
+window.addEventListener('focus', () => {
+  if (!pendingPost) return;
+  pendingPost = false; $('noteText').value = ''; $('count').textContent = '0 / 200';
+  setTimeout(loadNotes, 1500);
+});
+
+// ===== 명언 =====
+const quotes = [
+  ['퇴사는 끝이 아니라, 알람 없는 아침의 시작이다.','— 멜론, 출근길에서'],
+  ['인수인계 문서는 길게, 송별사는 짧게.','— 고대 직장인 격언'],
+  ['멜론은 원래 익으면 떠나는 법이다.','— 과일가게 사장님'],
+  ['"제가 없어도 잘 돌아갈 거예요"는 거짓말이다. 서로 알고 있다.','— 남겨진 팀원 일동'],
+  ['떠나는 자의 뒷모습은 언제나 퇴근 시간보다 빠르다.','— 칼퇴의 정석 3장'],
+  ['그동안 "넵"이라고 한 거, 사실 절반은 "음…"이었어요.','— 멜론 (추정)'],
+  ['어디서든 꿀 같은 멜론이 되시길.','— 팀 전원'],
+  ['퇴사 D-day 계산기는 세상에서 가장 정확한 행복 측정기다.','— 이 웹페이지'],
+  ['우리는 멜론님을 보내는 게 아니다. 멜론님이 우리를 두고 가는 것이다.','— 억울한 동료들'],
+];
+let qi = Math.floor(Math.random()*quotes.length);
+function showQuote(){
+  const q = $('quote'); q.style.opacity = 0;
+  setTimeout(() => { q.textContent = '“' + quotes[qi][0] + '”'; $('quoteSrc').textContent = quotes[qi][1]; q.style.opacity = 1; }, 300);
+}
+$('nextQuote').onclick = () => { qi = (qi+1) % quotes.length; showQuote(); };
+showQuote(); setInterval(() => { qi = (qi+1) % quotes.length; showQuote(); }, 10000);
+
+// ===== 붙잡기 =====
+let tries = 0;
+const btn = $('catchBtn'), arena = $('arena');
+const excuses = ['멜론님: "아 저 반차라서요~"','멜론님: "그건 후임자한테…"','멜론님: "(이미 짐 쌈)"','멜론님: "연봉 두 배면 생각해볼게요 ㅎ"',
+  '멜론님: "아 네네 다음에 밥 한번 해요~"','멜론님: "저 지금 마음은 제주도라서요"','멜론님: "😎👋"'];
+function dodge(){
+  const r = arena.getBoundingClientRect(), b = btn.getBoundingClientRect();
+  btn.style.left = (Math.random()*(r.width-b.width) + b.width/2) + 'px';
+  btn.style.top = (Math.random()*(r.height-b.height) + b.height/2) + 'px';
+  tries++; $('catchLog').textContent = `붙잡기 시도 ${tries}회 · 성공 0회`;
+  if (tries % 3 === 0) toast(excuses[Math.floor(Math.random()*excuses.length)]);
+  if (tries === 20) toast('20번이나… 그 마음 위 게시판에 포스트잇으로 남겨주세요 🥲');
+}
+btn.addEventListener('mouseenter', dodge);
+btn.addEventListener('click', e => { e.preventDefault(); dodge(); });
+btn.addEventListener('touchstart', e => { e.preventDefault(); dodge(); }, {passive:false});
+
+// ===== 버킷리스트 =====
+const todos = ['법인카드로 마지막 점심 플렉스','회의 중 "그건 제 알 바 아닌데요" 속으로 말하기 (밖으로 X)','인수인계 문서에 "화이팅!" 한 줄 추가',
+  '탕비실 간식 마지막 털이','슬랙 프로필 사진을 해변으로 변경','"그동안 감사했습니다" 메일 초안 37번 수정','사내 메신저 비밀번호 까먹기 연습',
+  '마지막 퇴근, 엘리베이터에서 슬로모션으로 뒤돌아보기'];
+let done = []; try { done = JSON.parse(localStorage.getItem('melon-todo') || '[]'); } catch(e){}
+function renderTodo(){
+  const ul = $('todo'); ul.innerHTML = '';
+  todos.forEach((t,i) => {
+    const li = document.createElement('li'); li.dataset.i = i; if (done.includes(i)) li.className = 'done';
+    li.innerHTML = '<span class="box"></span><span class="txt"></span>';
+    li.children[0].textContent = done.includes(i) ? '✓' : ''; li.children[1].textContent = t; ul.appendChild(li);
+  });
+}
+$('todo').addEventListener('click', e => {
+  const li = e.target.closest('li'); if (!li) return; const i = +li.dataset.i;
+  done = done.includes(i) ? done.filter(x => x !== i) : [...done, i];
+  try { localStorage.setItem('melon-todo', JSON.stringify(done)); } catch(e){}
+  renderTodo();
+  if (done.length === todos.length){ confetti(40); toast('버킷리스트 완료! 이제 진짜 퇴사만 남았습니다 🎓'); }
+});
+renderTodo();
+
+$('ticker').textContent = ['[속보] 멜론님 퇴사 확정… 팀원들 "믿기지 않아"','[단독] 멜론님 책상 위 화분, 새 주인 찾는 중','[경제] 멜론님 퇴사로 사내 커피 소비량 급감 전망',
+  '[날씨] 멜론님 마음속 날씨: 연일 맑음','[스포츠] 멜론님, 퇴근 100m 신기록 경신','[사회] "인수인계 언제 해요?" 질문 하루 평균 12회 돌파'].join('     🍈     ');
+
+const melonMsgs = ['🍈 쓰담쓰담','🍈 "저 아직 여기 있어요"','🍈 잘 익었다!','🍈 데굴데굴~','🍈 수박 아님 주의'];
+let mc = 0; $('melon').onclick = () => { mc++; confetti(12); toast(melonMsgs[mc % melonMsgs.length]); };
+
+$('saveBtn').onclick = () => {
+  if (!$('endInput').value) return toast('마지막 출근일을 넣어주세요!');
+  cfg = { start: $('startInput').value || cfg.start, end: $('endInput').value, time: $('timeInput').value || '18:00' };
+  try { localStorage.setItem('melon-dday-v2', JSON.stringify(cfg)); } catch(e){}
+  lastKey = ''; tick(); toast('날짜 적용 완료! 🚀');
+};
+
+let tt;
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2800); }
+function confetti(n){
+  const em = ['🍈','🎉','✨','🥳','🌴','💚'];
+  for (let i=0;i<n;i++){
+    const c = document.createElement('div'); c.className = 'confetti'; c.textContent = em[Math.floor(Math.random()*em.length)];
+    c.style.left = Math.random()*100 + 'vw'; c.style.animationDuration = (2 + Math.random()*2.5) + 's';
+    document.body.appendChild(c); setTimeout(() => c.remove(), 5000);
+  }
+}
+
+tick(); setInterval(tick, 1000);
+loadNotes();
+</script>
+</body>
+</html>
