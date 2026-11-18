@@ -313,8 +313,8 @@
   .melonman{position:absolute;bottom:calc(28% - 8px);width:130px;height:262px;will-change:transform}
   .melonman .face{position:absolute;left:50%;top:0;width:104px;transform:translateX(-50%);z-index:3;filter:drop-shadow(0 3px 4px rgba(0,0,0,.18));transform-origin:50% 90%;animation:headbob .5s ease-in-out infinite}
   @keyframes headbob{50%{transform:translateX(-50%) translateY(-3px) rotate(-2deg)}}
-  .melonman.struggle .face{animation:headshake .18s ease-in-out infinite}
-  @keyframes headshake{0%,100%{transform:translateX(-50%) rotate(-4deg)}50%{transform:translateX(-50%) rotate(5deg)}}
+  .melonman.struggle .face{animation:headshake .2s ease-in-out infinite}
+  @keyframes headshake{0%,100%{transform:translateX(calc(-50% + 10px)) translateY(4px) rotate(9deg)}50%{transform:translateX(calc(-50% + 12px)) translateY(3px) rotate(14deg)}}
   .melonman svg{position:absolute;left:0;bottom:0;width:130px;height:146px;overflow:visible;z-index:2}
   .melonman .legA,.melonman .legB,.melonman .armA,.melonman .armB,.melonman .torso{transform-box:view-box}
   .melonman .legA{transform-origin:76px 66px}.melonman .legB{transform-origin:56px 66px}
@@ -546,7 +546,7 @@
       <div class="melonman walk" id="mm">
         <div class="bubble" id="bubble"></div>
         <div class="shadow"></div>
-        <img class="face" src="face.png" alt="멜론님 얼굴">
+        <img class="face" src="melon-face.png?v=3" alt="멜론님 얼굴">
         <svg viewBox="0 0 130 146" aria-hidden="true">
           <defs>
             <linearGradient id="hood" x1="0" x2="1"><stop offset="0" stop-color="#2b2b2f"/><stop offset=".55" stop-color="#1e1e21"/><stop offset="1" stop-color="#141416"/></linearGradient>
