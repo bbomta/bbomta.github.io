@@ -841,106 +841,44 @@ function confetti(n){ if(REDUCED) return; const em=['🍈','🎉','✨','💚','
 tick(); setInterval(tick,1000);
 live();
 
-// ===== 배경음악: 직접 만든 경쾌한 곡 (Web Audio로 실시간 연주, 계속 반복) =====
+// ===== 배경음악: 올려주신 곡 (bgm.mp3, 끊김 없이 반복) =====
 const Music = (() => {
-  let ctx = null, master = null, wet = null, noiseBuf = null, playing = false, muted = false, bar = 0, nextT = 0, tick = null;
-  const VOL = .62, BPM = 112, B = 60 / BPM, BAR = B * 4, E = B / 2;
-  const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
-  const CH = { C:[48,52,55], G:[43,47,50], Am:[45,48,52], F:[41,45,48], Em:[40,43,47] };
-  const PROG = ['C','G','Am','F','C','G','Am','F','F','G','Em','Am','F','G','C','C'];
-  // 멜로디: 마디별 [8분음표 위치, 미디음, 길이(8분음표)]
-  const MEL = [
-    [[0,76,1],[1,79,1],[3,84,1],[4,83,1],[5,84,1],[6,79,2]],
-    [[0,86,1],[1,83,1],[2,79,2],[5,86,1],[6,83,2]],
-    [[0,84,1],[1,81,1],[2,76,1],[3,81,1],[4,84,2],[6,88,2]],
-    [[0,86,2],[2,84,1],[3,81,1],[4,77,2],[6,79,2]],
-    [[0,76,1],[1,79,1],[3,84,1],[4,83,1],[5,84,1],[6,79,2]],
-    [[0,86,1],[1,83,1],[2,79,2],[5,86,1],[6,83,2]],
-    [[0,84,1],[1,83,1],[2,81,1],[3,79,1],[4,81,1],[5,84,1],[6,88,2]],
-    [[0,89,2],[2,88,1],[3,86,1],[4,84,4]],
-    [[0,81,1],[1,84,1],[2,89,2],[4,88,1],[5,86,1],[6,84,2]],
-    [[0,83,1],[1,86,1],[2,91,2],[4,89,1],[5,88,1],[6,86,2]],
-    [[0,88,2],[2,83,1],[3,79,1],[4,83,1],[5,88,1],[6,86,2]],
-    [[0,84,2],[2,81,1],[3,76,1],[4,81,2],[6,83,2]],
-    [[0,84,1],[1,84,1],[2,81,1],[3,84,1],[4,89,2],[6,88,2]],
-    [[0,86,1],[1,86,1],[2,83,1],[3,86,1],[4,91,2],[6,89,1],[7,86,1]],
-    [[0,88,3],[3,86,1],[4,84,2],[6,79,2]],
-    [[0,84,4],[0,76,4],[0,79,4]],
-  ];
+  const SRC = 'bgm.mp3', VOL = .8;
+  let ctx = null, master = null, buffer = null, src = null, playing = false, muted = false, offset = 0, startedAt = 0, want = false;
+  // 페이지가 열리자마자 파일을 미리 받아둠 (입장 버튼을 누르면 바로 나오게)
+  const fileP = fetch(SRC).then(r => { if (!r.ok) throw new Error('음악 파일을 불러오지 못했어요'); return r.arrayBuffer(); }).catch(e => { console.error(e); return null; });
+  let decodeP = null;
   function ensure(){
     if (!ctx){
       const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
-      ctx = new AC();
-      master = ctx.createGain(); master.gain.value = 0;
-      const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 3;
-      master.connect(comp); comp.connect(ctx.destination);
-      const conv = ctx.createConvolver(), len = ctx.sampleRate * 1.6, ir = ctx.createBuffer(2, len, ctx.sampleRate);
-      for (let c = 0; c < 2; c++){ const d = ir.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3); }
-      conv.buffer = ir; wet = ctx.createGain(); wet.gain.value = .22; wet.connect(conv); conv.connect(master);
-      noiseBuf = ctx.createBuffer(1, ctx.sampleRate * .5, ctx.sampleRate); const nd = noiseBuf.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+      ctx = new AC(); master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
     }
     if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+    if (!decodeP) decodeP = fileP.then(ab => ab ? new Promise((res, rej) => ctx.decodeAudioData(ab.slice(0), res, rej)) : null).then(b => (buffer = b)).catch(e => { console.error(e); return null; });
     return ctx;
   }
-  const route = (node, dry, rev) => { const g = ctx.createGain(); g.gain.value = dry; node.connect(g); g.connect(master); if (rev){ const r = ctx.createGain(); r.gain.value = rev; node.connect(r); r.connect(wet); } };
-  // 마림바 느낌 멜로디
-  function mallet(t, m, v, len){
-    const f = mtof(m), env = ctx.createGain(), d = Math.min(.9, .25 + len * .18);
-    env.gain.setValueAtTime(0, t); env.gain.linearRampToValueAtTime(v, t + .004); env.gain.exponentialRampToValueAtTime(.0001, t + d);
-    [[1, 1, 'sine'], [4, .22, 'sine'], [2, .12, 'triangle']].forEach(([r, a, type]) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type; o.frequency.value = f * r; g.gain.value = a; o.connect(g); g.connect(env); o.start(t); o.stop(t + d + .05); });
-    route(env, .9, .5);
-  }
-  // 엇박 코드 (통통 튀는 느낌)
-  function stab(t, notes, v){
-    const env = ctx.createGain(), lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(2600, t); lp.frequency.exponentialRampToValueAtTime(700, t + .18); lp.Q.value = 2;
-    env.gain.setValueAtTime(0, t); env.gain.linearRampToValueAtTime(v, t + .005); env.gain.exponentialRampToValueAtTime(.0001, t + .22);
-    notes.forEach(m => { const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = mtof(m + 12); o.connect(lp); o.start(t); o.stop(t + .25); });
-    lp.connect(env); route(env, .55, .25);
-  }
-  function bass(t, m, len){
-    const o = ctx.createOscillator(), env = ctx.createGain(), lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 500;
-    o.type = 'triangle'; o.frequency.value = mtof(m);
-    env.gain.setValueAtTime(0, t); env.gain.linearRampToValueAtTime(.32, t + .01); env.gain.setValueAtTime(.28, t + len * .6); env.gain.exponentialRampToValueAtTime(.0001, t + len);
-    o.connect(lp); lp.connect(env); route(env, 1, 0); o.start(t); o.stop(t + len + .02);
-  }
-  function kick(t){
-    const o = ctx.createOscillator(), env = ctx.createGain(); o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(42, t + .12);
-    env.gain.setValueAtTime(.55, t); env.gain.exponentialRampToValueAtTime(.0001, t + .28); o.connect(env); route(env, 1, 0); o.start(t); o.stop(t + .3);
-  }
-  function noise(t, type, freq, v, d, rev){
-    const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), env = ctx.createGain(); src.buffer = noiseBuf; f.type = type; f.frequency.value = freq;
-    env.gain.setValueAtTime(v, t); env.gain.exponentialRampToValueAtTime(.0001, t + d); src.connect(f); f.connect(env); route(env, 1, rev); src.start(t); src.stop(t + d + .02);
-  }
-  const clap = t => { noise(t, 'bandpass', 1500, .2, .16, .35); noise(t + .012, 'bandpass', 1900, .12, .1, 0); };
-  const hat = (t, v) => noise(t, 'highpass', 7500, v, .04, 0);
-  function scheduleBar(t, i){
-    const k = i % 16, loop = Math.floor(i / 16), name = PROG[k], ch = CH[name];
-    const intro = i < 2; // 처음 두 마디는 가볍게 시작
-    // 드럼
-    if (!intro){ kick(t); kick(t + 2 * B); if (k % 2) kick(t + 2.5 * B); clap(t + B); clap(t + 3 * B); }
-    for (let e = 0; e < 8; e++) hat(t + e * E, e % 2 ? .07 : .035);
-    if (k === 15){ [3, 3.25, 3.5, 3.75].forEach((x, j) => noise(t + x * B, 'bandpass', 1700, .07 + j * .03, .09, .2)); }
-    // 베이스: 1, 2&, 3, 4&
-    if (!intro){ bass(t, ch[0] - 12, B * .9); bass(t + 1.5 * B, ch[0] - 12, E * .9); bass(t + 2 * B, ch[2] - 12, B * .9); bass(t + 3.5 * B, ch[0], E * .9); }
-    // 엇박 코드
-    for (let q = 0; q < 4; q++) stab(t + q * B + E, ch, intro ? .05 : .075);
-    // 멜로디 (두 번째 반복부터는 한 옥타브 위 장식 추가)
-    if (!intro || i === 1) MEL[k].forEach(([pos, m, len]) => { mallet(t + pos * E, m, .3, len); if (loop % 2 === 1 && len >= 2) mallet(t + pos * E + .01, m + 12, .08, len); });
-  }
-  function pump(){
-    if (!playing) return;
-    while (nextT < ctx.currentTime + 1.2){ scheduleBar(nextT, bar); nextT += BAR; bar++; }
+  function begin(){
+    if (!buffer || !want || src) return;
+    src = ctx.createBufferSource(); src.buffer = buffer; src.loop = true; src.connect(master);
+    const t = ctx.currentTime; startedAt = t - offset;
+    src.start(t, offset % buffer.duration);
+    master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(0, t); master.gain.linearRampToValueAtTime(muted ? 0 : VOL, t + 1.2);
+    if (window.bgmUI) bgmUI();
   }
   function start(){
     if (!ensure() || playing) return;
-    playing = true; bar = 0; nextT = ctx.currentTime + .12;
-    const t = ctx.currentTime; master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(0, t); master.gain.linearRampToValueAtTime(muted ? 0 : VOL, t + 1.5);
-    pump(); tick = setInterval(pump, 250);
+    playing = true; want = true;
+    if (buffer) begin(); else decodeP.then(begin);
   }
-  function stop(){ playing = false; clearInterval(tick); if (ctx){ const t = ctx.currentTime; master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t); master.gain.linearRampToValueAtTime(0, t + .6); } }
+  function stop(){
+    want = false; playing = false; if (!ctx || !src) return;
+    const t = ctx.currentTime, s0 = src; offset = buffer ? (t - startedAt) % buffer.duration : 0; src = null;
+    master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t); master.gain.linearRampToValueAtTime(0, t + .6);
+    setTimeout(() => { try { s0.stop(); } catch(e){} }, 700);
+  }
   function setMuted(m){ muted = m; if (!ctx) return; const t = ctx.currentTime; master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t); master.gain.linearRampToValueAtTime(m ? 0 : VOL, t + .5); }
   // 탭을 떠나면 잠시 멈춤
-  document.addEventListener('visibilitychange', () => { if (!ctx || !playing) return; if (document.hidden) ctx.suspend(); else { ctx.resume(); nextT = Math.max(nextT, ctx.currentTime + .1); } });
+  document.addEventListener('visibilitychange', () => { if (!ctx || !playing) return; document.hidden ? ctx.suspend() : ctx.resume(); });
   return { ensure, start, stop, setMuted, get playing(){ return playing; }, get muted(){ return muted; } };
 })();
 function bgmUI(){
