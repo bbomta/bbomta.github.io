@@ -128,6 +128,35 @@
     .note{min-height:140px;padding:18px 12px 10px}
     .note p{font-size:16px}
   }
+
+  /* 갤러리 */
+  .upload{background:var(--flesh-light);border:2px solid var(--ink);border-radius:16px;padding:18px;display:grid;gap:10px}
+  .upload input[type=text]{width:100%;font:inherit;font-size:16px;padding:10px 14px;border:2px solid var(--ink);border-radius:12px;background:#fff}
+  .upload input[type=text]:focus{outline:3px solid var(--flesh);outline-offset:1px}
+  .pick{display:flex;align-items:center;justify-content:center;gap:8px;border:2px dashed var(--ink);border-radius:12px;background:#fff;padding:18px;cursor:pointer;font-weight:700;color:var(--ink);text-align:center}
+  .pick:hover{background:#fffaf2}
+  .pick input{display:none}
+  .previews{display:flex;gap:8px;flex-wrap:wrap}
+  .previews img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:2px solid var(--ink)}
+  .upload-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .upload-row .hint{font-size:14px;color:var(--muted);flex:1}
+  .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:22px;margin-top:24px}
+  .polaroid{background:#fff;padding:10px 10px 12px;box-shadow:0 6px 16px rgba(0,0,0,.14),0 1px 2px rgba(0,0,0,.1);cursor:zoom-in;transition:transform .15s;border:0;text-align:left;font:inherit;color:inherit}
+  .polaroid:hover{transform:rotate(0deg) scale(1.03)!important;z-index:2}
+  .polaroid .ph{aspect-ratio:1/1;background:#eee;overflow:hidden}
+  .polaroid img{width:100%;height:100%;object-fit:cover;display:block}
+  .polaroid .cap{font-family:'Jua';font-size:17px;line-height:1.4;margin-top:10px;color:var(--ink);overflow-wrap:anywhere}
+  .polaroid .by{font-size:13px;color:var(--muted);margin-top:2px}
+  .lightbox{position:fixed;inset:0;background:rgba(20,20,18,.88);display:none;align-items:center;justify-content:center;flex-direction:column;z-index:200;padding:20px}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:min(92vw,1100px);max-height:78vh;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+  .lightbox .lb-cap{color:#fff;font-family:'Jua';font-size:20px;margin-top:14px;text-align:center;max-width:90vw}
+  .lightbox .lb-by{color:#d9d4c8;font-size:14px;margin-top:4px}
+  .lightbox button{position:absolute;background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:999px;width:48px;height:48px;font-size:24px;cursor:pointer}
+  .lightbox .lb-close{top:18px;right:18px}
+  .lightbox .lb-prev{left:14px;top:50%;transform:translateY(-50%)}
+  .lightbox .lb-next{right:14px;top:50%;transform:translateY(-50%)}
+  @media (max-width:560px){ .gallery{grid-template-columns:1fr 1fr;gap:14px} .polaroid .cap{font-size:15px} }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -136,6 +165,7 @@
 <nav><div class="in">
   <a href="#countdown">⏱ 카운트다운</a>
   <a href="#board">📝 롤링페이퍼</a>
+  <a href="#gallery">📸 갤러리</a>
   <a href="#stats">📊 통계</a>
   <a href="#fun">🙏 붙잡기</a>
   <a href="#bucket">✅ 버킷리스트</a>
@@ -183,6 +213,24 @@
     <div class="board-msg" id="boardMsg">게시판을 불러오는 중…</div>
   </section>
 
+  <section class="card" id="gallery">
+    <h2>📸 멜론님 갤러리</h2>
+    <p class="desc">멜론님과의 추억 사진을 올려주세요. 회식, 워크숍, 몰래 찍은 졸린 얼굴(본인 허락 하에)… 모두 환영!</p>
+    <form class="upload" id="uploadForm">
+      <label class="pick">📷 사진 고르기 (최대 5장)<input type="file" id="photoInput" accept="image/*" multiple></label>
+      <div class="previews" id="previews"></div>
+      <input type="text" id="caption" maxlength="60" placeholder="사진 한 줄 설명 (선택) 예) 2024 워크숍, 멜론님 노래방 점수 98점">
+      <input type="text" id="photoAuthor" maxlength="20" placeholder="올린 사람 (선택, 비우면 익명)">
+      <div class="upload-row">
+        <span class="hint" id="uploadHint">사진은 자동으로 줄여서 올라가요.</span>
+        <button class="btn" type="submit" id="uploadBtn">올리기 📤</button>
+      </div>
+    </form>
+    <div class="board-head"><b id="photoCount">사진 0장</b></div>
+    <div class="gallery" id="photos"></div>
+    <div class="board-msg" id="galleryMsg">갤러리를 불러오는 중…</div>
+  </section>
+
   <section class="card">
     <div class="bar-title"><span>🏃 탈출 진행률</span><span id="pct">0%</span></div>
     <div class="bar"><i id="progress" style="width:0%"></i></div>
@@ -220,28 +268,23 @@
     <ul class="todo" id="todo"></ul>
   </section>
 
-  <section class="card">
-    <h2 style="font-size:22px">⚙️ 날짜 설정</h2>
-    <p class="desc">여기서 바꾼 날짜는 내 화면에만 적용돼요.</p>
-    <div class="settings">
-      <label>퇴사 발표일 <input type="date" id="startInput"></label>
-      <label>마지막 출근일 <input type="date" id="endInput"></label>
-      <label>퇴근 시각 <input type="time" id="timeInput"></label>
-      <button class="btn alt" id="saveBtn">적용</button>
-    </div>
-  </section>
-
   <footer>멜론님의 앞날을 진심으로 응원하며, 약간 질투합니다. 🍈</footer>
 </div>
 
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="사진 크게 보기">
+  <button class="lb-close" id="lbClose" aria-label="닫기">✕</button>
+  <button class="lb-prev" id="lbPrev" aria-label="이전 사진">‹</button>
+  <img id="lbImg" alt="">
+  <div class="lb-cap" id="lbCap"></div>
+  <div class="lb-by" id="lbBy"></div>
+  <button class="lb-next" id="lbNext" aria-label="다음 사진">›</button>
+</div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 const DEFAULTS = { start: '2026-11-18', end: '2026-11-20', time: '15:00' };
 const $ = id => document.getElementById(id);
-let cfg = {...DEFAULTS};
-try { const s = JSON.parse(localStorage.getItem('melon-dday-v2') || 'null'); if (s && s.end) cfg = {...cfg, ...s}; } catch(e){}
-$('startInput').value = cfg.start; $('endInput').value = cfg.end; $('timeInput').value = cfg.time;
+const cfg = {...DEFAULTS};
 
 const endDate = () => new Date(cfg.end + 'T' + (cfg.time || '18:00') + ':00');
 const startDate = () => new Date(cfg.start + 'T09:00:00');
@@ -460,12 +503,124 @@ $('ticker').textContent = ['[속보] 멜론님 퇴사 확정… 팀원들 "믿�
 const melonMsgs = ['🍈 쓰담쓰담','🍈 "저 아직 여기 있어요"','🍈 잘 익었다!','🍈 데굴데굴~','🍈 수박 아님 주의'];
 let mc = 0; $('melon').onclick = () => { mc++; confetti(12); toast(melonMsgs[mc % melonMsgs.length]); };
 
-$('saveBtn').onclick = () => {
-  if (!$('endInput').value) return toast('마지막 출근일을 넣어주세요!');
-  cfg = { start: $('startInput').value || cfg.start, end: $('endInput').value, time: $('timeInput').value || '18:00' };
-  try { localStorage.setItem('melon-dday-v2', JSON.stringify(cfg)); } catch(e){}
-  lastKey = ''; tick(); toast('날짜 적용 완료! 🚀');
-};
+
+// ===== 갤러리 (Supabase Storage) =====
+let photos = new Map(), uploading = false, picked = [], lbIndex = 0, lbList = [];
+function galleryMsg(t){ $('galleryMsg').textContent = t; $('galleryMsg').style.display = t ? 'block' : 'none'; }
+try { $('photoAuthor').value = localStorage.getItem('melon-author') || ''; } catch(e){}
+
+const photoUrl = path => sb.storage.from('gallery').getPublicUrl(path).data.publicUrl;
+
+function renderPhotos(){
+  lbList = [...photos.values()].sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+  $('photoCount').textContent = '사진 ' + lbList.length + '장';
+  const wrap = $('photos'); wrap.innerHTML = '';
+  lbList.forEach((ph, i) => {
+    const el = document.createElement('button'); el.type = 'button'; el.className = 'polaroid';
+    el.style.transform = `rotate(${((ph.id % 5) - 2) * 1.1}deg)`;
+    const box = document.createElement('div'); box.className = 'ph';
+    const img = document.createElement('img'); img.loading = 'lazy'; img.alt = ph.caption || '멜론님 사진'; img.src = photoUrl(ph.path);
+    box.appendChild(img);
+    const cap = document.createElement('div'); cap.className = 'cap'; cap.textContent = ph.caption || '🍈';
+    const by = document.createElement('div'); by.className = 'by'; by.textContent = '📷 ' + (ph.author || '익명의 동료');
+    el.append(box, cap, by);
+    el.onclick = () => openLb(i);
+    wrap.appendChild(el);
+  });
+  galleryMsg(lbList.length ? '' : '아직 사진이 없어요. 첫 사진을 올려주세요! 📸');
+}
+
+async function loadPhotos(){
+  if (!sb) return;
+  const { data, error } = await sb.from('photos').select('*').order('created_at', { ascending: false }).limit(300);
+  if (error){ console.error(error); return galleryMsg('⚠️ 갤러리 불러오기 실패 — ' + [error.code, error.message].filter(Boolean).join(' / ')); }
+  photos = new Map(data.map(p => [p.id, p])); renderPhotos();
+}
+
+function initGallery(){
+  if (!sb){ galleryMsg('갤러리를 불러오지 못했어요. 새로고침해 주세요.'); $('uploadBtn').disabled = true; return; }
+  loadPhotos();
+  sb.channel('photos-live')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'photos' }, ({ new: p }) => { photos.set(p.id, p); renderPhotos(); })
+    .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'photos' }, ({ old }) => { if (old && photos.delete(old.id)) renderPhotos(); })
+    .subscribe();
+  setInterval(loadPhotos, 90000);
+}
+
+$('photoInput').addEventListener('change', e => {
+  picked = [...e.target.files].filter(f => f.type.startsWith('image/')).slice(0, 5);
+  if (e.target.files.length > 5) toast('한 번에 5장까지만 올릴 수 있어요');
+  const pv = $('previews'); pv.innerHTML = '';
+  picked.forEach(f => { const im = document.createElement('img'); im.alt = ''; im.src = URL.createObjectURL(f); pv.appendChild(im); });
+  $('uploadHint').textContent = picked.length ? picked.length + '장 선택됨' : '사진은 자동으로 줄여서 올라가요.';
+});
+
+function shrink(file, max = 1600){
+  return new Promise((resolve, reject) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const r = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas'); c.width = Math.round(img.width * r); c.height = Math.round(img.height * r);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      c.toBlob(b => b ? resolve(b) : reject(new Error('변환 실패')), 'image/jpeg', 0.85);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('이 형식의 사진은 열 수 없어요 (HEIC라면 JPG로 바꿔주세요)')); };
+    img.src = url;
+  });
+}
+
+$('uploadForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!sb || uploading) return;
+  if (!picked.length) return toast('사진을 먼저 골라주세요!');
+  const caption = $('caption').value.trim().slice(0, 60) || null;
+  const author = $('photoAuthor').value.trim().slice(0, 20) || null;
+  try { localStorage.setItem('melon-author', author || ''); } catch(e){}
+  uploading = true; $('uploadBtn').disabled = true;
+  let ok = 0, lastErr = null;
+  for (let i = 0; i < picked.length; i++){
+    $('uploadHint').textContent = `올리는 중… ${i+1} / ${picked.length}`;
+    try {
+      const blob = await shrink(picked[i]);
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
+      const up = await sb.storage.from('gallery').upload(path, blob, { contentType: 'image/jpeg', upsert: false });
+      if (up.error) throw up.error;
+      const ins = await sb.from('photos').insert({ path, caption, author });
+      if (ins.error) throw ins.error;
+      ok++;
+    } catch(err){ console.error(err); lastErr = err; }
+  }
+  uploading = false; $('uploadBtn').disabled = false;
+  if (ok){
+    picked = []; $('photoInput').value = ''; $('previews').innerHTML = ''; $('caption').value = '';
+    $('uploadHint').textContent = '사진은 자동으로 줄여서 올라가요.';
+    confetti(16); toast(`사진 ${ok}장 올렸어요! 📸`); loadPhotos();
+  }
+  if (lastErr){
+    const msg = [lastErr.statusCode || lastErr.code, lastErr.message || lastErr.error].filter(Boolean).join(' / ');
+    galleryMsg('⚠️ 올리기 실패 — ' + msg);
+    if (!ok) $('uploadHint').textContent = '올리지 못했어요. 아래 오류를 확인해 주세요.';
+  }
+});
+
+function openLb(i){
+  if (!lbList.length) return;
+  lbIndex = (i + lbList.length) % lbList.length;
+  const ph = lbList[lbIndex];
+  $('lbImg').src = photoUrl(ph.path); $('lbImg').alt = ph.caption || '멜론님 사진';
+  $('lbCap').textContent = ph.caption || ''; $('lbBy').textContent = '📷 ' + (ph.author || '익명의 동료') + `  ·  ${lbIndex+1} / ${lbList.length}`;
+  $('lightbox').classList.add('open');
+}
+const closeLb = () => $('lightbox').classList.remove('open');
+$('lbClose').onclick = closeLb;
+$('lbPrev').onclick = e => { e.stopPropagation(); openLb(lbIndex - 1); };
+$('lbNext').onclick = e => { e.stopPropagation(); openLb(lbIndex + 1); };
+$('lightbox').addEventListener('click', e => { if (e.target.id === 'lightbox') closeLb(); });
+document.addEventListener('keydown', e => {
+  if (!$('lightbox').classList.contains('open')) return;
+  if (e.key === 'Escape') closeLb(); else if (e.key === 'ArrowLeft') openLb(lbIndex - 1); else if (e.key === 'ArrowRight') openLb(lbIndex + 1);
+});
 
 let tt;
 function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2800); }
@@ -480,6 +635,7 @@ function confetti(n){
 
 tick(); setInterval(tick, 1000);
 initBoard();
+initGallery();
 </script>
 </body>
 </html>
