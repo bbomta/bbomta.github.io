@@ -269,6 +269,18 @@
   .ending .final .btn.dim{background:rgba(255,255,255,.14);color:#fff}
   .ending .close{position:absolute;top:16px;right:16px;z-index:6;width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:18px;cursor:pointer}
   .ending .skip{position:absolute;bottom:20px;right:20px;z-index:6;border:0;background:none;color:#86868b;font-size:14px;cursor:pointer}
+
+  /* 엔딩 음악 */
+  .ending .gate{position:absolute;inset:0;z-index:8;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+  .ending .gate.show{display:flex}
+  .ending .gate .melon-b{font-size:64px;line-height:1;animation:bob 2.6s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(-8px) rotate(6deg)}}
+  .ending .gate h2{margin-top:22px;font-size:clamp(30px,5vw,52px);font-weight:800;letter-spacing:-.04em;line-height:1.15}
+  .ending .gate p{margin-top:12px;color:#a1a1a6;font-size:17px}
+  .ending .gate .acts{display:flex;gap:10px;margin-top:30px;flex-wrap:wrap;justify-content:center}
+  .ending .gate .btn{background:#f5f5f7;color:#1d1d1f;font-size:18px;padding:14px 28px}
+  .ending .gate .btn.dim{background:rgba(255,255,255,.12);color:#e8e8ed}
+  .ending .snd{position:absolute;top:16px;left:16px;z-index:6;height:42px;min-width:42px;padding:0 14px;border-radius:999px;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:15px;font-weight:600;cursor:pointer}
 </style>
 </head>
 <body>
@@ -444,6 +456,13 @@
     <div class="acts"><button class="btn" id="endReplay">처음부터 다시 보기</button><button class="btn dim" id="endClose">페이지로 돌아가기</button></div>
   </div>
   <button class="close" id="endX" aria-label="닫기">✕</button>
+  <button class="snd" id="endSnd" aria-label="소리 끄기">🔊</button>
+  <div class="gate" id="gate">
+    <div class="melon-b" aria-hidden="true">🍈</div>
+    <h2>멜론님께 보내는<br>마지막 인사</h2>
+    <p>음악과 함께 보면 더 좋아요.</p>
+    <div class="acts"><button class="btn" id="gateSound">🔊 소리 켜고 보기</button><button class="btn dim" id="gateMute">소리 없이 보기</button></div>
+  </div>
   <button class="skip" id="endSkip">건너뛰기</button>
 </div>
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="사진 크게 보기">
@@ -796,16 +815,132 @@ tick(); setInterval(tick,1000);
 intro();
 live();
 
+// ===== 엔딩 음악: 직접 만든 오르골 곡 (Web Audio로 실시간 연주) =====
+const Music = (() => {
+  let ctx = null, master = null, wet = null, playingNodes = [], muted = false, startedAt = 0;
+  const BPM = 74, BEAT = 60 / BPM, BAR = BEAT * 4;
+  const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+  // 코드 진행 (16마디)
+  const CH = { C:[48,52,55], G:[43,47,50], Am:[45,48,52], Em:[40,43,47], F:[41,45,48], Gs:[43,48,50] };
+  const prog = ['C','G','Am','Em','F','C','F','G', 'Am','F','C','G','Am','F','Gs','C'];
+  // 멜로디: [마디, 박, 미디음, 길이(박)]
+  const mel = [
+    [0,0,76,1],[0,1,79,1],[0,2,84,1.5],[0,3.5,83,.5],
+    [1,0,83,1.5],[1,1.5,81,.5],[1,2,79,2],
+    [2,0,81,1],[2,1,84,1],[2,2,88,1.5],[2,3.5,86,.5],
+    [3,0,83,2],[3,2,79,2],
+    [4,0,81,1],[4,1,79,.5],[4,1.5,77,.5],[4,2,81,1],[4,3,84,1],
+    [5,0,79,1.5],[5,1.5,76,.5],[5,2,72,2],
+    [6,0,77,1],[6,1,81,1],[6,2,86,1],[6,3,84,1],
+    [7,0,83,2],[7,2,79,2],
+    [8,0,84,1],[8,1,83,.5],[8,1.5,81,.5],[8,2,76,2],
+    [9,0,77,1],[9,1,81,1],[9,2,84,2],
+    [10,0,88,1.5],[10,1.5,86,.5],[10,2,84,1],[10,3,79,1],
+    [11,0,83,1],[11,1,81,1],[11,2,79,1],[11,3,74,1],
+    [12,0,76,1],[12,1,81,1],[12,2,84,1],[12,3,88,1],
+    [13,0,86,1.5],[13,1,84,.5],[13,2,81,2],
+    [14,0,83,1],[14,1,84,1],[14,2,86,2],
+    [15,0,84,4],[15,0,76,4],[15,0,79,4],
+  ];
+
+  function ensure(){
+    if (!ctx){
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+      ctx = new AC();
+      master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
+      // 리버브 (직접 만든 잔향)
+      const conv = ctx.createConvolver(), len = ctx.sampleRate * 3.2, ir = ctx.createBuffer(2, len, ctx.sampleRate);
+      for (let c = 0; c < 2; c++){ const d = ir.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6); }
+      conv.buffer = ir; wet = ctx.createGain(); wet.gain.value = .42; wet.connect(conv); conv.connect(master);
+    }
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+    return ctx;
+  }
+  const unlocked = () => !!ctx && ctx.state === 'running';
+
+  function out(node, dry){ const g = ctx.createGain(); g.gain.value = dry; node.connect(g); g.connect(master); node.connect(wet); }
+  function bell(t, midi, vel, len){
+    const f = mtof(midi), env = ctx.createGain(), dec = Math.max(1.2, 3.4 - (midi - 60) * .05);
+    env.gain.setValueAtTime(0, t); env.gain.linearRampToValueAtTime(vel, t + .006); env.gain.exponentialRampToValueAtTime(.0001, t + dec);
+    [[1, 1], [2, .28], [3.98, .09], [5.4, .035]].forEach(([r, a]) => {
+      const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine'; o.frequency.value = f * r;
+      g.gain.value = a; o.connect(g); g.connect(env); o.start(t); o.stop(t + dec + .1); playingNodes.push(o);
+    });
+    out(env, .75);
+  }
+  function pad(t, notes, dur){
+    const env = ctx.createGain(), lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900;
+    env.gain.setValueAtTime(0, t); env.gain.linearRampToValueAtTime(.05, t + 1.2); env.gain.setValueAtTime(.05, t + dur - .6); env.gain.linearRampToValueAtTime(0, t + dur + .8);
+    notes.forEach(m => [-4, 4].forEach(dt => { const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = mtof(m + 12); o.detune.value = dt; o.connect(lp); o.start(t); o.stop(t + dur + 1); playingNodes.push(o); }));
+    lp.connect(env); out(env, .6);
+  }
+  function schedule(t0, loopIdx){
+    prog.forEach((name, bar) => {
+      const t = t0 + bar * BAR, ch = CH[name], arp = [ch[0], ch[1], ch[2], ch[0] + 12, ch[2], ch[1], ch[2], ch[0] + 12];
+      if (bar < 15 || loopIdx === 0) arp.forEach((m, i) => bell(t + i * BEAT / 2, m + 12, .07 + (i === 0 ? .03 : 0), BEAT / 2));
+      pad(t, ch, BAR);
+    });
+    mel.forEach(([bar, beat, m, len]) => bell(t0 + bar * BAR + beat * BEAT, m, loopIdx ? .13 : .17, len * BEAT));
+  }
+  function start(){
+    if (!ensure()) return false;
+    stop(0);
+    const t0 = ctx.currentTime + .15; startedAt = t0;
+    master.gain.cancelScheduledValues(t0); master.gain.setValueAtTime(0, t0); master.gain.linearRampToValueAtTime(muted ? 0 : 1, t0 + 2);
+    schedule(t0, 0); schedule(t0 + 16 * BAR, 1);
+    const end = t0 + 32 * BAR; // 두 번 연주 후 천천히 사라짐
+    master.gain.setValueAtTime(muted ? 0 : 1, end - 6); master.gain.linearRampToValueAtTime(0, end + 2);
+    return true;
+  }
+  function stop(fade = 1.2){
+    if (!ctx) return;
+    const t = ctx.currentTime, nodes = playingNodes; playingNodes = [];
+    master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t); master.gain.linearRampToValueAtTime(0, t + Math.max(.02, fade));
+    setTimeout(() => nodes.forEach(o => { try { o.stop(); } catch(e){} }), fade * 1000 + 100);
+  }
+  function setMuted(m){
+    muted = m; if (!ctx) return;
+    const t = ctx.currentTime; master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t);
+    master.gain.linearRampToValueAtTime(m ? 0 : 1, t + .4);
+    if (!m){ const end = startedAt + 32 * BAR; if (end > t + 6){ master.gain.setValueAtTime(1, end - 6); master.gain.linearRampToValueAtTime(0, end + 2); } }
+  }
+  return { ensure, unlocked, start, stop, setMuted, get muted(){ return muted; }, get playing(){ return playingNodes.length > 0; } };
+})();
+// 페이지를 한 번이라도 누르면 소리를 쓸 수 있게 준비 (오후 3시 자동 재생용)
+['pointerdown','keydown','touchstart'].forEach(ev => document.addEventListener(ev, () => { if (!Music.unlocked()) Music.ensure(); }, { passive: true }));
+function sndUI(){
+  const b = $('endSnd');
+  if (!Music.playing){ b.textContent = '🔊 소리 켜기'; b.setAttribute('aria-label', '소리 켜기'); }
+  else { b.textContent = Music.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', Music.muted ? '소리 켜기' : '소리 끄기'); }
+}
+$('endSnd').onclick = () => {
+  if (!Music.playing){ Music.setMuted(false); Music.start(); }
+  else Music.setMuted(!Music.muted);
+  sndUI();
+};
+
 // ===== 엔딩: 마지막 퇴근 순간 =====
 let endTimers = [], endPlaying = false;
 const later = (fn, ms) => endTimers.push(setTimeout(fn, REDUCED ? Math.min(ms, 300) : ms));
 function clearEnding(){ endTimers.forEach(clearTimeout); endTimers = []; $('fieldN').innerHTML = ''; $('endT').innerHTML = ''; $('scrim').classList.remove('in'); $('final').classList.remove('in'); }
 function shuffle(a){ for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
-function playEnding(){
+function playEnding(opts = {}){
   clearEnding(); endPlaying = true;
   const ov = $('ending'); ov.classList.add('open'); document.body.style.overflow = 'hidden';
   clearTimeout(timer);
+  if (opts.gate && !opts.passed){
+    $('gate').classList.add('show'); $('endSnd').style.display = 'none'; $('endSkip').style.display = 'none';
+    $('gateSound').onclick = () => { Music.setMuted(false); Music.ensure(); $('gate').classList.remove('show'); playEnding({ passed: true, sound: true }); };
+    $('gateMute').onclick = () => { $('gate').classList.remove('show'); playEnding({ passed: true, sound: false }); };
+    setTimeout(() => $('gateSound').focus(), 50);
+    return;
+  }
+  $('endSnd').style.display = '';
+  if (opts.sound === false){ Music.stop(.3); }
+  else if (opts.sound === true || (Music.ensure() && Music.unlocked())){ Music.start(); }
+  else { Music.stop(.1); }
+  sndUI();
   const n = togetherNumbers();
   $('finalP').textContent = `${n.days.toLocaleString()}일 동안 함께해서 고마웠어요. 어디서든 지금처럼 빛나길, 동료들이 응원할게요.`;
 
@@ -867,12 +1002,12 @@ function skipEnding(){
   $('scrim').classList.add('in'); $('final').classList.add('in'); $('endSkip').style.display = 'none';
 }
 function closeEnding(){
-  clearEnding(); endPlaying = false; $('ending').classList.remove('open'); document.body.style.overflow = '';
+  clearEnding(); endPlaying = false; Music.stop(1.5); $('gate').classList.remove('show'); $('ending').classList.remove('open'); document.body.style.overflow = '';
   if (location.hash === '#ending' || location.hash === '#for-melon') history.replaceState(null, '', location.pathname);
   schedule();
 }
 $('endX').onclick = closeEnding; $('endClose').onclick = closeEnding; $('endSkip').onclick = skipEnding;
-$('endReplay').onclick = () => playEnding();
+$('endReplay').onclick = () => playEnding({ sound: Music.playing && !Music.muted ? true : undefined });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && endPlaying) closeEnding(); });
 
 // 언제 재생할까: 마지막 퇴근 순간(페이지를 열어둔 경우), 퇴근 후 첫 방문, 또는 #for-melon 링크
@@ -884,7 +1019,7 @@ setInterval(maybeEnding, 1000);
 function startEndingWhenReady(){
   // 포스트잇과 사진을 불러온 뒤 시작 (최대 4초 대기)
   let waited = 0;
-  const go = () => { if ((notes.size || photos.length) || waited >= 4000 || !sb) playEnding(); else { waited += 250; setTimeout(go, 250); } };
+  const go = () => { if ((notes.size || photos.length) || waited >= 4000 || !sb) playEnding({ gate: true }); else { waited += 250; setTimeout(go, 250); } };
   go();
 }
 if (location.hash === '#ending' || location.hash === '#for-melon') startEndingWhenReady();
