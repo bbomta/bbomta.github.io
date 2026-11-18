@@ -1009,10 +1009,12 @@ showQuote(); setInterval(()=>{ qi=(qi+1)%quotes.length; showQuote(); }, 9000);
     if (!top.length){ const li = document.createElement('li'); li.textContent = '아직 없어요'; ol.appendChild(li); return; }
     top.forEach(([n, t], i) => { const li = document.createElement('li'); const a = document.createElement('b'); a.textContent = `${i + 1}. ${n}`; const b = document.createElement('span'); b.textContent = fmtDur(t); li.append(a, b); ol.appendChild(li); });
   }
+  function grabErr(t){ let el = $('grabErr'); if (!el){ el = document.createElement('p'); el.id = 'grabErr'; el.className = 'msg'; el.style.color = '#d8432a'; document.querySelector('.grab-stats').after(el); } el.textContent = t ? '⚠️ ' + t : ''; }
   async function loadGrabs(){
     if (!sb) return;
     const { data, error } = await sb.from('grabs').select('id,author,seconds').limit(20000);
-    if (error){ console.error(error); $('gTotal').textContent = '—'; return; }
+    if (error){ console.error(error); $('gTotal').textContent = '—'; grabErr('불러오기 실패: ' + errText(error)); return; }
+    grabErr('');
     grabs = data; renderGrab();
   }
   async function record(sec){
@@ -1022,7 +1024,7 @@ showQuote(); setInterval(()=>{ qi=(qi+1)%quotes.length; showQuote(); }, 9000);
     grabs.push({ id: 'local' + Date.now(), author, seconds: +sec.toFixed(1) }); renderGrab();
     if (!sb) return;
     const { error } = await sb.from('grabs').insert({ author, seconds: +sec.toFixed(1) });
-    if (error) console.error(error);
+    if (error){ console.error(error); grabErr('저장 실패: ' + errText(error)); }
   }
   if (sb){
     loadGrabs();
