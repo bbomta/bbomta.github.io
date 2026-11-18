@@ -343,9 +343,9 @@
 
     <div class="span" id="span">
       <div><b data-to="0" id="dTogether">0<small>일</small></b><i>함께한 날</i></div>
-      <div><b data-to="0" id="dWork">0<small>일</small></b><i>함께 출근한 날 (약)</i></div>
+      <div><b data-to="0" id="dMonths">0<small>개월</small></b><i>함께한 달</i></div>
       <div><b data-to="0" id="dFri">0<small>번</small></b><i>함께 맞이한 금요일</i></div>
-      <div><b data-to="0" id="dHours">0<small>시간</small></b><i>회사에서 보낸 시간 (약)</i></div>
+      <div><b data-to="0" id="dNY">0<small>번</small></b><i>함께 맞이한 새해</i></div>
     </div>
 
     <div class="line" id="line" aria-hidden="true"><i id="lineFill"></i></div>
@@ -421,7 +421,7 @@
   <div class="wrap">
     <div class="s-head">
       <h2>숫자로 보는 남은 회사생활.</h2>
-      <p>과학적 근거는 없지만, 마음만은 정확합니다.</p>
+      <p>마지막 퇴근까지, 정확하게 세어봤어요.</p>
     </div>
     <div class="bento" id="bento">
       <div class="tile wide dark">
@@ -429,13 +429,10 @@
         <div><div class="meter"><i id="pctBar" style="width:0"></i></div><div class="d">퇴사 발표일부터 마지막 퇴근까지</div></div>
       </div>
       <div class="tile wide">
-        <div><div class="k">남은 업무 의욕</div><div class="v" id="motiv">100<small>%</small></div></div>
-        <div><div class="meter warm"><i id="motivBar" style="width:100%"></i></div><div class="d" id="motivNote"></div></div>
+        <div><div class="k">마지막 퇴근까지</div><div class="v" id="tH">0<small>시간</small></div></div>
+        <div class="d" id="tHd">금요일 오후 3시까지 남은 시간이에요.</div>
       </div>
-      <div class="tile"><div class="k">남은 출근</div><div><div class="v" id="t1">0<small>번</small></div><div class="d">연차를 쓰면 더 줄어요. 권장합니다.</div></div></div>
-      <div class="tile"><div class="k">남은 회사 점심</div><div><div class="v" id="t2">0<small>끼</small></div><div class="d">맛집 리스트를 마무리할 마지막 기회.</div></div></div>
-      <div class="tile"><div class="k">남은 회의</div><div><div class="v" id="t3">0<small>개</small></div><div class="d" id="t3d"></div></div></div>
-      <div class="tile wide"><div class="k">“이것만 봐주실 수 있어요?”</div><div><div class="v" id="t4">0<small>번</small></div><div class="d">앞으로 들을 예상 횟수. 마음의 준비를 해주세요.</div></div></div>
+      <div class="tile wide"><div class="k">남은 출근</div><div><div class="v" id="t1">0<small>번</small></div><div class="d">오늘을 포함해 마지막 날까지 남은 평일이에요.</div></div></div>
       <div class="tile wide"><div class="k">남은 월요병</div><div><div class="v" id="t5">0<small>번</small></div><div class="d" id="t5d"></div></div></div>
     </div>
   </div>
@@ -530,26 +527,23 @@ function tick(){
   const dd=Math.round((e0-t0)/86400000);
   if(diff<=0){
     $('dday').textContent='FREE'; $('timer').textContent='멜론님은 이제 자유예요.';
-    $('status').textContent='지금쯤 평일 낮잠 중일 예정'; meters(100,0); numbers(0,0); return;
+    $('status').textContent='지금쯤 평일 낮잠 중일 예정'; meters(100); numbers(0,0); setV('tH',0); $('tHd').textContent='마지막 퇴근을 마쳤어요.'; return;
   }
   $('dday').textContent = dd===0 ? 'D-Day' : 'D-'+dd;
   const s=Math.floor(diff/1000), D=Math.floor(s/86400), H=Math.floor(s%86400/3600), M=Math.floor(s%3600/60), S=s%60;
   $('timer').textContent = `${D?D+'일 ':''}${H}시간 ${String(M).padStart(2,'0')}분 ${String(S).padStart(2,'0')}초 남았어요`;
   $('status').textContent = (statusLines.find(([n])=>dd>=n)||statusLines.at(-1))[1];
   const total=end-start, pct= total>0 ? Math.min(100,Math.max(0,(now-start)/total*100)) : 0;
-  meters(pct, Math.max(0,Math.round(100-pct*1.15)));
+  meters(pct); setV('tH', Math.ceil(diff/3600000));
   numbers(workdaysBetween(now,end), dd);
 }
-function meters(pct, motiv){
+function meters(pct){
   setV('pct', pct.toFixed(2)); $('pctBar').style.width=pct+'%';
-  setV('motiv', motiv); $('motivBar').style.width=motiv+'%';
-  $('motivNote').textContent = motiv>70?'아직 메일에 성실히 답장하는 단계':motiv>40?'메일 답장이 “넵”으로 수렴하는 단계':motiv>10?'메신저 상태가 🌴로 바뀌는 단계':'측정 불가. 영혼은 이미 퇴사했어요';
 }
 function numbers(w, dd){
   const key=w+'-'+dd; if(key===lastKey) return; lastKey=key;
-  const meet=Math.round(w*2.3), mon=mondaysUntil(endDate());
-  setV('t1',w); setV('t2',w); setV('t3',meet); setV('t4',Math.round(w*4.7)); setV('t5',mon);
-  $('t3d').textContent = `그중 메일로 충분했을 회의는 약 ${Math.round(meet*.8)}개.`;
+  const mon=mondaysUntil(endDate());
+  setV('t1',w); setV('t5',mon);
   $('t5d').textContent = mon ? '마지막 월요병은 조금 덜 아플 거예요.' : '축하해요. 월요병을 졸업했어요.';
 }
 
@@ -766,17 +760,18 @@ function togetherNumbers(){
   const end = endDate(), now = new Date(), until = now < end ? now : end;
   const d0 = new Date(HIRE); d0.setHours(0,0,0,0); const d1 = new Date(until); d1.setHours(0,0,0,0);
   const days = Math.round((d1 - d0) / 86400000) + 1;
-  let weekdays = 0, fridays = 0; const d = new Date(d0);
-  while (d <= d1){ const w = d.getDay(); if (w && w !== 6) weekdays++; if (w === 5) fridays++; d.setDate(d.getDate() + 1); }
-  const work = Math.round(weekdays * 0.94 / 10) * 10; // 공휴일·연차를 대략 뺀 값
-  return { days, work, fridays, hours: work * 8 };
+  let fridays = 0, newyears = 0; const d = new Date(d0); d.setDate(d.getDate() + 1);
+  if (d0.getDay() === 5) fridays++;
+  while (d <= d1){ if (d.getDay() === 5) fridays++; if (d.getMonth() === 0 && d.getDate() === 1) newyears++; d.setDate(d.getDate() + 1); }
+  const months = (d1.getFullYear() - d0.getFullYear()) * 12 + (d1.getMonth() - d0.getMonth()) - (d1.getDate() < d0.getDate() ? 1 : 0);
+  return { days, months, fridays, newyears };
 }
 const REACTS = [['🤩',29],['🙇',28],['🐧',26],['😊',26],['🥳',26],['👏',20],['👀',16],['🫡',15],['👍',14]];
 (function(){
   const box = $('reacts');
   REACTS.forEach(([e,n],i) => { const s = document.createElement('span'); s.textContent = e + ' ' + n; s.style.transitionDelay = (i * 90) + 'ms'; box.appendChild(s); });
   const n = togetherNumbers();
-  $('dTogether').dataset.to = n.days; $('dWork').dataset.to = n.work; $('dFri').dataset.to = n.fridays; $('dHours').dataset.to = n.hours;
+  $('dTogether').dataset.to = n.days; $('dMonths').dataset.to = n.months; $('dFri').dataset.to = n.fridays; $('dNY').dataset.to = n.newyears;
   const total = endDate() - HIRE, done = Math.min(1, (Date.now() - HIRE) / total);
   if (Date.now() >= endDate()) $('finaleLead').textContent = '마지막 퇴근을 마쳤어요. 그동안 정말 수고 많으셨어요.';
 
@@ -908,7 +903,7 @@ function playEnding(opts = {}){
     ['2023년 1월 9일, 오전 11시 22분.', '', 0, 3000],
     ['“앞으로 잘부탁드리겠습니다! 😁”', '', 3400, 3000],
     [`그 뒤로 ${n.days.toLocaleString()}일.`, '', 6800, 2800],
-    [`함께 출근한 날 약 ${n.work.toLocaleString()}일, 함께 맞이한 금요일 ${n.fridays}번.`, '', 9900, 3200],
+    [`함께 맞이한 금요일 ${n.fridays}번, 새해 ${n.newyears}번.`, '', 9900, 3200],
     ['그리고 오늘, 마지막 퇴근.', 'big', 13500, 3400],
   ];
   const box = $('endT');
