@@ -213,12 +213,40 @@
     .row,.cue i,.slide.show img,.progress i.on::after{animation:none!important}
     .seq{transition:none;opacity:1;transform:none;filter:none}
   }
+
+  /* 처음부터 마지막까지 */
+  .together{background:var(--paper);padding:130px 0 120px;text-align:center}
+  .together .date{font-size:clamp(40px,7vw,84px);font-weight:800;letter-spacing:-.05em;line-height:1.05}
+  .together .lead{margin:16px auto 0;font-size:clamp(17px,2vw,21px);color:var(--mute);max-width:30em}
+  .hello{width:min(560px,100%);margin:52px auto 0;text-align:left;background:var(--mist);border-radius:26px;padding:26px 26px 22px;display:flex;gap:16px}
+  .hello .av{flex:0 0 48px;height:48px;border-radius:14px;background:#cdf2d6;display:flex;align-items:center;justify-content:center;font-size:28px}
+  .hello .who{font-weight:700;font-size:17px}
+  .hello .who span{font-weight:400;font-size:14px;color:var(--mute);margin-left:8px}
+  .hello p{margin-top:4px;font-size:18px;line-height:1.6}
+  .reacts{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+  .reacts span{display:inline-flex;align-items:center;gap:5px;background:#fff;border-radius:999px;padding:4px 10px;font-size:14px;font-weight:600;color:var(--ink-2);
+    opacity:0;transform:scale(.6);transition:opacity .4s var(--ease),transform .5s cubic-bezier(.34,1.56,.64,1)}
+  .reacts.go span{opacity:1;transform:none}
+  .hello-note{margin-top:18px;font-size:15px;color:var(--mute)}
+  .span{margin:110px auto 0;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;width:min(1000px,100%)}
+  .span div{padding:8px 4px}
+  .span b{display:block;font-size:clamp(40px,5.4vw,64px);font-weight:800;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums}
+  .span b small{font-size:.4em;font-weight:700;margin-left:3px;letter-spacing:-.02em;color:var(--ink-2)}
+  .span i{display:block;font-style:normal;margin-top:12px;font-size:16px;color:var(--mute)}
+  @media (max-width:760px){ .span{grid-template-columns:1fr 1fr;row-gap:40px} }
+  .line{position:relative;width:min(560px,100%);margin:100px auto 0;height:6px;border-radius:999px;background:var(--mist);overflow:hidden}
+  .line i{position:absolute;inset:0 auto 0 0;width:0;border-radius:999px;background:linear-gradient(90deg,var(--rind),#ffb46b);transition:width 2.4s var(--ease)}
+  .line-ends{width:min(560px,100%);margin:12px auto 0;display:flex;justify-content:space-between;font-size:14px;color:var(--mute)}
+  .finale{margin-top:90px}
+  .finale .date{font-size:clamp(34px,5.6vw,64px)}
+  .finale .lead{color:var(--ink-2)}
 </style>
 </head>
 <body>
 
 <header class="bar" id="bar"><div class="in">
   <a class="logo" href="#top" aria-label="맨 위로">🍈</a>
+  <a class="nav opt" href="#together">함께한 시간</a>
   <a class="nav" href="#gallery">갤러리</a>
   <a class="nav" href="#wall">포스트잇</a>
   <a class="nav opt" href="#numbers">숫자로 보기</a>
@@ -235,7 +263,38 @@
     <div class="when seq" id="when">&nbsp;</div>
     <div class="status seq" id="status">&nbsp;</div>
   </div>
-  <a class="cue seq" id="cue" href="#gallery">아래로 내려보세요<i></i></a>
+  <a class="cue seq" id="cue" href="#together">아래로 내려보세요<i></i></a>
+</section>
+
+<section class="together" id="together">
+  <div class="wrap">
+    <div class="date">2023년 1월 9일.</div>
+    <p class="lead">오전 11시 22분, 이런 인사로 멜론님을 처음 만났어요.</p>
+    <figure class="hello">
+      <div class="av" aria-hidden="true">🍈</div>
+      <div>
+        <div class="who">멜론<span>오전 11:22</span></div>
+        <p>안녕하세요! 오늘 마케팅 유니티 개발자로 입사한 멜론입니다!<br>앞으로 잘부탁드리겠습니다! 😁</p>
+        <div class="reacts" id="reacts" aria-label="이모지 반응 200개"></div>
+      </div>
+    </figure>
+    <p class="hello-note">그날 받은 환영 이모지는 모두 200개였어요.</p>
+
+    <div class="span" id="span">
+      <div><b data-to="0" id="dTogether">0<small>일</small></b><i>함께한 날</i></div>
+      <div><b data-to="0" id="dWork">0<small>일</small></b><i>함께 출근한 날 (약)</i></div>
+      <div><b data-to="0" id="dFri">0<small>번</small></b><i>함께 맞이한 금요일</i></div>
+      <div><b data-to="0" id="dHours">0<small>시간</small></b><i>회사에서 보낸 시간 (약)</i></div>
+    </div>
+
+    <div class="line" id="line" aria-hidden="true"><i id="lineFill"></i></div>
+    <div class="line-ends"><span>2023. 1. 9</span><span>2026. 11. 20</span></div>
+
+    <div class="finale">
+      <div class="date">그리고 2026년 11월 20일.</div>
+      <p class="lead" id="finaleLead">오후 3시, 마지막 퇴근. 그동안 정말 수고 많으셨어요.</p>
+    </div>
+  </div>
 </section>
 
 <section class="gallery-sec" id="gallery">
@@ -613,6 +672,42 @@ function live(){
     .subscribe();
   setInterval(()=>{ loadNotes(); loadPhotos(); }, 90000);
 }
+
+// ===== 처음부터 마지막까지 =====
+const HIRE = new Date('2023-01-09T09:00:00');
+function togetherNumbers(){
+  const end = endDate(), now = new Date(), until = now < end ? now : end;
+  const d0 = new Date(HIRE); d0.setHours(0,0,0,0); const d1 = new Date(until); d1.setHours(0,0,0,0);
+  const days = Math.round((d1 - d0) / 86400000) + 1;
+  let weekdays = 0, fridays = 0; const d = new Date(d0);
+  while (d <= d1){ const w = d.getDay(); if (w && w !== 6) weekdays++; if (w === 5) fridays++; d.setDate(d.getDate() + 1); }
+  const work = Math.round(weekdays * 0.94 / 10) * 10; // 공휴일·연차를 대략 뺀 값
+  return { days, work, fridays, hours: work * 8 };
+}
+const REACTS = [['🤩',29],['🙇',28],['🐧',26],['😊',26],['🥳',26],['👏',20],['👀',16],['🫡',15],['👍',14]];
+(function(){
+  const box = $('reacts');
+  REACTS.forEach(([e,n],i) => { const s = document.createElement('span'); s.textContent = e + ' ' + n; s.style.transitionDelay = (i * 90) + 'ms'; box.appendChild(s); });
+  const n = togetherNumbers();
+  $('dTogether').dataset.to = n.days; $('dWork').dataset.to = n.work; $('dFri').dataset.to = n.fridays; $('dHours').dataset.to = n.hours;
+  const total = endDate() - HIRE, done = Math.min(1, (Date.now() - HIRE) / total);
+  if (Date.now() >= endDate()) $('finaleLead').textContent = '마지막 퇴근을 마쳤어요. 그동안 정말 수고 많으셨어요.';
+
+  function countUp(el){
+    const to = +el.dataset.to, dur = REDUCED ? 0 : 1800, t0 = performance.now(), tn = el.firstChild;
+    const step = t => { const k = dur ? Math.min(1, (t - t0) / dur) : 1, e = 1 - Math.pow(1 - k, 3);
+      tn.nodeValue = Math.round(to * e).toLocaleString(); if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }
+  const seen = new Set();
+  const ob = new IntersectionObserver(es => es.forEach(en => {
+    if (!en.isIntersecting || seen.has(en.target)) return; seen.add(en.target);
+    if (en.target.id === 'reacts') en.target.classList.add('go');
+    if (en.target.id === 'span') en.target.querySelectorAll('b').forEach(countUp);
+    if (en.target.id === 'line') $('lineFill').style.width = (done * 100).toFixed(2) + '%';
+  }), { threshold: .35 });
+  ['reacts','span','line'].forEach(id => ob.observe($(id)));
+})();
 
 // ===== 명언 =====
 const quotes=[['퇴사는 끝이 아니라, 알람 없는 아침의 시작이다.','멜론, 출근길에서'],['인수인계 문서는 길게, 송별사는 짧게.','고대 직장인 격언'],
