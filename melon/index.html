@@ -1032,7 +1032,7 @@ showQuote(); setInterval(()=>{ qi=(qi+1)%quotes.length; showQuote(); }, 9000);
 
 // ===== 버킷리스트 =====
 const todos=['법인카드로 마지막 점심 플렉스','회의 중 “그건 제 알 바 아닌데요” 속으로만 말하기','인수인계 문서 끝에 “화이팅!” 한 줄 추가','탕비실 간식 마지막 털이',
-  '메신저 프로필 사진을 해변으로 바꾸기','마지막 퇴근길, 엘리베이터에서 슬로모션으로 뒤돌아보기'];
+  '메신저 프로필 사진을 해변으로 바꾸기','휴대폰의 출근 알람 삭제 버튼 누르기','포스트잇 다 읽고 울지 않기 (실패 예정)','마지막 퇴근길, 엘리베이터에서 슬로모션으로 뒤돌아보기'];
 let done=[]; try{ done=JSON.parse(localStorage.getItem('melon-todo')||'[]'); }catch(e){}
 function renderTodo(){ const ul=$('todo'); ul.innerHTML=''; todos.forEach((t,i)=>{ const li=document.createElement('li'); li.dataset.i=i; li.tabIndex=0; li.setAttribute('role','checkbox'); li.setAttribute('aria-checked',done.includes(i));
   if(done.includes(i)) li.className='done'; li.innerHTML='<span class="box"></span><span class="txt"></span>'; li.children[0].textContent=done.includes(i)?'✓':''; li.children[1].textContent=t; ul.appendChild(li); }); }
