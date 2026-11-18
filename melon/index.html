@@ -3,639 +3,666 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>멜론님 탈출 카운트다운 🍈</title>
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<title>멜론님, 그동안 고마웠어요 🍈</title>
+<meta name="description" content="멜론님 퇴사까지 남은 시간, 그리고 동료들이 남긴 포스트잇과 사진">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
-    --rind:#2f6b2a; --rind-dark:#1f4a1b; --flesh:#f4a65a; --flesh-light:#fff0dc;
-    --cream:#fbf7ef; --ink:#1f1e1b; --body:#33312c; --muted:#5c574d; --line:#e4dccb; --red:#d8432a;
+    --ink:#1d1d1f; --ink-2:#424245; --mute:#6e6e73; --hair:#d2d2d7;
+    --paper:#ffffff; --mist:#f5f5f7; --night:#000000;
+    --rind:#2d7a3e; --flesh:#ff9f45;
+    --n1:#fff1a8; --n2:#ffd6e0; --n3:#cdf2d6; --n4:#d4e8ff; --n5:#ffe0bf;
+    --ease:cubic-bezier(.22,.61,.36,1);
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html{-webkit-text-size-adjust:100%}
-  body{font-family:'Noto Sans KR',system-ui,sans-serif;color:var(--body);background:var(--cream);
-    font-size:17px;line-height:1.65;min-height:100vh;overflow-x:hidden;word-break:keep-all}
-  .wrap{max-width:920px;margin:0 auto;padding:36px 20px 80px}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+    color:var(--ink);background:var(--paper);font-size:17px;line-height:1.6;letter-spacing:-.01em;
+    -webkit-font-smoothing:antialiased;word-break:keep-all;overflow-x:hidden}
+  img{display:block}
+  button,input,textarea,select{font:inherit;color:inherit}
+  :focus-visible{outline:3px solid #0071e3;outline-offset:3px;border-radius:6px}
 
-  .ticker{background:var(--rind-dark);color:#fff;font-family:'Jua';white-space:nowrap;overflow:hidden;padding:9px 0;font-size:16px}
-  .ticker span{display:inline-block;animation:scroll 40s linear infinite;padding-left:100%}
-  @keyframes scroll{to{transform:translateX(-100%)}}
-  @media (prefers-reduced-motion: reduce){ .ticker span,.melon{animation:none} }
+  /* 상단 바 */
+  .bar{position:fixed;inset:0 0 auto 0;height:52px;z-index:50;display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.6);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
+    transition:background .4s var(--ease)}
+  .bar.light{background:rgba(255,255,255,.72);border-bottom:1px solid rgba(0,0,0,.06)}
+  .bar .in{width:min(1000px,100%);padding:0 22px;display:flex;align-items:center;gap:26px}
+  .bar .logo{font-size:20px;text-decoration:none;margin-right:auto}
+  .bar a.nav{font-size:13px;color:rgba(255,255,255,.82);text-decoration:none;white-space:nowrap;transition:color .2s}
+  .bar.light a.nav{color:var(--ink-2)}
+  .bar a.nav:hover{color:#fff}.bar.light a.nav:hover{color:var(--ink)}
+  @media (max-width:600px){ .bar .in{gap:16px} .bar a.nav.opt{display:none} }
 
-  nav{position:sticky;top:0;z-index:20;background:rgba(251,247,239,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
-  nav .in{max-width:920px;margin:0 auto;padding:10px 20px;display:flex;gap:8px;overflow-x:auto}
-  nav a{font-family:'Jua';font-size:16px;color:var(--rind-dark);text-decoration:none;padding:6px 14px;border-radius:999px;white-space:nowrap;background:#fff;border:1.5px solid var(--line)}
-  nav a:hover{border-color:var(--rind)}
+  /* 히어로 */
+  .hero{position:relative;min-height:100svh;background:var(--night);color:#f5f5f7;overflow:hidden;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:84px 22px 84px}
+  .drift{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:28px;opacity:0;
+    transition:opacity 2.4s var(--ease);pointer-events:none;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+  .drift.on{opacity:.3}
+  .drift.on.lift{opacity:.5}
+  .row{display:flex;width:max-content;gap:24px;animation:slide var(--dur,90s) linear infinite}
+  .row.rev{animation-direction:reverse}
+  @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .mini{width:210px;min-height:150px;padding:20px 18px;color:#1d1d1f;border-radius:4px 4px 16px 4px;font-size:15px;line-height:1.5;font-weight:500;
+    display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 18px 40px rgba(0,0,0,.45);flex:none}
+  .mini span{display:block;font-size:12px;color:rgba(0,0,0,.55);margin-top:10px;font-weight:600}
+  .hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 50% 50%,rgba(0,0,0,.92) 0%,rgba(0,0,0,.55) 55%,rgba(0,0,0,0) 100%);pointer-events:none}
+  .hero-copy{position:relative;z-index:2;max-width:900px}
+  .hero .melon{font-size:48px;line-height:1;margin-bottom:18px;background:none;border:0;cursor:pointer}
+  .hero h1{font-size:clamp(40px,6.4vw,76px);line-height:1.04;font-weight:800;letter-spacing:-.045em}
+  .hero h1 .l2{display:block;color:#a1a1a6}
+  .hero .dday{margin-top:34px;font-size:clamp(84px,15vw,176px);line-height:.9;font-weight:800;letter-spacing:-.06em;
+    background:linear-gradient(180deg,#ffffff 30%,#ffb46b 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero .timer{margin-top:18px;font-size:clamp(19px,2.6vw,26px);font-weight:600;font-variant-numeric:tabular-nums;color:#f5f5f7}
+  .hero .when{margin-top:8px;font-size:clamp(15px,1.8vw,19px);color:#a1a1a6}
+  .hero .status{margin-top:22px;display:inline-block;font-size:15px;color:#e8e8ed;padding:9px 18px;border-radius:999px;background:rgba(255,255,255,.1)}
+  .cue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;color:#86868b;font-size:13px;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .cue i{width:1px;height:28px;background:linear-gradient(#86868b,transparent);animation:cue 2s ease-in-out infinite}
+  @keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+  /* 한 번의 등장 연출 */
+  .seq{opacity:0;transform:translateY(18px);filter:blur(6px);transition:opacity 1.2s var(--ease),transform 1.2s var(--ease),filter 1.2s var(--ease)}
+  .seq.in{opacity:1;transform:none;filter:none}
 
-  header{text-align:center;margin-bottom:30px}
-  .melon{font-size:76px;display:inline-block;animation:bob 2.6s ease-in-out infinite;cursor:pointer;user-select:none;background:none;border:0}
-  @keyframes bob{50%{transform:translateY(-8px) rotate(6deg)}}
-  .badge{display:inline-block;background:var(--red);color:#fff;font-family:'Jua';padding:5px 14px;border-radius:999px;font-size:15px}
-  h1{font-family:'Black Han Sans';font-weight:400;font-size:clamp(40px,8vw,68px);line-height:1.1;margin:16px 0 10px;color:var(--rind-dark)}
-  h1 .m{color:var(--rind)}
-  .sub{color:var(--muted);font-size:18px}
+  /* 공통 섹션 */
+  section{scroll-margin-top:52px}
+  .wrap{width:min(1000px,100%);margin:0 auto;padding:0 22px}
+  .s-head{text-align:center;padding:120px 0 48px}
+  .s-head h2{font-size:clamp(36px,5.6vw,64px);line-height:1.06;font-weight:800;letter-spacing:-.04em}
+  .s-head p{margin:16px auto 0;max-width:34em;font-size:clamp(17px,2vw,21px);color:var(--mute);line-height:1.5}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:999px;padding:12px 24px;font-size:17px;font-weight:600;cursor:pointer;
+    background:var(--ink);color:#fff;transition:transform .15s var(--ease),opacity .2s}
+  .btn:hover{opacity:.86}.btn:active{transform:scale(.97)}
+  .btn.ghost{background:transparent;color:#0066cc;padding:12px 6px}
+  .btn.ghost:hover{text-decoration:underline;opacity:1}
+  .btn:disabled{opacity:.35;cursor:not-allowed}
+  .field{width:100%;border:1px solid var(--hair);border-radius:14px;padding:14px 16px;font-size:17px;background:#fff;transition:border-color .2s,box-shadow .2s}
+  .field:focus{outline:none;border-color:#0071e3;box-shadow:0 0 0 4px rgba(0,113,227,.15)}
+  textarea.field{min-height:120px;resize:vertical;line-height:1.55}
+  .msg{text-align:center;color:var(--mute);font-size:15px;padding:24px 0}
+  .msg:empty{display:none}
 
-  section{scroll-margin-top:70px}
-  .card{background:#fff;border:2px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink);padding:30px 28px;margin-bottom:28px}
-  h2{font-family:'Jua';font-weight:400;font-size:28px;color:var(--ink);margin-bottom:6px;line-height:1.3}
-  .desc{color:var(--muted);font-size:16px;margin-bottom:20px}
-
-  .dday{text-align:center}
-  .dday .label{font-family:'Jua';color:var(--muted);font-size:20px}
-  .dday .big{font-family:'Black Han Sans';font-size:clamp(84px,20vw,160px);line-height:1;color:var(--red);margin:8px 0 10px}
-  .dday .status{font-size:20px;font-weight:700;color:var(--rind-dark)}
-  .dday .when{color:var(--muted);font-size:16px;margin-top:4px}
-  .clock{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}
-  .clock div{background:var(--rind-dark);color:#fff;border-radius:14px;padding:14px 4px;text-align:center}
-  .clock b{display:block;font-family:'Black Han Sans';font-weight:400;font-size:clamp(30px,7vw,48px);line-height:1.15;font-variant-numeric:tabular-nums}
-  .clock small{font-size:15px;font-weight:500}
-
-  /* 게시판 */
-  .compose{background:var(--flesh-light);border:2px solid var(--ink);border-radius:16px;padding:18px}
-  .compose textarea{width:100%;min-height:96px;resize:vertical;font:inherit;font-size:17px;line-height:1.6;padding:12px 14px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink)}
-  .compose textarea:focus,#author:focus,.settings input:focus{outline:3px solid var(--flesh);outline-offset:1px}
-  .compose-row{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:12px}
-  .colors{display:flex;gap:8px;align-items:center}
-  .colors span{font-size:15px;color:var(--muted);margin-right:2px}
-  .swatch{width:32px;height:32px;border-radius:8px;border:2px solid var(--ink);cursor:pointer}
-  .swatch[aria-pressed="true"]{outline:3px solid var(--ink);outline-offset:2px}
-  .anon{display:flex;align-items:center;gap:6px;font-size:16px;cursor:pointer}
-  .anon input{width:18px;height:18px;accent-color:var(--rind)}
-  .count{font-size:14px;color:var(--muted);margin-left:auto}
-  .btn{font-family:'Jua';font-size:17px;padding:10px 20px;border:2px solid var(--ink);border-radius:12px;background:var(--rind);color:#fff;cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
-  .btn.alt{background:var(--flesh);color:var(--ink)}
-  .btn:active{transform:translate(2px,2px);box-shadow:none}
-  .btn:disabled{opacity:.5;cursor:not-allowed}
-  .board-msg{text-align:center;color:var(--muted);padding:28px 10px;font-size:16px}
-  .board-head{display:flex;justify-content:space-between;align-items:baseline;margin:26px 0 14px;gap:10px;flex-wrap:wrap}
-  .board-head b{font-family:'Jua';font-weight:400;font-size:20px;color:var(--ink)}
-  .board-head select{font:inherit;font-size:15px;padding:5px 8px;border:1.5px solid var(--ink);border-radius:8px;background:#fff}
-  .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px}
-  .note{position:relative;padding:22px 18px 14px;min-height:170px;color:#1f1e1b;box-shadow:0 6px 14px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.1);
-    border-radius:3px 3px 18px 3px;display:flex;flex-direction:column;transition:transform .15s}
-  .note:hover{transform:rotate(0deg) scale(1.03)!important;z-index:2}
-  .note::before{content:'';position:absolute;top:-10px;left:50%;transform:translateX(-50%) rotate(-2deg);width:70px;height:20px;background:rgba(255,255,255,.6);border:1px solid rgba(0,0,0,.06)}
-  .note p{font-size:17px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;flex:1;font-weight:500}
-  .note .meta{margin-top:12px;font-size:14px;color:#4a463e;display:flex;justify-content:space-between;align-items:center;gap:6px;border-top:1px dashed rgba(0,0,0,.2);padding-top:8px}
-  .note .who{font-weight:700}
-  .note .av{width:22px;height:22px;border-radius:50%;vertical-align:-6px;margin-right:5px;border:1px solid rgba(0,0,0,.15)}
-  .note a{color:inherit}
-  .note .del{background:none;border:0;font-size:14px;color:#7a2a1c;cursor:pointer;text-decoration:underline;font-family:inherit}
-
-  /* 진행바 */
-  .bar-title{display:flex;justify-content:space-between;font-size:18px;font-weight:700;margin-bottom:8px;color:var(--ink)}
-  .bar{height:26px;background:var(--flesh-light);border:2px solid var(--ink);border-radius:999px;overflow:hidden}
-  .bar i{display:block;height:100%;background:var(--rind);transition:width 1s}
-  .bar.motiv i{background:var(--red)}
-  .bar-note{font-size:15px;color:var(--muted);margin-top:8px}
-  .gauge-row{margin-top:24px}
-
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
-  .stat{background:var(--flesh-light);border-radius:14px;padding:18px}
-  .stat .n{font-family:'Black Han Sans';font-size:40px;line-height:1.1;color:var(--rind-dark)}
-  .stat .t{font-size:17px;font-weight:700;color:var(--ink);margin-top:4px}
-  .stat .d{font-size:15px;color:var(--muted);margin-top:4px;line-height:1.5}
-
-  .quote{text-align:center;font-family:'Jua';font-size:clamp(22px,4vw,28px);line-height:1.5;color:var(--ink);min-height:90px;display:flex;align-items:center;justify-content:center;padding:6px 10px;transition:opacity .4s}
-  .quote-src{text-align:center;color:var(--muted);font-size:16px}
-
-  .arena{position:relative;height:210px;border:2px dashed var(--rind);border-radius:16px;background:#f7fbf3;overflow:hidden}
-  #catchBtn{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);font-family:'Jua';font-size:18px;background:var(--red);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:12px 22px;box-shadow:3px 3px 0 var(--ink);cursor:pointer;transition:left .18s,top .18s;white-space:nowrap}
-  .catch-log{text-align:center;font-size:17px;font-weight:700;margin-top:12px;color:var(--rind-dark)}
-
-  .todo li{list-style:none;display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer;font-size:17px}
-  .todo li:last-child{border:none}
-  .todo .box{flex:0 0 24px;height:24px;border:2px solid var(--ink);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:15px;background:#fff}
-  .todo li.done .txt{text-decoration:line-through;color:var(--muted)}
-  .todo li.done .box{background:var(--rind);color:#fff}
-
-  .settings{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:center}
-  .settings label{display:flex;flex-direction:column;font-size:15px;font-weight:500;gap:4px}
-  .settings input{font:inherit;font-size:16px;padding:8px 10px;border:2px solid var(--ink);border-radius:10px;background:#fff}
-
-  footer{text-align:center;color:var(--muted);font-size:15px;margin-top:30px}
-
-  .confetti{position:fixed;top:-40px;font-size:28px;pointer-events:none;z-index:99;animation:fall linear forwards}
-  @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
-  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(140px);background:var(--ink);color:#fff;font-size:16px;font-weight:500;padding:13px 22px;border-radius:14px;transition:transform .35s;z-index:100;max-width:90vw;text-align:center}
-  .toast.show{transform:translateX(-50%) translateY(0)}
-  .free .dday .big{color:var(--rind)}
-
-  @media (max-width:560px){
-    .card{padding:24px 18px;box-shadow:4px 4px 0 var(--ink)}
-    h2{font-size:24px}
-    .clock{gap:8px}
-    .board{grid-template-columns:1fr 1fr;gap:14px}
-    .note{min-height:140px;padding:18px 12px 10px}
-    .note p{font-size:16px}
-  }
-
-  /* 갤러리 */
-  .upload{background:var(--flesh-light);border:2px solid var(--ink);border-radius:16px;padding:18px;display:grid;gap:10px}
-  .upload input[type=text]{width:100%;font:inherit;font-size:16px;padding:10px 14px;border:2px solid var(--ink);border-radius:12px;background:#fff}
-  .upload input[type=text]:focus{outline:3px solid var(--flesh);outline-offset:1px}
-  .pick{display:flex;align-items:center;justify-content:center;gap:8px;border:2px dashed var(--ink);border-radius:12px;background:#fff;padding:18px;cursor:pointer;font-weight:700;color:var(--ink);text-align:center}
-  .pick:hover{background:#fffaf2}
-  .pick input{display:none}
+  /* 갤러리 무대 */
+  .gallery-sec{background:var(--night);color:#f5f5f7;padding-bottom:110px}
+  .gallery-sec .s-head p{color:#a1a1a6}
+  .stage{position:relative;width:min(1200px,calc(100% - 44px));margin:0 auto;aspect-ratio:16/9;border-radius:28px;overflow:hidden;background:#1d1d1f}
+  @media (max-width:700px){ .stage{aspect-ratio:4/5;border-radius:20px} }
+  .slide{position:absolute;inset:0;opacity:0;transition:opacity 1.8s var(--ease)}
+  .slide.show{opacity:1}
+  .slide img{width:100%;height:100%;object-fit:cover;transform:scale(1);will-change:transform}
+  .slide.show img{animation:kb 9s linear forwards}
+  @keyframes kb{from{transform:scale(1) translate(0,0)}to{transform:scale(1.12) translate(var(--kx,1%),var(--ky,-1%))}}
+  .slide .bg{position:absolute;inset:-40px;background-size:cover;background-position:center;filter:blur(40px) brightness(.55);transform:scale(1.1)}
+  .slide img.contain{position:relative;object-fit:contain}
+  .stage .shade{position:absolute;inset:auto 0 0 0;height:45%;background:linear-gradient(transparent,rgba(0,0,0,.72));pointer-events:none;z-index:2}
+  .stage .cap{position:absolute;left:32px;right:32px;bottom:28px;z-index:3;transition:opacity .8s var(--ease)}
+  .stage .cap b{display:block;font-size:clamp(20px,2.6vw,30px);font-weight:700;letter-spacing:-.02em;line-height:1.3}
+  .stage .cap span{display:block;margin-top:6px;font-size:15px;color:rgba(255,255,255,.75)}
+  .stage .ctrl{position:absolute;right:20px;top:20px;z-index:3;display:flex;gap:8px}
+  .stage .ctrl button{width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#fff;cursor:pointer;font-size:15px}
+  .stage .ctrl button:hover{background:rgba(255,255,255,.28)}
+  .stage .empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;color:#a1a1a6;padding:20px}
+  .stage .empty b{font-size:clamp(24px,3vw,34px);color:#f5f5f7;font-weight:700}
+  .progress{display:flex;gap:6px;justify-content:center;margin-top:22px;flex-wrap:wrap;padding:0 22px}
+  .progress i{width:28px;height:4px;border-radius:2px;background:rgba(255,255,255,.22);overflow:hidden;cursor:pointer;position:relative}
+  .progress i.on::after{content:'';position:absolute;inset:0;background:#fff;transform-origin:left;animation:fill var(--slide,7s) linear forwards}
+  .progress i.done{background:rgba(255,255,255,.7)}
+  .progress.paused i.on::after{animation-play-state:paused}
+  @keyframes fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  .thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;width:min(1200px,calc(100% - 44px));margin:36px auto 0}
+  .thumbs button{aspect-ratio:1;border:0;padding:0;border-radius:12px;overflow:hidden;cursor:pointer;background:#1d1d1f;opacity:.62;transition:opacity .3s}
+  .thumbs button:hover,.thumbs button.on{opacity:1}
+  .thumbs img{width:100%;height:100%;object-fit:cover}
+  .upload-toggle{text-align:center;margin-top:44px}
+  .upload-toggle .btn{background:#f5f5f7;color:#1d1d1f}
+  .upload{display:none;width:min(560px,calc(100% - 44px));margin:26px auto 0;background:#1d1d1f;border-radius:24px;padding:26px;gap:12px}
+  .upload.open{display:grid}
+  .upload .field{background:#2c2c2e;border-color:#3a3a3c;color:#f5f5f7}
+  .upload .field::placeholder{color:#8e8e93}
+  .pick{display:flex;align-items:center;justify-content:center;border:1.5px dashed #48484a;border-radius:16px;padding:26px;cursor:pointer;color:#e8e8ed;font-weight:600;text-align:center}
+  .pick:hover{border-color:#8e8e93}
+  .pick input{position:absolute;opacity:0;width:1px;height:1px}
   .previews{display:flex;gap:8px;flex-wrap:wrap}
-  .previews img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:2px solid var(--ink)}
-  .upload-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .upload-row .hint{font-size:14px;color:var(--muted);flex:1}
-  .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:22px;margin-top:24px}
-  .polaroid{background:#fff;padding:10px 10px 12px;box-shadow:0 6px 16px rgba(0,0,0,.14),0 1px 2px rgba(0,0,0,.1);cursor:zoom-in;transition:transform .15s;border:0;text-align:left;font:inherit;color:inherit}
-  .polaroid:hover{transform:rotate(0deg) scale(1.03)!important;z-index:2}
-  .polaroid .ph{aspect-ratio:1/1;background:#eee;overflow:hidden}
-  .polaroid img{width:100%;height:100%;object-fit:cover;display:block}
-  .polaroid .cap{font-family:'Jua';font-size:17px;line-height:1.4;margin-top:10px;color:var(--ink);overflow-wrap:anywhere}
-  .polaroid .by{font-size:13px;color:var(--muted);margin-top:2px}
-  .lightbox{position:fixed;inset:0;background:rgba(20,20,18,.88);display:none;align-items:center;justify-content:center;flex-direction:column;z-index:200;padding:20px}
-  .lightbox.open{display:flex}
-  .lightbox img{max-width:min(92vw,1100px);max-height:78vh;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
-  .lightbox .lb-cap{color:#fff;font-family:'Jua';font-size:20px;margin-top:14px;text-align:center;max-width:90vw}
-  .lightbox .lb-by{color:#d9d4c8;font-size:14px;margin-top:4px}
-  .lightbox button{position:absolute;background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:999px;width:48px;height:48px;font-size:24px;cursor:pointer}
-  .lightbox .lb-close{top:18px;right:18px}
-  .lightbox .lb-prev{left:14px;top:50%;transform:translateY(-50%)}
-  .lightbox .lb-next{right:14px;top:50%;transform:translateY(-50%)}
-  @media (max-width:560px){ .gallery{grid-template-columns:1fr 1fr;gap:14px} .polaroid .cap{font-size:15px} }
+  .previews img{width:60px;height:60px;object-fit:cover;border-radius:10px}
+  .upload .row2{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap}
+  .upload .hint{font-size:14px;color:#8e8e93}
+  .upload .btn{background:#f5f5f7;color:#1d1d1f}
+  .gallery-sec .msg{color:#a1a1a6}
+
+  /* 포스트잇 벽 */
+  .wall-sec{background:var(--mist);padding-bottom:120px}
+  .compose{width:min(640px,100%);margin:0 auto;background:#fff;border-radius:24px;padding:26px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+  .compose .row2{display:flex;align-items:center;gap:14px;margin-top:14px;flex-wrap:wrap}
+  .swatches{display:flex;gap:8px}
+  .sw{width:28px;height:28px;border-radius:50%;border:0;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+  .sw[aria-pressed="true"]{box-shadow:inset 0 0 0 1px rgba(0,0,0,.08),0 0 0 2px #fff,0 0 0 4px var(--ink)}
+  .count{font-size:13px;color:var(--mute);margin-left:auto}
+  .compose .name{margin-top:12px}
+  .wall-tools{display:flex;justify-content:space-between;align-items:center;margin:64px 0 22px;gap:12px;flex-wrap:wrap}
+  .wall-tools b{font-size:21px;font-weight:700;letter-spacing:-.02em}
+  .seg{display:inline-flex;background:#e8e8ed;border-radius:999px;padding:3px}
+  .seg button{border:0;background:transparent;border-radius:999px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink-2)}
+  .seg button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+  .wall{columns:4 220px;column-gap:22px}
+  .note{break-inside:avoid;margin:0 0 22px;padding:24px 20px 16px;border-radius:4px 4px 20px 4px;color:#1d1d1f;
+    box-shadow:0 1px 1px rgba(0,0,0,.06),0 10px 24px -8px rgba(0,0,0,.18);position:relative}
+  .note.fresh{animation:pop .7s var(--ease)}
+  @keyframes pop{from{opacity:0;transform:translateY(-14px) scale(.96) rotate(-2deg)}to{opacity:1}}
+  .note p{font-size:17px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;font-weight:500}
+  .note .meta{display:flex;justify-content:space-between;gap:8px;margin-top:16px;font-size:13px;color:rgba(0,0,0,.55)}
+  .note .meta b{font-weight:700;color:rgba(0,0,0,.72)}
+
+  /* 숫자 벤토 */
+  .bento{display:grid;grid-template-columns:repeat(6,1fr);gap:18px;padding-bottom:40px}
+  .tile{background:var(--mist);border-radius:26px;padding:30px;display:flex;flex-direction:column;justify-content:space-between;min-height:220px;grid-column:span 2}
+  .tile.wide{grid-column:span 3}
+  .tile.full{grid-column:1/-1;min-height:auto}
+  .tile .k{font-size:17px;font-weight:600;color:var(--ink-2)}
+  .tile .v{font-size:clamp(48px,6vw,72px);font-weight:800;letter-spacing:-.05em;line-height:1;margin-top:24px;font-variant-numeric:tabular-nums}
+  .tile .v small{font-size:.38em;font-weight:700;letter-spacing:-.02em;margin-left:4px;color:var(--ink-2)}
+  .tile .d{font-size:15px;color:var(--mute);margin-top:12px;line-height:1.45}
+  .tile.dark{background:var(--ink);color:#f5f5f7}
+  .tile.dark .k{color:#d2d2d7}.tile.dark .d{color:#a1a1a6}.tile.dark .v small{color:#d2d2d7}
+  .meter{height:10px;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;margin-top:18px}
+  .tile.dark .meter{background:rgba(255,255,255,.14)}
+  .meter i{display:block;height:100%;border-radius:999px;background:var(--rind);transition:width 1.2s var(--ease)}
+  .meter.warm i{background:linear-gradient(90deg,#ff6b4a,#ffb46b)}
+  @media (max-width:760px){ .bento{grid-template-columns:1fr 1fr;gap:12px} .tile,.tile.wide{grid-column:span 1;min-height:180px;padding:22px} .tile.full{grid-column:1/-1} }
+
+  /* 명언 */
+  .quote-sec{padding:140px 0;text-align:center}
+  .quote{font-size:clamp(28px,4.4vw,52px);font-weight:700;letter-spacing:-.035em;line-height:1.25;max-width:20em;margin:0 auto;min-height:3.8em;display:flex;align-items:center;justify-content:center;transition:opacity .6s var(--ease)}
+  .quote-src{margin-top:18px;color:var(--mute);font-size:17px;transition:opacity .6s var(--ease)}
+
+  /* 놀이 */
+  .play{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding-bottom:120px}
+  @media (max-width:760px){ .play{grid-template-columns:1fr} }
+  .card{background:var(--mist);border-radius:26px;padding:32px}
+  .card h3{font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1.2}
+  .card > p{color:var(--mute);margin-top:8px}
+  .arena{position:relative;height:230px;margin-top:22px;border-radius:18px;background:#fff;overflow:hidden}
+  #catchBtn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:0;border-radius:999px;padding:12px 22px;background:var(--ink);color:#fff;font-weight:600;cursor:pointer;white-space:nowrap;transition:left .2s var(--ease),top .2s var(--ease)}
+  .catch-log{margin-top:14px;font-size:15px;color:var(--mute);font-variant-numeric:tabular-nums}
+  .todo{list-style:none;margin-top:18px}
+  .todo li{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--hair);cursor:pointer;font-size:16px;line-height:1.45}
+  .todo li:last-child{border:0}
+  .todo .box{flex:0 0 22px;height:22px;border-radius:50%;border:1.5px solid #aeaeb2;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;margin-top:1px;transition:background .2s,border-color .2s}
+  .todo li.done .box{background:var(--rind);border-color:var(--rind)}
+  .todo li.done .txt{color:var(--mute);text-decoration:line-through}
+
+  footer{background:var(--mist);color:var(--mute);font-size:13px;text-align:center;padding:30px 22px 40px;border-top:1px solid var(--hair)}
+
+  /* 라이트박스 */
+  .lb{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;flex-direction:column;z-index:200;padding:24px}
+  .lb.open{display:flex}
+  .lb img{max-width:min(94vw,1200px);max-height:80vh;border-radius:10px}
+  .lb .t{color:#f5f5f7;font-weight:600;font-size:19px;margin-top:16px;text-align:center}
+  .lb .s{color:#a1a1a6;font-size:14px;margin-top:4px}
+  .lb button{position:absolute;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:20px;cursor:pointer}
+  .lb .x{top:18px;right:18px}.lb .p{left:14px;top:50%;transform:translateY(-50%)}.lb .n{right:14px;top:50%;transform:translateY(-50%)}
+
+  .toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,140px);background:rgba(29,29,31,.92);backdrop-filter:blur(12px);color:#fff;font-size:15px;font-weight:500;
+    padding:13px 22px;border-radius:999px;transition:transform .45s var(--ease);z-index:300;max-width:90vw;text-align:center}
+  .toast.show{transform:translate(-50%,0)}
+  .confetti{position:fixed;top:-40px;font-size:26px;pointer-events:none;z-index:250;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+
+  @media (prefers-reduced-motion: reduce){
+    .row,.cue i,.slide.show img,.progress i.on::after{animation:none!important}
+    .seq{transition:none;opacity:1;transform:none;filter:none}
+  }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<div class="ticker" aria-hidden="true"><span id="ticker"></span></div>
-<nav><div class="in">
-  <a href="#countdown">⏱ 카운트다운</a>
-  <a href="#board">📝 롤링페이퍼</a>
-  <a href="#gallery">📸 갤러리</a>
-  <a href="#stats">📊 통계</a>
-  <a href="#fun">🙏 붙잡기</a>
-  <a href="#bucket">✅ 버킷리스트</a>
-</div></nav>
 
-<div class="wrap">
-  <header>
-    <button class="melon" id="melon" aria-label="멜론 누르기">🍈</button><br>
-    <span class="badge">⚠️ 긴급 속보</span>
-    <h1><span class="m">멜론</span>님<br>탈출 카운트다운</h1>
-    <p class="sub">회사가 멜론 하나를 잃고, 세상은 자유인 한 명을 얻습니다</p>
-  </header>
+<header class="bar" id="bar"><div class="in">
+  <a class="logo" href="#top" aria-label="맨 위로">🍈</a>
+  <a class="nav" href="#gallery">갤러리</a>
+  <a class="nav" href="#wall">포스트잇</a>
+  <a class="nav opt" href="#numbers">숫자로 보기</a>
+  <a class="nav opt" href="#play">놀이터</a>
+</div></header>
 
-  <section class="card dday" id="countdown">
-    <div class="label">자유까지 남은 날</div>
-    <div class="big" id="dday">D-?</div>
-    <div class="status" id="status">계산 중…</div>
-    <div class="when" id="when"></div>
-    <div class="clock" aria-label="남은 시간">
-      <div><b id="d">0</b><small>일</small></div>
-      <div><b id="h">00</b><small>시간</small></div>
-      <div><b id="mi">00</b><small>분</small></div>
-      <div><b id="s">00</b><small>초</small></div>
+<section class="hero" id="top">
+  <div class="drift" id="drift" aria-hidden="true"></div>
+  <div class="hero-copy">
+    <button class="melon seq" id="melon" aria-label="멜론 쓰다듬기">🍈</button>
+    <h1><span class="seq" id="l1">멜론님,</span><span class="l2 seq" id="l2">그동안 정말 고마웠어요.</span></h1>
+    <div class="dday seq" id="dday">D-?</div>
+    <div class="timer seq" id="timer">&nbsp;</div>
+    <div class="when seq" id="when">&nbsp;</div>
+    <div class="status seq" id="status">&nbsp;</div>
+  </div>
+  <a class="cue seq" id="cue" href="#gallery">아래로 내려보세요<i></i></a>
+</section>
+
+<section class="gallery-sec" id="gallery">
+  <div class="wrap s-head">
+    <h2>함께한 장면들.</h2>
+    <p>동료들이 올린 멜론님 사진이 천천히 넘어가요. 갖고 있는 사진이 있다면 여기에 더해주세요.</p>
+  </div>
+  <div class="stage" id="stage">
+    <div class="empty" id="stageEmpty"><b>첫 장면을 기다리는 중</b><span>아래 ‘사진 올리기’로 멜론님 사진을 올려주세요.</span></div>
+    <div class="slide" id="slideA"></div>
+    <div class="slide" id="slideB"></div>
+    <div class="shade"></div>
+    <div class="cap" id="stageCap"><b></b><span></span></div>
+    <div class="ctrl">
+      <button id="stPrev" aria-label="이전 사진">‹</button>
+      <button id="stPlay" aria-label="일시정지">❚❚</button>
+      <button id="stNext" aria-label="다음 사진">›</button>
+      <button id="stZoom" aria-label="크게 보기">⤢</button>
     </div>
-  </section>
+  </div>
+  <div class="progress" id="dots"></div>
+  <div class="thumbs" id="thumbs"></div>
+  <div class="msg" id="galleryMsg">사진을 불러오는 중이에요.</div>
+  <div class="upload-toggle"><button class="btn" id="openUpload" aria-expanded="false">사진 올리기</button></div>
+  <form class="upload" id="uploadForm">
+    <label class="pick"><span id="pickLabel">사진 고르기 · 한 번에 5장까지</span><input type="file" id="photoInput" accept="image/*" multiple></label>
+    <div class="previews" id="previews"></div>
+    <input class="field" id="caption" maxlength="60" placeholder="한 줄 설명 (예: 2024 워크숍, 노래방 98점)">
+    <input class="field" id="photoAuthor" maxlength="20" placeholder="올린 사람 (비워두면 익명)">
+    <div class="row2"><span class="hint" id="uploadHint">큰 사진은 자동으로 줄여서 올려요.</span><button class="btn" type="submit" id="uploadBtn">올리기</button></div>
+  </form>
+</section>
 
-  <section class="card" id="board">
-    <h2>📝 멜론님께 포스트잇 붙이기</h2>
-    <p class="desc">하고 싶은 말을 남겨주세요. 감사, 추억, 폭로(적당히), 저주(귀엽게) 모두 환영합니다.<br>로그인 필요 없어요. 붙이면 모두의 화면에 바로 나타나요.</p>
+<section class="wall-sec" id="wall">
+  <div class="wrap">
+    <div class="s-head">
+      <h2>한 마디씩, 붙여주세요.</h2>
+      <p>감사, 추억, 소소한 폭로까지. 붙이는 순간 모두의 화면에 나타나요. 로그인은 필요 없어요.</p>
+    </div>
     <form class="compose" id="compose">
-      <label for="noteText" class="visually-hidden" style="position:absolute;left:-9999px">메시지</label>
-      <textarea id="noteText" maxlength="200" placeholder="예) 멜론님 덕분에 회의가 덜 지루했어요. 근데 제 마우스는 언제 돌려주시나요?"></textarea>
-      <input id="author" maxlength="20" placeholder="이름 (선택, 비우면 익명)" style="margin-top:10px;width:100%;font:inherit;font-size:16px;padding:10px 14px;border:2px solid var(--ink);border-radius:12px;background:#fff">
-      <div class="compose-row">
-        <div class="colors" id="colors"><span>색상</span></div>
-                <span class="count" id="count">0 / 200</span>
-        <button class="btn" type="submit" id="postBtn">붙이기 📌</button>
+      <label for="noteText" style="position:absolute;left:-9999px">메시지</label>
+      <textarea class="field" id="noteText" maxlength="200" placeholder="멜론님 덕분에 회의가 덜 지루했어요. 근데 제 마우스는 언제 돌려주시나요?"></textarea>
+      <input class="field name" id="author" maxlength="20" placeholder="이름 (비워두면 익명)">
+      <div class="row2">
+        <div class="swatches" id="swatches" role="group" aria-label="포스트잇 색"></div>
+        <span class="count" id="count">0/200</span>
+        <button class="btn" type="submit" id="postBtn">붙이기</button>
       </div>
     </form>
-    <div class="board-head">
+    <div class="wall-tools">
       <b id="boardCount">포스트잇 0장</b>
-      <span style="display:flex;gap:8px;align-items:center"><button class="btn alt" type="button" id="refreshBtn" style="padding:5px 12px;font-size:15px">🔄 새로고침</button><select id="sort" aria-label="정렬"><option value="new">최신순</option><option value="old">오래된순</option></select></span>
-    </div>
-    <div class="board" id="notes"></div>
-    <div class="board-msg" id="boardMsg">게시판을 불러오는 중…</div>
-  </section>
-
-  <section class="card" id="gallery">
-    <h2>📸 멜론님 갤러리</h2>
-    <p class="desc">멜론님과의 추억 사진을 올려주세요. 회식, 워크숍, 몰래 찍은 졸린 얼굴(본인 허락 하에)… 모두 환영!</p>
-    <form class="upload" id="uploadForm">
-      <label class="pick">📷 사진 고르기 (최대 5장)<input type="file" id="photoInput" accept="image/*" multiple></label>
-      <div class="previews" id="previews"></div>
-      <input type="text" id="caption" maxlength="60" placeholder="사진 한 줄 설명 (선택) 예) 2024 워크숍, 멜론님 노래방 점수 98점">
-      <input type="text" id="photoAuthor" maxlength="20" placeholder="올린 사람 (선택, 비우면 익명)">
-      <div class="upload-row">
-        <span class="hint" id="uploadHint">사진은 자동으로 줄여서 올라가요.</span>
-        <button class="btn" type="submit" id="uploadBtn">올리기 📤</button>
+      <div class="seg" role="group" aria-label="정렬">
+        <button type="button" data-sort="new" aria-pressed="true">최신순</button>
+        <button type="button" data-sort="old" aria-pressed="false">오래된순</button>
       </div>
-    </form>
-    <div class="board-head"><b id="photoCount">사진 0장</b></div>
-    <div class="gallery" id="photos"></div>
-    <div class="board-msg" id="galleryMsg">갤러리를 불러오는 중…</div>
-  </section>
-
-  <section class="card">
-    <div class="bar-title"><span>🏃 탈출 진행률</span><span id="pct">0%</span></div>
-    <div class="bar"><i id="progress" style="width:0%"></i></div>
-    <p class="bar-note">퇴사 발표일부터 마지막 퇴근까지 기준</p>
-    <div class="gauge-row">
-      <div class="bar-title"><span>🔋 잔여 업무 의욕</span><span id="motivPct">100%</span></div>
-      <div class="bar motiv"><i id="motiv" style="width:100%"></i></div>
-      <p class="bar-note" id="motivNote"></p>
     </div>
-  </section>
+    <div class="wall" id="notes"></div>
+    <div class="msg" id="boardMsg">포스트잇을 불러오는 중이에요.</div>
+  </div>
+</section>
 
-  <section class="card" id="stats">
-    <h2>📊 잔여 회사생활 통계</h2>
-    <p class="desc">※ 과학적 근거는 전혀 없습니다.</p>
-    <div class="stats" id="statsGrid"></div>
-  </section>
+<section id="numbers">
+  <div class="wrap">
+    <div class="s-head">
+      <h2>숫자로 보는 남은 회사생활.</h2>
+      <p>과학적 근거는 없지만, 마음만은 정확합니다.</p>
+    </div>
+    <div class="bento" id="bento">
+      <div class="tile wide dark">
+        <div><div class="k">탈출 진행률</div><div class="v" id="pct">0<small>%</small></div></div>
+        <div><div class="meter"><i id="pctBar" style="width:0"></i></div><div class="d">퇴사 발표일부터 마지막 퇴근까지</div></div>
+      </div>
+      <div class="tile wide">
+        <div><div class="k">남은 업무 의욕</div><div class="v" id="motiv">100<small>%</small></div></div>
+        <div><div class="meter warm"><i id="motivBar" style="width:100%"></i></div><div class="d" id="motivNote"></div></div>
+      </div>
+      <div class="tile"><div class="k">남은 출근</div><div><div class="v" id="t1">0<small>번</small></div><div class="d">연차를 쓰면 더 줄어요. 권장합니다.</div></div></div>
+      <div class="tile"><div class="k">남은 회사 점심</div><div><div class="v" id="t2">0<small>끼</small></div><div class="d">맛집 리스트를 마무리할 마지막 기회.</div></div></div>
+      <div class="tile"><div class="k">남은 회의</div><div><div class="v" id="t3">0<small>개</small></div><div class="d" id="t3d"></div></div></div>
+      <div class="tile wide"><div class="k">“이것만 봐주실 수 있어요?”</div><div><div class="v" id="t4">0<small>번</small></div><div class="d">앞으로 들을 예상 횟수. 마음의 준비를 해주세요.</div></div></div>
+      <div class="tile wide"><div class="k">남은 월요병</div><div><div class="v" id="t5">0<small>번</small></div><div class="d" id="t5d"></div></div></div>
+    </div>
+  </div>
+</section>
 
-  <section class="card">
-    <h2>📜 오늘의 퇴사 명언</h2>
-    <div class="quote" id="quote"></div>
-    <div class="quote-src" id="quoteSrc"></div>
-    <div style="text-align:center;margin-top:16px"><button class="btn alt" id="nextQuote">다른 명언 보기</button></div>
-  </section>
+<section class="quote-sec">
+  <div class="wrap">
+    <p class="quote" id="quote"></p>
+    <p class="quote-src" id="quoteSrc"></p>
+  </div>
+</section>
 
-  <section class="card" id="fun">
-    <h2>🙏 멜론님 붙잡기 챌린지</h2>
-    <p class="desc">버튼을 눌러 멜론님을 붙잡아 보세요. 가능하다면요.</p>
-    <div class="arena" id="arena"><button id="catchBtn">제발 가지 마세요 😭</button></div>
-    <div class="catch-log" id="catchLog">붙잡기 시도 0회 · 성공 0회</div>
-  </section>
+<section id="play">
+  <div class="wrap play">
+    <div class="card">
+      <h3>멜론님 붙잡기.</h3>
+      <p>버튼을 눌러보세요. 가능하다면요.</p>
+      <div class="arena" id="arena"><button id="catchBtn">제발 가지 마세요</button></div>
+      <div class="catch-log" id="catchLog">시도 0번, 성공 0번</div>
+    </div>
+    <div class="card">
+      <h3>퇴사 전 버킷리스트.</h3>
+      <p>체크는 내 브라우저에만 남아요.</p>
+      <ul class="todo" id="todo"></ul>
+    </div>
+  </div>
+</section>
 
-  <section class="card" id="bucket">
-    <h2>✅ 퇴사 전 버킷리스트</h2>
-    <p class="desc">체크 표시는 내 브라우저에만 저장돼요.</p>
-    <ul class="todo" id="todo"></ul>
-  </section>
+<footer>멜론님의 앞날을 진심으로 응원하며, 약간 질투합니다. 🍈</footer>
 
-  <footer>멜론님의 앞날을 진심으로 응원하며, 약간 질투합니다. 🍈</footer>
-</div>
-
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="사진 크게 보기">
-  <button class="lb-close" id="lbClose" aria-label="닫기">✕</button>
-  <button class="lb-prev" id="lbPrev" aria-label="이전 사진">‹</button>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="사진 크게 보기">
+  <button class="x" id="lbX" aria-label="닫기">✕</button>
+  <button class="p" id="lbP" aria-label="이전 사진">‹</button>
   <img id="lbImg" alt="">
-  <div class="lb-cap" id="lbCap"></div>
-  <div class="lb-by" id="lbBy"></div>
-  <button class="lb-next" id="lbNext" aria-label="다음 사진">›</button>
+  <div class="t" id="lbT"></div>
+  <div class="s" id="lbS"></div>
+  <button class="n" id="lbN" aria-label="다음 사진">›</button>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-const DEFAULTS = { start: '2026-11-18', end: '2026-11-20', time: '15:00' };
 const $ = id => document.getElementById(id);
-const cfg = {...DEFAULTS};
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const endDate = () => new Date(cfg.end + 'T' + (cfg.time || '18:00') + ':00');
+// ===== 날짜 (고정) =====
+const cfg = { start: '2026-11-18', end: '2026-11-20', time: '15:00' };
+const endDate = () => new Date(cfg.end + 'T' + cfg.time + ':00');
 const startDate = () => new Date(cfg.start + 'T09:00:00');
 const DOW = ['일','월','화','수','목','금','토'];
-
-function workdaysBetween(a, b){
-  let n = 0; const d = new Date(a); d.setHours(0,0,0,0); const e = new Date(b); e.setHours(0,0,0,0);
-  while (d <= e){ const w = d.getDay(); if (w && w !== 6) n++; d.setDate(d.getDate()+1); } return n;
-}
+(function(){ const e = endDate(); $('when').textContent = `${e.getMonth()+1}월 ${e.getDate()}일 ${DOW[e.getDay()]}요일 ${e.getHours()>=12?'오후':'오전'} ${e.getHours()%12||12}시${e.getMinutes()?' '+e.getMinutes()+'분':''}, 멜론님은 자유가 됩니다.`; })();
 
 const statusLines = [
-  [60,'아직 멀었습니다. 표정 관리 부탁드립니다.'],
-  [30,'슬슬 책상 서랍이 비어가는 중…'],
-  [14,'"인수인계"라는 단어가 들리기 시작했습니다'],
-  [7,'이제 모든 회의에 "저는 그때 없어서요"가 가능'],
-  [3,'얼굴에서 빛이 나기 시작했습니다 ✨'],
-  [2,'모레면 자유! 벌써 표정에서 퇴사가 묻어납니다'],
-  [1,'내일이면 남입니다. 오늘 커피는 멜론님이 쏘시죠?'],
-  [0,'오늘이 마지막 날!! 마지막 퇴근, 최대한 천천히 하세요'],
-];
+  [60,'아직 멀었어요. 표정 관리 부탁드립니다.'],[30,'책상 서랍이 조금씩 비어가는 중'],[14,'“인수인계”라는 단어가 들리기 시작했어요'],
+  [7,'이제 모든 회의에서 “저는 그때 없어서요”가 가능해요'],[3,'얼굴에서 빛이 나기 시작했어요'],[2,'모레면 자유. 벌써 표정에서 퇴사가 묻어나요'],
+  [1,'내일이면 남이에요. 오늘 커피는 멜론님이 쏘시죠?'],[0,'오늘이 마지막 날. 퇴근은 최대한 천천히 해주세요']];
 
+function workdaysBetween(a,b){ let n=0; const d=new Date(a); d.setHours(0,0,0,0); const e=new Date(b); e.setHours(0,0,0,0);
+  while(d<=e){ const w=d.getDay(); if(w&&w!==6) n++; d.setDate(d.getDate()+1);} return n; }
+function mondaysUntil(end){ let n=0; const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+1); while(d<=end){ if(d.getDay()===1) n++; d.setDate(d.getDate()+1);} return n; }
+const setV = (id, n, unit) => { const el=$(id); el.firstChild ? (el.firstChild.nodeValue = n.toLocaleString()) : (el.textContent = n); };
+
+let lastKey='';
 function tick(){
-  const now = new Date(), end = endDate(), start = startDate(), diff = end - now;
-  const t0 = new Date(now); t0.setHours(0,0,0,0); const e0 = new Date(end); e0.setHours(0,0,0,0);
-  const dayDiff = Math.round((e0 - t0) / 86400000);
-  $('when').textContent = `마지막 퇴근: ${end.getMonth()+1}월 ${end.getDate()}일 (${DOW[end.getDay()]}) ${end.getHours() >= 12 ? '오후' : '오전'} ${end.getHours() % 12 || 12}시${end.getMinutes() ? ' ' + end.getMinutes() + '분' : ''}`;
-  if (diff <= 0){
-    document.body.classList.add('free');
-    $('dday').textContent = 'D+' + Math.abs(dayDiff);
-    $('status').textContent = '🎉 멜론님은 자유인입니다. 지금쯤 평일 낮잠 중일 예정';
-    ['d','h','mi','s'].forEach(k => $(k).textContent = k === 'd' ? '0' : '00');
-    setBars(100, 0); renderStats(0, 0); return;
+  const now=new Date(), end=endDate(), start=startDate(), diff=end-now;
+  const t0=new Date(now); t0.setHours(0,0,0,0); const e0=new Date(end); e0.setHours(0,0,0,0);
+  const dd=Math.round((e0-t0)/86400000);
+  if(diff<=0){
+    $('dday').textContent='FREE'; $('timer').textContent='멜론님은 이제 자유예요.';
+    $('status').textContent='지금쯤 평일 낮잠 중일 예정'; meters(100,0); numbers(0,0); return;
   }
-  document.body.classList.remove('free');
-  $('dday').textContent = dayDiff === 0 ? 'D-DAY' : 'D-' + dayDiff;
-  $('status').textContent = (statusLines.find(([n]) => dayDiff >= n) || statusLines.at(-1))[1];
-  const s = Math.floor(diff/1000);
-  $('d').textContent = Math.floor(s/86400);
-  $('h').textContent = String(Math.floor(s%86400/3600)).padStart(2,'0');
-  $('mi').textContent = String(Math.floor(s%3600/60)).padStart(2,'0');
-  $('s').textContent = String(s%60).padStart(2,'0');
-  const total = end - start;
-  const pct = total > 0 ? Math.min(100, Math.max(0, (now - start) / total * 100)) : 0;
-  setBars(pct, Math.max(0, Math.round(100 - pct * 1.15)));
-  renderStats(workdaysBetween(now, end), dayDiff);
+  $('dday').textContent = dd===0 ? 'D-Day' : 'D-'+dd;
+  const s=Math.floor(diff/1000), D=Math.floor(s/86400), H=Math.floor(s%86400/3600), M=Math.floor(s%3600/60), S=s%60;
+  $('timer').textContent = `${D?D+'일 ':''}${H}시간 ${String(M).padStart(2,'0')}분 ${String(S).padStart(2,'0')}초 남았어요`;
+  $('status').textContent = (statusLines.find(([n])=>dd>=n)||statusLines.at(-1))[1];
+  const total=end-start, pct= total>0 ? Math.min(100,Math.max(0,(now-start)/total*100)) : 0;
+  meters(pct, Math.max(0,Math.round(100-pct*1.15)));
+  numbers(workdaysBetween(now,end), dd);
 }
-function setBars(pct, motiv){
-  $('progress').style.width = pct.toFixed(2) + '%';
-  $('pct').textContent = pct.toFixed(3) + '%';
-  $('motiv').style.width = motiv + '%';
-  $('motivPct').textContent = motiv + '%';
-  $('motivNote').textContent = motiv > 70 ? '아직 메일 답장은 하는 단계' : motiv > 40 ? '메일 답장이 "넵"으로 수렴하는 단계'
-    : motiv > 10 ? '슬랙 상태가 "🌴"로 바뀌는 단계' : '측정 불가. 영혼은 이미 퇴사함';
+function meters(pct, motiv){
+  setV('pct', pct.toFixed(2)); $('pctBar').style.width=pct+'%';
+  setV('motiv', motiv); $('motivBar').style.width=motiv+'%';
+  $('motivNote').textContent = motiv>70?'아직 메일에 성실히 답장하는 단계':motiv>40?'메일 답장이 “넵”으로 수렴하는 단계':motiv>10?'메신저 상태가 🌴로 바뀌는 단계':'측정 불가. 영혼은 이미 퇴사했어요';
 }
-let lastKey = '';
-function renderStats(workdays, days){
-  const key = workdays + '-' + days; if (key === lastKey) return; lastKey = key;
-  let mondays = 0; { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+1); const e = endDate(); while (d <= e){ if (d.getDay() === 1) mondays++; d.setDate(d.getDate()+1); } }
-  const items = [
-    [workdays,'남은 출근 횟수','주말 제외. 연차 쓰면 더 줄어듦 (권장)'],
-    [workdays,'남은 회사 점심','맛집 리스트 마무리할 마지막 기회'],
-    [Math.round(workdays*2.3),'남은 회의 (추정)','그중 메일로 가능했던 회의 약 ' + Math.round(workdays*2.3*0.8) + '개'],
-    [Math.round(workdays*4.7),'"이것만 봐주실 수 있어요?"','앞으로 들을 예상 횟수'],
-    [Math.round(workdays*3),'남은 회사 커피','카페인 약 ' + Math.round(workdays*3*0.15*1000) + 'mg 예정'],
-    [mondays,'남은 월요병', mondays ? '마지막 월요병은 덜 아플 예정' : '축하합니다. 월요병 졸업 🎓'],
-  ];
-  const g = $('statsGrid'); g.innerHTML = '';
-  items.forEach(([n,t,d]) => {
-    const el = document.createElement('div'); el.className = 'stat';
-    el.innerHTML = '<div class="n"></div><div class="t"></div><div class="d"></div>';
-    el.children[0].textContent = n.toLocaleString(); el.children[1].textContent = t; el.children[2].textContent = d;
-    g.appendChild(el);
-  });
+function numbers(w, dd){
+  const key=w+'-'+dd; if(key===lastKey) return; lastKey=key;
+  const meet=Math.round(w*2.3), mon=mondaysUntil(endDate());
+  setV('t1',w); setV('t2',w); setV('t3',meet); setV('t4',Math.round(w*4.7)); setV('t5',mon);
+  $('t3d').textContent = `그중 메일로 충분했을 회의는 약 ${Math.round(meet*.8)}개.`;
+  $('t5d').textContent = mon ? '마지막 월요병은 조금 덜 아플 거예요.' : '축하해요. 월요병을 졸업했어요.';
 }
 
-// ===== 포스트잇 게시판 (Supabase) =====
-const SUPABASE_URL = 'https://mtxzrcaixncoedxymzjp.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_fNrLK8o8hgja9leQKo4KAw_K4ntHTq5';
-const COLORS = ['#fff3a3','#ffd1dc','#c9f0d0','#cfe6ff','#ffdcb3'];
-let color = COLORS[0];
-COLORS.forEach((c,i) => {
-  const b = document.createElement('button'); b.type = 'button'; b.className = 'swatch'; b.style.background = c;
-  b.setAttribute('aria-label', '색상 ' + (i+1)); b.setAttribute('aria-pressed', i === 0);
-  b.onclick = () => { color = c; [...document.querySelectorAll('.swatch')].forEach(x => x.setAttribute('aria-pressed', x === b)); };
-  $('colors').appendChild(b);
-});
-$('noteText').addEventListener('input', e => $('count').textContent = e.target.value.length + ' / 200');
-try { $('author').value = localStorage.getItem('melon-author') || ''; } catch(e){}
+// ===== 첫 화면 연출 =====
+function intro(){
+  const order=[['melon',100],['l1',350],['l2',1100],['dday',2100],['timer',2700],['when',2900],['status',3300],['cue',3900]];
+  order.forEach(([id,t])=> setTimeout(()=>$(id).classList.add('in'), REDUCED?0:t));
+  setTimeout(()=>$('drift').classList.add('on'), REDUCED?0:2600);
+}
+const bar=$('bar');
+const io=new IntersectionObserver(([e])=> bar.classList.toggle('light', !e.isIntersecting), {rootMargin:'-52px 0px 0px 0px'});
+io.observe($('top'));
 
-let sb = null, notes = new Map(), posting = false, lastPost = 0;
-function boardMsg(t){ $('boardMsg').textContent = t; $('boardMsg').style.display = t ? 'block' : 'none'; }
+// ===== Supabase =====
+const SUPABASE_URL='https://mtxzrcaixncoedxymzjp.supabase.co';
+const SUPABASE_KEY='sb_publishable_fNrLK8o8hgja9leQKo4KAw_K4ntHTq5';
+let sb=null;
+try{ if(window.supabase) sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY); }catch(e){ console.error(e); }
+const errText = e => [e.statusCode||e.code, e.message||e.error, e.hint].filter(Boolean).join(' / ');
+
+// ===== 포스트잇 =====
+const COLORS=['#fff1a8','#ffd6e0','#cdf2d6','#d4e8ff','#ffe0bf'];
+let color=COLORS[0], notes=new Map(), sortMode='new', posting=false, lastPost=0, freshId=null;
+COLORS.forEach((c,i)=>{ const b=document.createElement('button'); b.type='button'; b.className='sw'; b.style.background=c;
+  b.setAttribute('aria-label','색 '+(i+1)); b.setAttribute('aria-pressed', i===0);
+  b.onclick=()=>{ color=c; document.querySelectorAll('.sw').forEach(x=>x.setAttribute('aria-pressed', x===b)); };
+  $('swatches').appendChild(b); });
+$('noteText').addEventListener('input', e=> $('count').textContent=e.target.value.length+'/200');
+try{ const a=localStorage.getItem('melon-author')||''; $('author').value=a; $('photoAuthor').value=a; }catch(e){}
+document.querySelectorAll('.seg button').forEach(b=> b.onclick=()=>{ sortMode=b.dataset.sort; document.querySelectorAll('.seg button').forEach(x=>x.setAttribute('aria-pressed',x===b)); renderNotes(); });
+const fmt = d => `${d.getMonth()+1}월 ${d.getDate()}일 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+const colorOf = n => COLORS.includes(n.color) ? n.color : COLORS[n.id%COLORS.length];
 
 function renderNotes(){
-  const list = [...notes.values()].sort((a,b) => {
-    const d = new Date(a.created_at) - new Date(b.created_at);
-    return $('sort').value === 'old' ? d : -d;
+  const list=[...notes.values()].sort((a,b)=>{ const d=new Date(a.created_at)-new Date(b.created_at); return sortMode==='old'?d:-d; });
+  $('boardCount').textContent='포스트잇 '+list.length+'장';
+  const wrap=$('notes'); wrap.innerHTML='';
+  list.forEach(n=>{
+    const el=document.createElement('article'); el.className='note'+(n.id===freshId?' fresh':''); el.style.background=colorOf(n);
+    el.style.transform=`rotate(${((n.id%5)-2)*.6}deg)`;
+    const p=document.createElement('p'); p.textContent=String(n.text||'').slice(0,200);
+    const m=document.createElement('div'); m.className='meta';
+    const w=document.createElement('b'); w.textContent=n.author||'익명의 동료';
+    const t=document.createElement('span'); t.textContent=fmt(new Date(n.created_at));
+    m.append(w,t); el.append(p,m); wrap.appendChild(el);
   });
-  $('boardCount').textContent = '포스트잇 ' + list.length + '장';
-  const wrap = $('notes'); wrap.innerHTML = '';
-  list.forEach(n => {
-    const el = document.createElement('div'); el.className = 'note';
-    el.style.background = COLORS.includes(n.color) ? n.color : COLORS[0];
-    el.style.transform = `rotate(${((n.id % 7) - 3) * 0.8}deg)`;
-    const p = document.createElement('p'); p.textContent = String(n.text || '').slice(0, 200);
-    const meta = document.createElement('div'); meta.className = 'meta';
-    const who = document.createElement('span'); who.className = 'who'; who.textContent = n.author || '익명의 동료';
-    const d = new Date(n.created_at);
-    const t = document.createElement('span');
-    t.textContent = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-    meta.append(who, t); el.append(p, meta); wrap.appendChild(el);
-  });
-  boardMsg(list.length ? '' : '아직 포스트잇이 없어요. 첫 번째로 붙여주세요! 📌');
+  $('boardMsg').textContent = list.length ? '' : '아직 포스트잇이 없어요. 첫 장을 붙여주세요.';
+  buildDrift(list);
 }
-$('sort').onchange = renderNotes;
+
+// 히어로 뒤로 흘러가는 포스트잇
+let driftSig='';
+function buildDrift(list){
+  let src=list.slice(0,36);
+  if(!src.length) src=[{id:1,text:'첫 포스트잇의 주인공이 되어주세요',author:'🍈'},{id:2,text:'멜론님께 하고 싶은 말, 아래에서 붙일 수 있어요',author:'🍈'},{id:3,text:'사진도 함께 올려주세요',author:'🍈'}];
+  const sig=src.map(n=>n.id).join(','); if(sig===driftSig) return; driftSig=sig;
+  const rowsN = innerWidth<600 ? 2 : 3;
+  const rows=Array.from({length:rowsN},()=>[]);
+  src.forEach((n,i)=>rows[i%rowsN].push(n));
+  const drift=$('drift'); drift.innerHTML='';
+  rows.forEach((r,ri)=>{
+    let items=r.slice(); while(items.length<6) items=items.concat(r.length?r:src); // 화면을 채울 만큼
+    const row=document.createElement('div'); row.className='row'+(ri%2?' rev':'');
+    row.style.setProperty('--dur', (items.length*9 + ri*12)+'s');
+    [...items,...items].forEach(n=>{
+      const m=document.createElement('div'); m.className='mini'; m.style.background=colorOf(n);
+      m.style.transform=`rotate(${((n.id+ri)%5-2)*1.2}deg)`;
+      const t=String(n.text||''); m.textContent = t.length>70 ? t.slice(0,70)+'…' : t;
+      const a=document.createElement('span'); a.textContent=n.author||'익명의 동료'; m.appendChild(a);
+      row.appendChild(m);
+    });
+    drift.appendChild(row);
+  });
+}
 
 async function loadNotes(){
-  if (!sb) return;
-  const { data, error } = await sb.from('notes').select('*').order('created_at', { ascending: false }).limit(500);
-  if (error){ boardMsg('⚠️ 불러오기 실패 — ' + [error.code, error.message, error.hint].filter(Boolean).join(' / ')); console.error(error); return; }
-  notes = new Map(data.map(n => [n.id, n])); renderNotes();
-}
-$('refreshBtn').onclick = () => { boardMsg('불러오는 중…'); loadNotes(); };
-
-function initBoard(){
-  if (!window.supabase){ boardMsg('게시판을 불러오지 못했어요. 새로고침해 주세요.'); $('postBtn').disabled = true; return; }
-  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  boardMsg('게시판을 불러오는 중…');
-  loadNotes();
-  sb.channel('notes-live')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notes' }, ({ new: n }) => { notes.set(n.id, n); renderNotes(); })
-    .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'notes' }, ({ old }) => { if (old && notes.delete(old.id)) renderNotes(); })
-    .subscribe();
-  setInterval(loadNotes, 60000); // 실시간 연결이 끊겨도 1분마다 갱신
+  if(!sb) return;
+  const {data,error}=await sb.from('notes').select('*').order('created_at',{ascending:false}).limit(500);
+  if(error){ console.error(error); $('boardMsg').textContent='포스트잇을 불러오지 못했어요 ('+errText(error)+'). 잠시 후 새로고침해 주세요.'; return; }
+  notes=new Map(data.map(n=>[n.id,n])); renderNotes();
 }
 
-$('compose').addEventListener('submit', async e => {
+$('compose').addEventListener('submit', async e=>{
   e.preventDefault();
-  const text = $('noteText').value.trim();
-  if (!text) return toast('내용을 써주세요!');
-  if (!sb || posting) return;
-  if (Date.now() - lastPost < 10000) return toast('조금만 천천히요! 10초 뒤에 다시 붙여주세요 🐢');
-  const author = $('author').value.trim().slice(0, 20) || null;
-  try { localStorage.setItem('melon-author', author || ''); } catch(e){}
-  posting = true; $('postBtn').disabled = true;
-  const { error } = await sb.from('notes').insert({ text: text.slice(0, 200), color, author });
-  posting = false; $('postBtn').disabled = false;
-  if (error){ console.error(error); boardMsg('⚠️ 붙이기 실패 — ' + [error.code, error.message, error.details, error.hint].filter(Boolean).join(' / ')); return toast('붙이지 못했어요. 게시판 아래 오류 내용을 캡처해 주세요.'); }
-  lastPost = Date.now();
-  loadNotes();
-  $('noteText').value = ''; $('count').textContent = '0 / 200';
-  confetti(14); toast('포스트잇 붙였어요! 📌 모두에게 보여요');
+  const text=$('noteText').value.trim();
+  if(!text) return toast('내용을 먼저 써주세요');
+  if(!sb||posting) return;
+  if(Date.now()-lastPost<10000) return toast('10초 뒤에 다시 붙일 수 있어요');
+  const author=$('author').value.trim().slice(0,20)||null;
+  try{ localStorage.setItem('melon-author',author||''); }catch(e){}
+  posting=true; $('postBtn').disabled=true;
+  const {error}=await sb.from('notes').insert({text:text.slice(0,200),color,author});
+  posting=false; $('postBtn').disabled=false;
+  if(error){ console.error(error); $('boardMsg').textContent='붙이지 못했어요 ('+errText(error)+').'; return toast('붙이지 못했어요'); }
+  lastPost=Date.now(); $('noteText').value=''; $('count').textContent='0/200';
+  await loadNotes(); confetti(14); toast('붙였어요. 모두의 화면에 나타났어요');
 });
 
-// ===== 명언 =====
-const quotes = [
-  ['퇴사는 끝이 아니라, 알람 없는 아침의 시작이다.','— 멜론, 출근길에서'],
-  ['인수인계 문서는 길게, 송별사는 짧게.','— 고대 직장인 격언'],
-  ['멜론은 원래 익으면 떠나는 법이다.','— 과일가게 사장님'],
-  ['"제가 없어도 잘 돌아갈 거예요"는 거짓말이다. 서로 알고 있다.','— 남겨진 팀원 일동'],
-  ['떠나는 자의 뒷모습은 언제나 퇴근 시간보다 빠르다.','— 칼퇴의 정석 3장'],
-  ['그동안 "넵"이라고 한 거, 사실 절반은 "음…"이었어요.','— 멜론 (추정)'],
-  ['어디서든 꿀 같은 멜론이 되시길.','— 팀 전원'],
-  ['퇴사 D-day 계산기는 세상에서 가장 정확한 행복 측정기다.','— 이 웹페이지'],
-  ['우리는 멜론님을 보내는 게 아니다. 멜론님이 우리를 두고 가는 것이다.','— 억울한 동료들'],
-];
-let qi = Math.floor(Math.random()*quotes.length);
-function showQuote(){
-  const q = $('quote'); q.style.opacity = 0;
-  setTimeout(() => { q.textContent = '“' + quotes[qi][0] + '”'; $('quoteSrc').textContent = quotes[qi][1]; q.style.opacity = 1; }, 300);
+// ===== 갤러리 =====
+let photos=[], cur=-1, playing=!REDUCED, timer=null, front='A', picked=[], uploading=false;
+const SLIDE_MS=7000;
+const url = p => sb.storage.from('gallery').getPublicUrl(p).data.publicUrl;
+document.documentElement.style.setProperty('--slide', SLIDE_MS+'ms');
+
+function renderGallery(){
+  $('stageEmpty').style.display = photos.length ? 'none' : 'flex';
+  $('galleryMsg').textContent = '';
+  const th=$('thumbs'); th.innerHTML='';
+  photos.forEach((p,i)=>{ const b=document.createElement('button'); b.type='button'; b.setAttribute('aria-label',(p.caption||'사진')+' 보기');
+    const im=document.createElement('img'); im.loading='lazy'; im.alt=''; im.src=url(p.path); b.appendChild(im); b.onclick=()=>show(i,true); th.appendChild(b); });
+  const dots=$('dots'); dots.innerHTML='';
+  if(photos.length>1 && photos.length<=30) photos.forEach((_,i)=>{ const d=document.createElement('i'); d.onclick=()=>show(i,true); dots.appendChild(d); });
+  if(photos.length && (cur<0||cur>=photos.length)) show(0); else markUI();
 }
-$('nextQuote').onclick = () => { qi = (qi+1) % quotes.length; showQuote(); };
-showQuote(); setInterval(() => { qi = (qi+1) % quotes.length; showQuote(); }, 10000);
-
-// ===== 붙잡기 =====
-let tries = 0;
-const btn = $('catchBtn'), arena = $('arena');
-const excuses = ['멜론님: "아 저 반차라서요~"','멜론님: "그건 후임자한테…"','멜론님: "(이미 짐 쌈)"','멜론님: "연봉 두 배면 생각해볼게요 ㅎ"',
-  '멜론님: "아 네네 다음에 밥 한번 해요~"','멜론님: "저 지금 마음은 제주도라서요"','멜론님: "😎👋"'];
-function dodge(){
-  const r = arena.getBoundingClientRect(), b = btn.getBoundingClientRect();
-  btn.style.left = (Math.random()*(r.width-b.width) + b.width/2) + 'px';
-  btn.style.top = (Math.random()*(r.height-b.height) + b.height/2) + 'px';
-  tries++; $('catchLog').textContent = `붙잡기 시도 ${tries}회 · 성공 0회`;
-  if (tries % 3 === 0) toast(excuses[Math.floor(Math.random()*excuses.length)]);
-  if (tries === 20) toast('20번이나… 그 마음 위 게시판에 포스트잇으로 남겨주세요 🥲');
+function markUI(){
+  [...$('thumbs').children].forEach((b,i)=>b.classList.toggle('on',i===cur));
+  [...$('dots').children].forEach((d,i)=>{ d.className = i===cur?'on':(i<cur?'done':''); });
+  $('dots').classList.toggle('paused',!playing);
+  $('stPlay').textContent = playing?'❚❚':'▶'; $('stPlay').setAttribute('aria-label', playing?'일시정지':'재생');
 }
-btn.addEventListener('mouseenter', dodge);
-btn.addEventListener('click', e => { e.preventDefault(); dodge(); });
-btn.addEventListener('touchstart', e => { e.preventDefault(); dodge(); }, {passive:false});
-
-// ===== 버킷리스트 =====
-const todos = ['법인카드로 마지막 점심 플렉스','회의 중 "그건 제 알 바 아닌데요" 속으로 말하기 (밖으로 X)','인수인계 문서에 "화이팅!" 한 줄 추가',
-  '탕비실 간식 마지막 털이','슬랙 프로필 사진을 해변으로 변경','"그동안 감사했습니다" 메일 초안 37번 수정','사내 메신저 비밀번호 까먹기 연습',
-  '마지막 퇴근, 엘리베이터에서 슬로모션으로 뒤돌아보기'];
-let done = []; try { done = JSON.parse(localStorage.getItem('melon-todo') || '[]'); } catch(e){}
-function renderTodo(){
-  const ul = $('todo'); ul.innerHTML = '';
-  todos.forEach((t,i) => {
-    const li = document.createElement('li'); li.dataset.i = i; if (done.includes(i)) li.className = 'done';
-    li.innerHTML = '<span class="box"></span><span class="txt"></span>';
-    li.children[0].textContent = done.includes(i) ? '✓' : ''; li.children[1].textContent = t; ul.appendChild(li);
-  });
+function show(i, user){
+  if(!photos.length) return;
+  cur=(i+photos.length)%photos.length;
+  const p=photos[cur], next= front==='A'?'B':'A';
+  const el=$('slide'+next), old=$('slide'+front);
+  el.innerHTML='';
+  const bg=document.createElement('div'); bg.className='bg'; bg.style.backgroundImage=`url("${url(p.path)}")`;
+  const im=document.createElement('img'); im.alt=p.caption||'멜론님 사진'; im.src=url(p.path);
+  im.onload=()=>{ const portrait=im.naturalHeight>im.naturalWidth*1.05, wideStage=$('stage').clientWidth>$('stage').clientHeight;
+    if(portrait&&wideStage){ im.classList.add('contain'); el.prepend(bg); } };
+  im.style.setProperty('--kx', (Math.random()*4-2).toFixed(1)+'%'); im.style.setProperty('--ky', (Math.random()*4-2).toFixed(1)+'%');
+  el.appendChild(im);
+  requestAnimationFrame(()=>{ el.classList.add('show'); old.classList.remove('show'); });
+  front=next;
+  const cap=$('stageCap'); cap.style.opacity=0;
+  setTimeout(()=>{ cap.querySelector('b').textContent=p.caption||''; cap.querySelector('span').textContent='📷 '+(p.author||'익명의 동료'); cap.style.opacity=1; }, 500);
+  // 다음 사진 미리 불러오기
+  if(photos.length>1){ const pre=new Image(); pre.src=url(photos[(cur+1)%photos.length].path); }
+  markUI(); schedule();
 }
-$('todo').addEventListener('click', e => {
-  const li = e.target.closest('li'); if (!li) return; const i = +li.dataset.i;
-  done = done.includes(i) ? done.filter(x => x !== i) : [...done, i];
-  try { localStorage.setItem('melon-todo', JSON.stringify(done)); } catch(e){}
-  renderTodo();
-  if (done.length === todos.length){ confetti(40); toast('버킷리스트 완료! 이제 진짜 퇴사만 남았습니다 🎓'); }
-});
-renderTodo();
-
-$('ticker').textContent = ['[속보] 멜론님 퇴사 확정… 팀원들 "믿기지 않아"','[단독] 멜론님 책상 위 화분, 새 주인 찾는 중','[경제] 멜론님 퇴사로 사내 커피 소비량 급감 전망',
-  '[날씨] 멜론님 마음속 날씨: 연일 맑음','[스포츠] 멜론님, 퇴근 100m 신기록 경신','[사회] "인수인계 언제 해요?" 질문 하루 평균 12회 돌파'].join('     🍈     ');
-
-const melonMsgs = ['🍈 쓰담쓰담','🍈 "저 아직 여기 있어요"','🍈 잘 익었다!','🍈 데굴데굴~','🍈 수박 아님 주의'];
-let mc = 0; $('melon').onclick = () => { mc++; confetti(12); toast(melonMsgs[mc % melonMsgs.length]); };
-
-
-// ===== 갤러리 (Supabase Storage) =====
-let photos = new Map(), uploading = false, picked = [], lbIndex = 0, lbList = [];
-function galleryMsg(t){ $('galleryMsg').textContent = t; $('galleryMsg').style.display = t ? 'block' : 'none'; }
-try { $('photoAuthor').value = localStorage.getItem('melon-author') || ''; } catch(e){}
-
-const photoUrl = path => sb.storage.from('gallery').getPublicUrl(path).data.publicUrl;
-
-function renderPhotos(){
-  lbList = [...photos.values()].sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-  $('photoCount').textContent = '사진 ' + lbList.length + '장';
-  const wrap = $('photos'); wrap.innerHTML = '';
-  lbList.forEach((ph, i) => {
-    const el = document.createElement('button'); el.type = 'button'; el.className = 'polaroid';
-    el.style.transform = `rotate(${((ph.id % 5) - 2) * 1.1}deg)`;
-    const box = document.createElement('div'); box.className = 'ph';
-    const img = document.createElement('img'); img.loading = 'lazy'; img.alt = ph.caption || '멜론님 사진'; img.src = photoUrl(ph.path);
-    box.appendChild(img);
-    const cap = document.createElement('div'); cap.className = 'cap'; cap.textContent = ph.caption || '🍈';
-    const by = document.createElement('div'); by.className = 'by'; by.textContent = '📷 ' + (ph.author || '익명의 동료');
-    el.append(box, cap, by);
-    el.onclick = () => openLb(i);
-    wrap.appendChild(el);
-  });
-  galleryMsg(lbList.length ? '' : '아직 사진이 없어요. 첫 사진을 올려주세요! 📸');
-}
+function schedule(){ clearTimeout(timer); if(playing && photos.length>1) timer=setTimeout(()=>show(cur+1), SLIDE_MS); }
+$('stPrev').onclick=()=>show(cur-1,true);
+$('stNext').onclick=()=>show(cur+1,true);
+$('stPlay').onclick=()=>{ playing=!playing; if(playing) show(cur+1); else { clearTimeout(timer); markUI(); } };
+$('stZoom').onclick=()=>openLb(cur);
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) clearTimeout(timer); else schedule(); });
 
 async function loadPhotos(){
-  if (!sb) return;
-  const { data, error } = await sb.from('photos').select('*').order('created_at', { ascending: false }).limit(300);
-  if (error){ console.error(error); return galleryMsg('⚠️ 갤러리 불러오기 실패 — ' + [error.code, error.message].filter(Boolean).join(' / ')); }
-  photos = new Map(data.map(p => [p.id, p])); renderPhotos();
+  if(!sb) return;
+  const {data,error}=await sb.from('photos').select('*').order('created_at',{ascending:false}).limit(300);
+  if(error){ console.error(error); $('galleryMsg').textContent='사진을 불러오지 못했어요 ('+errText(error)+').'; return; }
+  const keep = photos[cur] && photos[cur].id;
+  photos=data;
+  const idx = photos.findIndex(p=>p.id===keep); if(idx>=0) cur=idx;
+  renderGallery();
 }
 
-function initGallery(){
-  if (!sb){ galleryMsg('갤러리를 불러오지 못했어요. 새로고침해 주세요.'); $('uploadBtn').disabled = true; return; }
-  loadPhotos();
-  sb.channel('photos-live')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'photos' }, ({ new: p }) => { photos.set(p.id, p); renderPhotos(); })
-    .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'photos' }, ({ old }) => { if (old && photos.delete(old.id)) renderPhotos(); })
-    .subscribe();
-  setInterval(loadPhotos, 90000);
-}
-
-$('photoInput').addEventListener('change', e => {
-  picked = [...e.target.files].filter(f => f.type.startsWith('image/')).slice(0, 5);
-  if (e.target.files.length > 5) toast('한 번에 5장까지만 올릴 수 있어요');
-  const pv = $('previews'); pv.innerHTML = '';
-  picked.forEach(f => { const im = document.createElement('img'); im.alt = ''; im.src = URL.createObjectURL(f); pv.appendChild(im); });
-  $('uploadHint').textContent = picked.length ? picked.length + '장 선택됨' : '사진은 자동으로 줄여서 올라가요.';
+$('openUpload').onclick=()=>{ const f=$('uploadForm'), o=!f.classList.contains('open'); f.classList.toggle('open',o); $('openUpload').setAttribute('aria-expanded',o); $('openUpload').textContent=o?'닫기':'사진 올리기'; };
+$('photoInput').addEventListener('change',e=>{
+  picked=[...e.target.files].filter(f=>f.type.startsWith('image/')).slice(0,5);
+  if(e.target.files.length>5) toast('한 번에 5장까지 올릴 수 있어요');
+  const pv=$('previews'); pv.innerHTML=''; picked.forEach(f=>{ const im=document.createElement('img'); im.alt=''; im.src=URL.createObjectURL(f); pv.appendChild(im); });
+  $('pickLabel').textContent = picked.length ? picked.length+'장 골랐어요 · 다시 고르기' : '사진 고르기 · 한 번에 5장까지';
 });
-
-function shrink(file, max = 1600){
-  return new Promise((resolve, reject) => {
-    const img = new Image(), url = URL.createObjectURL(file);
-    img.onload = () => {
-      const r = Math.min(1, max / Math.max(img.width, img.height));
-      const c = document.createElement('canvas'); c.width = Math.round(img.width * r); c.height = Math.round(img.height * r);
-      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-      URL.revokeObjectURL(url);
-      c.toBlob(b => b ? resolve(b) : reject(new Error('변환 실패')), 'image/jpeg', 0.85);
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('이 형식의 사진은 열 수 없어요 (HEIC라면 JPG로 바꿔주세요)')); };
-    img.src = url;
-  });
-}
-
-$('uploadForm').addEventListener('submit', async e => {
+function shrink(file,max=1800){ return new Promise((res,rej)=>{ const img=new Image(), u=URL.createObjectURL(file);
+  img.onload=()=>{ const r=Math.min(1,max/Math.max(img.width,img.height)); const c=document.createElement('canvas'); c.width=Math.round(img.width*r); c.height=Math.round(img.height*r);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(u); c.toBlob(b=>b?res(b):rej(new Error('변환 실패')),'image/jpeg',.86); };
+  img.onerror=()=>{ URL.revokeObjectURL(u); rej(new Error('이 사진 형식은 열 수 없어요. HEIC라면 JPG로 바꿔서 올려주세요')); };
+  img.src=u; }); }
+$('uploadForm').addEventListener('submit', async e=>{
   e.preventDefault();
-  if (!sb || uploading) return;
-  if (!picked.length) return toast('사진을 먼저 골라주세요!');
-  const caption = $('caption').value.trim().slice(0, 60) || null;
-  const author = $('photoAuthor').value.trim().slice(0, 20) || null;
-  try { localStorage.setItem('melon-author', author || ''); } catch(e){}
-  uploading = true; $('uploadBtn').disabled = true;
-  let ok = 0, lastErr = null;
-  for (let i = 0; i < picked.length; i++){
-    $('uploadHint').textContent = `올리는 중… ${i+1} / ${picked.length}`;
-    try {
-      const blob = await shrink(picked[i]);
-      const path = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
-      const up = await sb.storage.from('gallery').upload(path, blob, { contentType: 'image/jpeg', upsert: false });
-      if (up.error) throw up.error;
-      const ins = await sb.from('photos').insert({ path, caption, author });
-      if (ins.error) throw ins.error;
-      ok++;
-    } catch(err){ console.error(err); lastErr = err; }
+  if(!sb||uploading) return;
+  if(!picked.length) return toast('사진을 먼저 골라주세요');
+  const caption=$('caption').value.trim().slice(0,60)||null, author=$('photoAuthor').value.trim().slice(0,20)||null;
+  try{ localStorage.setItem('melon-author',author||''); }catch(e){}
+  uploading=true; $('uploadBtn').disabled=true; let ok=0, err=null;
+  for(let i=0;i<picked.length;i++){
+    $('uploadHint').textContent=`올리는 중 ${i+1}/${picked.length}`;
+    try{ const blob=await shrink(picked[i]); const path=`${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
+      const up=await sb.storage.from('gallery').upload(path,blob,{contentType:'image/jpeg',upsert:false}); if(up.error) throw up.error;
+      const ins=await sb.from('photos').insert({path,caption,author}); if(ins.error) throw ins.error; ok++;
+    }catch(x){ console.error(x); err=x; }
   }
-  uploading = false; $('uploadBtn').disabled = false;
-  if (ok){
-    picked = []; $('photoInput').value = ''; $('previews').innerHTML = ''; $('caption').value = '';
-    $('uploadHint').textContent = '사진은 자동으로 줄여서 올라가요.';
-    confetti(16); toast(`사진 ${ok}장 올렸어요! 📸`); loadPhotos();
-  }
-  if (lastErr){
-    const msg = [lastErr.statusCode || lastErr.code, lastErr.message || lastErr.error].filter(Boolean).join(' / ');
-    galleryMsg('⚠️ 올리기 실패 — ' + msg);
-    if (!ok) $('uploadHint').textContent = '올리지 못했어요. 아래 오류를 확인해 주세요.';
-  }
+  uploading=false; $('uploadBtn').disabled=false;
+  if(ok){ picked=[]; $('photoInput').value=''; $('previews').innerHTML=''; $('caption').value=''; $('pickLabel').textContent='사진 고르기 · 한 번에 5장까지';
+    $('uploadHint').textContent='큰 사진은 자동으로 줄여서 올려요.'; confetti(16); toast(`사진 ${ok}장을 올렸어요`); cur=-1; await loadPhotos(); show(0,true); }
+  if(err){ $('uploadHint').textContent='올리지 못했어요: '+errText(err); }
 });
 
-function openLb(i){
-  if (!lbList.length) return;
-  lbIndex = (i + lbList.length) % lbList.length;
-  const ph = lbList[lbIndex];
-  $('lbImg').src = photoUrl(ph.path); $('lbImg').alt = ph.caption || '멜론님 사진';
-  $('lbCap').textContent = ph.caption || ''; $('lbBy').textContent = '📷 ' + (ph.author || '익명의 동료') + `  ·  ${lbIndex+1} / ${lbList.length}`;
-  $('lightbox').classList.add('open');
-}
-const closeLb = () => $('lightbox').classList.remove('open');
-$('lbClose').onclick = closeLb;
-$('lbPrev').onclick = e => { e.stopPropagation(); openLb(lbIndex - 1); };
-$('lbNext').onclick = e => { e.stopPropagation(); openLb(lbIndex + 1); };
-$('lightbox').addEventListener('click', e => { if (e.target.id === 'lightbox') closeLb(); });
-document.addEventListener('keydown', e => {
-  if (!$('lightbox').classList.contains('open')) return;
-  if (e.key === 'Escape') closeLb(); else if (e.key === 'ArrowLeft') openLb(lbIndex - 1); else if (e.key === 'ArrowRight') openLb(lbIndex + 1);
-});
+// 크게 보기
+let lbI=0;
+function openLb(i){ if(!photos.length) return; lbI=(i+photos.length)%photos.length; const p=photos[lbI];
+  $('lbImg').src=url(p.path); $('lbImg').alt=p.caption||'멜론님 사진'; $('lbT').textContent=p.caption||''; $('lbS').textContent=`📷 ${p.author||'익명의 동료'}  ${lbI+1}/${photos.length}`;
+  $('lb').classList.add('open'); clearTimeout(timer); }
+const closeLb=()=>{ $('lb').classList.remove('open'); schedule(); };
+$('lbX').onclick=closeLb; $('lbP').onclick=e=>{e.stopPropagation(); openLb(lbI-1);}; $('lbN').onclick=e=>{e.stopPropagation(); openLb(lbI+1);};
+$('lb').addEventListener('click',e=>{ if(e.target.id==='lb') closeLb(); });
+document.addEventListener('keydown',e=>{ if(!$('lb').classList.contains('open')) return;
+  if(e.key==='Escape') closeLb(); else if(e.key==='ArrowLeft') openLb(lbI-1); else if(e.key==='ArrowRight') openLb(lbI+1); });
 
-let tt;
-function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2800); }
-function confetti(n){
-  const em = ['🍈','🎉','✨','🥳','🌴','💚'];
-  for (let i=0;i<n;i++){
-    const c = document.createElement('div'); c.className = 'confetti'; c.textContent = em[Math.floor(Math.random()*em.length)];
-    c.style.left = Math.random()*100 + 'vw'; c.style.animationDuration = (2 + Math.random()*2.5) + 's';
-    document.body.appendChild(c); setTimeout(() => c.remove(), 5000);
-  }
+// 실시간
+function live(){
+  if(!sb){ $('boardMsg').textContent='포스트잇을 불러오지 못했어요. 새로고침해 주세요.'; $('galleryMsg').textContent=''; $('postBtn').disabled=true; $('uploadBtn').disabled=true; buildDrift([]); return; }
+  loadNotes(); loadPhotos();
+  sb.channel('melon-live')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'notes'},({new:n})=>{ freshId=n.id; notes.set(n.id,n); renderNotes(); })
+    .on('postgres_changes',{event:'DELETE',schema:'public',table:'notes'},({old})=>{ if(old&&notes.delete(old.id)) renderNotes(); })
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'photos'},()=>loadPhotos())
+    .on('postgres_changes',{event:'DELETE',schema:'public',table:'photos'},()=>loadPhotos())
+    .subscribe();
+  setInterval(()=>{ loadNotes(); loadPhotos(); }, 90000);
 }
 
-tick(); setInterval(tick, 1000);
-initBoard();
-initGallery();
+// ===== 명언 =====
+const quotes=[['퇴사는 끝이 아니라, 알람 없는 아침의 시작이다.','멜론, 출근길에서'],['인수인계 문서는 길게, 송별사는 짧게.','고대 직장인 격언'],
+  ['멜론은 원래 잘 익으면 떠나는 법이다.','과일가게 사장님'],['“제가 없어도 잘 돌아갈 거예요”는 거짓말이다. 서로 알고 있다.','남겨진 팀원 일동'],
+  ['떠나는 사람의 뒷모습은 언제나 퇴근 시간보다 빠르다.','칼퇴의 정석 3장'],['어디서든 꿀 같은 멜론이 되시길.','팀 전원'],
+  ['우리가 멜론님을 보내는 게 아니다. 멜론님이 우리를 두고 가는 것이다.','억울한 동료들']];
+let qi=Math.floor(Math.random()*quotes.length);
+function showQuote(){ const q=$('quote'), s=$('quoteSrc'); q.style.opacity=0; s.style.opacity=0;
+  setTimeout(()=>{ q.textContent=quotes[qi][0]; s.textContent=quotes[qi][1]; q.style.opacity=1; s.style.opacity=1; },600); }
+showQuote(); setInterval(()=>{ qi=(qi+1)%quotes.length; showQuote(); }, 9000);
+
+// ===== 붙잡기 =====
+let tries=0; const cb=$('catchBtn'), arena=$('arena');
+const excuses=['“아, 저 반차라서요~”','“그건 후임자분께…”','“(이미 짐 쌌음)”','“연봉 두 배면 생각해볼게요”','“네네, 다음에 밥 한번 해요~”','“지금 마음은 제주도라서요”'];
+function dodge(){ const r=arena.getBoundingClientRect(), b=cb.getBoundingClientRect();
+  cb.style.left=(Math.random()*(r.width-b.width)+b.width/2)+'px'; cb.style.top=(Math.random()*(r.height-b.height)+b.height/2)+'px';
+  tries++; $('catchLog').textContent=`시도 ${tries}번, 성공 0번`;
+  if(tries%3===0) toast('멜론님: '+excuses[Math.floor(Math.random()*excuses.length)]);
+  if(tries===20) toast('그 마음, 포스트잇으로 남겨주세요'); }
+cb.addEventListener('mouseenter',dodge); cb.addEventListener('click',e=>{e.preventDefault(); dodge();});
+cb.addEventListener('touchstart',e=>{e.preventDefault(); dodge();},{passive:false});
+
+// ===== 버킷리스트 =====
+const todos=['법인카드로 마지막 점심 플렉스','회의 중 “그건 제 알 바 아닌데요” 속으로만 말하기','인수인계 문서 끝에 “화이팅!” 한 줄 추가','탕비실 간식 마지막 털이',
+  '메신저 프로필 사진을 해변으로 바꾸기','“그동안 감사했습니다” 메일 초안 37번 고치기','마지막 퇴근길, 엘리베이터에서 슬로모션으로 뒤돌아보기'];
+let done=[]; try{ done=JSON.parse(localStorage.getItem('melon-todo')||'[]'); }catch(e){}
+function renderTodo(){ const ul=$('todo'); ul.innerHTML=''; todos.forEach((t,i)=>{ const li=document.createElement('li'); li.dataset.i=i; li.tabIndex=0; li.setAttribute('role','checkbox'); li.setAttribute('aria-checked',done.includes(i));
+  if(done.includes(i)) li.className='done'; li.innerHTML='<span class="box"></span><span class="txt"></span>'; li.children[0].textContent=done.includes(i)?'✓':''; li.children[1].textContent=t; ul.appendChild(li); }); }
+function toggleTodo(li){ const i=+li.dataset.i; done=done.includes(i)?done.filter(x=>x!==i):[...done,i];
+  try{ localStorage.setItem('melon-todo',JSON.stringify(done)); }catch(e){} renderTodo();
+  if(done.length===todos.length){ confetti(40); toast('버킷리스트 완료. 이제 퇴사만 남았어요'); } }
+$('todo').addEventListener('click',e=>{ const li=e.target.closest('li'); if(li) toggleTodo(li); });
+$('todo').addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&e.target.matches('li')){ e.preventDefault(); toggleTodo(e.target); } });
+renderTodo();
+
+// ===== 기타 =====
+const melonMsgs=['쓰담쓰담','“저 아직 여기 있어요”','잘 익었네요','데굴데굴','수박 아님 주의'];
+let mc=0; $('melon').onclick=()=>{ mc++; confetti(12); toast('🍈 '+melonMsgs[mc%melonMsgs.length]); };
+let tt; function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),2800); }
+function confetti(n){ if(REDUCED) return; const em=['🍈','🎉','✨','💚','🌴'];
+  for(let i=0;i<n;i++){ const c=document.createElement('div'); c.className='confetti'; c.textContent=em[Math.floor(Math.random()*em.length)];
+    c.style.left=Math.random()*100+'vw'; c.style.animationDuration=(2.2+Math.random()*2.4)+'s'; document.body.appendChild(c); setTimeout(()=>c.remove(),5000); } }
+
+tick(); setInterval(tick,1000);
+intro();
+live();
 </script>
 </body>
 </html>
