@@ -360,7 +360,7 @@ $('sort').onchange = renderNotes;
 async function loadNotes(){
   if (!sb) return;
   const { data, error } = await sb.from('notes').select('*').order('created_at', { ascending: false }).limit(500);
-  if (error){ boardMsg('게시판을 불러오지 못했어요. 잠시 후 🔄 새로고침해 주세요.'); console.error(error); return; }
+  if (error){ boardMsg('⚠️ 불러오기 실패 — ' + [error.code, error.message, error.hint].filter(Boolean).join(' / ')); console.error(error); return; }
   notes = new Map(data.map(n => [n.id, n])); renderNotes();
 }
 $('refreshBtn').onclick = () => { boardMsg('불러오는 중…'); loadNotes(); };
@@ -388,7 +388,7 @@ $('compose').addEventListener('submit', async e => {
   posting = true; $('postBtn').disabled = true;
   const { error } = await sb.from('notes').insert({ text: text.slice(0, 200), color, author });
   posting = false; $('postBtn').disabled = false;
-  if (error){ console.error(error); return toast('붙이지 못했어요. 잠시 후 다시 시도해 주세요.'); }
+  if (error){ console.error(error); boardMsg('⚠️ 붙이기 실패 — ' + [error.code, error.message, error.details, error.hint].filter(Boolean).join(' / ')); return toast('붙이지 못했어요. 게시판 아래 오류 내용을 캡처해 주세요.'); }
   lastPost = Date.now();
   loadNotes();
   $('noteText').value = ''; $('count').textContent = '0 / 200';
