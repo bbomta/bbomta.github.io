@@ -310,27 +310,39 @@
   .door{position:absolute;right:34px;bottom:28%;width:86px;height:150px;border-radius:8px 8px 0 0;background:#2d7a3e;box-shadow:inset 0 0 0 5px #24622f}
   .door::after{content:'';position:absolute;right:12px;top:78px;width:9px;height:9px;border-radius:50%;background:#ffd36b}
   .door b{position:absolute;left:50%;top:-30px;transform:translateX(-50%);background:#1d1d1f;color:#fff;font-size:12px;padding:4px 10px;border-radius:6px;white-space:nowrap}
-  .melonman{position:absolute;bottom:calc(28% - 6px);width:120px;height:250px;will-change:transform}
-  .melonman .face{position:absolute;left:50%;top:0;width:118px;transform:translateX(-50%);filter:drop-shadow(0 4px 6px rgba(0,0,0,.18));z-index:2;animation:headbob .5s ease-in-out infinite}
+  .melonman{position:absolute;bottom:calc(28% - 8px);width:130px;height:262px;will-change:transform}
+  .melonman .face{position:absolute;left:50%;top:0;width:104px;transform:translateX(-50%);z-index:3;filter:drop-shadow(0 3px 4px rgba(0,0,0,.18));transform-origin:50% 90%;animation:headbob .5s ease-in-out infinite}
   @keyframes headbob{50%{transform:translateX(-50%) translateY(-3px) rotate(-2deg)}}
-  .melonman svg{position:absolute;left:0;bottom:0;width:120px;height:170px;overflow:visible}
-  .melonman .legA,.melonman .legB{transform-box:fill-box;transform-origin:50% 0}
-  .melonman.walk .legA{animation:legA .5s ease-in-out infinite}
-  .melonman.walk .legB{animation:legB .5s ease-in-out infinite}
-  .melonman.struggle .legA{animation:legA .22s ease-in-out infinite}
-  .melonman.struggle .legB{animation:none;transform:rotate(-24deg) scaleY(1.12)}
-  .melonman.struggle .body{transform:rotate(12deg);transform-box:fill-box;transform-origin:50% 100%}
-  .melonman.slip .legA,.melonman.slip .legB{animation:legA .14s ease-in-out infinite}
-  @keyframes legA{0%,100%{transform:rotate(18deg)}50%{transform:rotate(-18deg)}}
-  @keyframes legB{0%,100%{transform:rotate(-18deg)}50%{transform:rotate(18deg)}}
-  .bubble{position:absolute;top:6px;left:calc(50% + 50px);background:#fff;color:#1d1d1f;font-size:15px;font-weight:700;padding:9px 14px;border-radius:16px;white-space:nowrap;
-    box-shadow:0 6px 18px rgba(0,0,0,.12);opacity:0;transition:opacity .25s}
+  .melonman.struggle .face{animation:headshake .18s ease-in-out infinite}
+  @keyframes headshake{0%,100%{transform:translateX(-50%) rotate(-4deg)}50%{transform:translateX(-50%) rotate(5deg)}}
+  .melonman svg{position:absolute;left:0;bottom:0;width:130px;height:146px;overflow:visible;z-index:2}
+  .melonman .legA,.melonman .legB,.melonman .armA,.melonman .armB,.melonman .torso{transform-box:view-box}
+  .melonman .legA{transform-origin:76px 66px}.melonman .legB{transform-origin:56px 66px}
+  .melonman .armA{transform-origin:100px 20px}.melonman .armB{transform-origin:30px 20px}
+  .melonman .torso{transform-origin:65px 68px}
+  .melonman.walk .legA{animation:swingA .5s ease-in-out infinite}.melonman.walk .legB{animation:swingB .5s ease-in-out infinite}
+  .melonman.walk .armA{animation:swingB .5s ease-in-out infinite}.melonman.walk .armB{animation:swingA .5s ease-in-out infinite}
+  .melonman.slip .legA,.melonman.slip .armB{animation:swingA .16s ease-in-out infinite}.melonman.slip .legB,.melonman.slip .armA{animation:swingB .16s ease-in-out infinite}
+  .melonman.struggle .torso{transform:rotate(10deg)}
+  .melonman.struggle .legA{animation:kick .2s ease-in-out infinite}
+  .melonman.struggle .legB{transform:rotate(-26deg)}
+  .melonman.struggle .armA{animation:reach .25s ease-in-out infinite}
+  .melonman.struggle .armB{animation:reach .25s ease-in-out infinite reverse}
+  @keyframes swingA{0%,100%{transform:rotate(20deg)}50%{transform:rotate(-20deg)}}
+  @keyframes swingB{0%,100%{transform:rotate(-20deg)}50%{transform:rotate(20deg)}}
+  @keyframes kick{0%,100%{transform:rotate(26deg)}50%{transform:rotate(6deg)}}
+  @keyframes reach{0%,100%{transform:rotate(-70deg)}50%{transform:rotate(-95deg)}}
+  .melonman .shadow{position:absolute;left:50%;bottom:-6px;width:96px;height:12px;transform:translateX(-50%);border-radius:50%;background:rgba(0,0,0,.14);filter:blur(2px)}
+  .bubble{position:absolute;top:8px;left:calc(50% + 48px);background:#fff;color:#1d1d1f;font-size:15px;font-weight:700;padding:9px 14px;border-radius:16px;white-space:nowrap;
+    box-shadow:0 6px 18px rgba(0,0,0,.12);opacity:0;transition:opacity .25s;z-index:4}
   .bubble.on{opacity:1}
   .bubble::after{content:'';position:absolute;left:-7px;top:12px;border:8px solid transparent;border-right-color:#fff;border-left:0}
-  .arm{position:absolute;left:0;bottom:calc(28% + 30px);height:26px;width:0;border-radius:0 14px 14px 0;background:#f2c9a5;box-shadow:inset 0 -5px 0 rgba(0,0,0,.08);opacity:0;transition:opacity .15s}
+  .arm{position:absolute;left:0;bottom:calc(28% + 22px);height:48px;width:0;opacity:0;transition:opacity .15s;z-index:3;pointer-events:none}
   .arm.on{opacity:1}
-  .arm::before{content:'';position:absolute;left:0;top:-6px;width:70px;height:38px;border-radius:0 10px 10px 0;background:#4a6fa5}
-  .arm i{position:absolute;right:-16px;top:-8px;font-size:34px;font-style:normal;transform:scaleX(-1) rotate(10deg)}
+  .arm .fore{position:absolute;left:0;right:30px;top:12px;height:24px;border-radius:0 12px 12px 0;background:linear-gradient(#f6d2b3,#e9b993);box-shadow:inset 0 -4px 0 rgba(0,0,0,.06)}
+  .arm .sleeve{position:absolute;left:0;top:4px;width:84px;height:40px;border-radius:0 14px 14px 0;background:linear-gradient(#5b82bd,#46699e)}
+  .arm .sleeve::after{content:'';position:absolute;right:0;top:0;bottom:0;width:10px;border-radius:0 14px 14px 0;background:#f5f5f7}
+  .arm svg{position:absolute;right:-6px;top:-4px;width:56px;height:56px}
   .gone-msg{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);font-size:clamp(20px,3vw,28px);font-weight:800;letter-spacing:-.03em;opacity:0;transition:opacity .4s;text-align:center;pointer-events:none}
   .gone-msg.on{opacity:1}
   .hold{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);border:0;border-radius:999px;padding:16px 30px;font-size:18px;font-weight:700;background:#1d1d1f;color:#fff;cursor:pointer;
@@ -345,7 +357,7 @@
   .grab-stats li b{font-weight:600}
   .grab-name{width:min(1000px,100%);margin:14px auto 0;display:flex;gap:10px;align-items:center;font-size:15px;color:var(--mute)}
   .grab-name .field{max-width:260px;padding:10px 14px;font-size:15px}
-  @media (max-width:760px){ .scene{height:340px} .grab-stats{grid-template-columns:1fr} .melonman{width:90px;height:190px} .melonman .face{width:88px} .melonman svg{width:90px;height:128px} .door{right:14px;width:62px;height:112px} .bubble{left:calc(50% + 36px);font-size:13px;padding:7px 11px} .hold{padding:14px 24px;font-size:17px} }
+  @media (max-width:760px){ .scene{height:340px} .grab-stats{grid-template-columns:1fr} .melonman{width:100px;height:204px} .melonman .face{width:80px} .melonman svg{width:100px;height:112px} .melonman .shadow{width:74px} .door{right:14px;width:62px;height:112px} .bubble{left:calc(50% + 36px);font-size:13px;padding:7px 11px} .hold{padding:14px 24px;font-size:17px} }
   .play.single{grid-template-columns:1fr;max-width:680px;margin:0 auto}
 </style>
 </head>
@@ -500,20 +512,58 @@
     <div class="scene" id="scene">
       <div class="wall-l">사무실</div>
       <div class="door"><b>퇴근 →</b></div>
-      <div class="arm" id="arm"><i>✋</i></div>
+      <div class="arm" id="arm">
+        <div class="fore"></div><div class="sleeve"></div>
+        <svg viewBox="0 0 56 56" aria-hidden="true">
+          <path d="M6 18 C 6 12, 16 10, 24 12 L 40 14 C 46 15, 48 22, 44 25 C 49 27, 49 33, 44 35 C 48 38, 46 44, 40 44 L 22 44 C 12 44, 6 38, 6 30 Z" fill="#f1c4a0" stroke="#d29f7a" stroke-width="1.5"/>
+          <path d="M24 24 L 42 25 M24 34 L 42 35" stroke="#d29f7a" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <path d="M10 18 C 14 8, 26 6, 30 12 C 32 16, 28 20, 22 20" fill="#f1c4a0" stroke="#d29f7a" stroke-width="1.5"/>
+          <path d="M41 16.5 q4 1 4.5 4 M41 27 q4 1 4 4 M38 37 q4 1 3.5 4.5" stroke="#fff" stroke-opacity=".6" stroke-width="2" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
       <div class="melonman walk" id="mm">
         <div class="bubble" id="bubble"></div>
+        <div class="shadow"></div>
         <img class="face" src="face.png" alt="멜론님 얼굴">
-        <svg viewBox="0 0 120 170" aria-hidden="true">
-          <g class="body">
-            <rect x="34" y="6" width="52" height="74" rx="18" fill="#7fb069"/>
-            <rect x="22" y="14" width="16" height="54" rx="8" fill="#6a9a58" transform="rotate(12 30 14)"/>
-            <rect x="82" y="14" width="16" height="54" rx="8" fill="#6a9a58" transform="rotate(-28 90 14)"/>
-            <circle cx="104" cy="62" r="8" fill="#f2c9a5"/>
-            <rect x="80" y="40" width="30" height="22" rx="4" fill="#3a3a3c"/>
+        <svg viewBox="0 0 130 146" aria-hidden="true">
+          <defs>
+            <linearGradient id="hood" x1="0" x2="1"><stop offset="0" stop-color="#2b2b2f"/><stop offset=".55" stop-color="#1e1e21"/><stop offset="1" stop-color="#141416"/></linearGradient>
+            <linearGradient id="jean" x1="0" x2="1"><stop offset="0" stop-color="#46597d"/><stop offset="1" stop-color="#2f3d5a"/></linearGradient>
+          </defs>
+          <!-- 뒷다리 -->
+          <g class="legB">
+            <path d="M48 64 h18 l-1 68 h-15 z" fill="url(#jean)"/>
+            <path d="M44 128 h24 c6 0 9 4 9 8 v3 h-36 v-5 c0 -4 1 -6 3 -6z" fill="#f2f2f2" stroke="#c8c8c8"/><rect x="41" y="137" width="36" height="4" rx="2" fill="#bdbdbd"/>
           </g>
-          <g class="legB"><rect x="40" y="72" width="18" height="78" rx="8" fill="#2f3e5c"/><rect x="34" y="144" width="30" height="14" rx="7" fill="#1d1d1f"/></g>
-          <g class="legA"><rect x="62" y="72" width="18" height="78" rx="8" fill="#3a4b6e"/><rect x="58" y="144" width="30" height="14" rx="7" fill="#1d1d1f"/></g>
+          <!-- 뒷팔 -->
+          <g class="armB"><g transform="scale(1 .8)">
+            <path d="M30 22 c-8 4 -10 14 -10 26 l1 22 c0 4 10 4 11 0 l2 -24 z" fill="#18181b"/>
+            <rect x="19" y="66" width="13" height="7" rx="3" fill="#2a2a2e"/>
+            <ellipse cx="25.5" cy="78" rx="6.5" ry="7" fill="#f1c4a0" stroke="#d29f7a"/>
+          </g></g>
+          <!-- 몸통 (검은 후드 집업) -->
+          <g class="torso"><g transform="scale(1 .74)">
+            <path d="M42 0 c-10 2 -14 8 -14 8 c-6 6 -8 14 -8 30 l2 50 c0 4 4 6 10 6 h66 c6 0 10 -2 10 -6 l2 -50 c0 -16 -2 -24 -8 -30 c0 0 -4 -6 -14 -8 c-6 8 -40 8 -46 0z" fill="url(#hood)"/>
+            <path d="M44 0 c4 10 38 10 42 0 c2 6 0 12 -4 14 c-10 6 -24 6 -34 0 c-4 -2 -6 -8 -4 -14z" fill="#232326"/>
+            <path d="M65 12 v80" stroke="#3d3d42" stroke-width="2"/>
+            <rect x="62.5" y="20" width="5" height="9" rx="1.5" fill="#8e8e93"/>
+            <path d="M56 12 v18 M74 12 v16" stroke="#3a3a3e" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="56" cy="31" r="2" fill="#8e8e93"/><circle cx="74" cy="29" r="2" fill="#8e8e93"/>
+            <path d="M34 64 c6 -4 12 -4 18 0 M78 64 c6 -4 12 -4 18 0" stroke="#3a3a3e" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <rect x="24" y="84" width="82" height="9" rx="4" fill="#232326"/>
+          </g></g>
+          <!-- 앞다리 -->
+          <g class="legA">
+            <path d="M66 64 h18 l-1 68 h-15 z" fill="url(#jean)"/>
+            <path d="M68 70 v58" stroke="#5a6d93" stroke-width="1.2" opacity=".7"/>
+            <path d="M62 128 h24 c6 0 9 4 9 8 v3 h-36 v-5 c0 -4 1 -6 3 -6z" fill="#fafafa" stroke="#c8c8c8"/><rect x="59" y="137" width="36" height="4" rx="2" fill="#bdbdbd"/>
+          </g>
+          <!-- 앞팔 -->
+          <g class="armA"><g transform="scale(1 .8)">
+            <path d="M100 22 c8 4 10 14 10 26 l-1 22 c0 4 -10 4 -11 0 l-2 -24 z" fill="#232326"/>
+            <rect x="98" y="66" width="13" height="7" rx="3" fill="#2f2f33"/>
+            <ellipse cx="104.5" cy="78" rx="6.5" ry="7" fill="#f1c4a0" stroke="#d29f7a"/>
+          </g></g>
         </svg>
       </div>
       <div class="gone-msg" id="goneMsg">멜론님이 퇴근했습니다 🏃💨<br><span style="font-size:.6em;color:#6e6e73;font-weight:600">곧 다시 출근합니다 (아마도)</span></div>
@@ -914,7 +964,7 @@ showQuote(); setInterval(()=>{ qi=(qi+1)%quotes.length; showQuote(); }, 9000);
       x = Math.max(10, x + v * dt);
       mm.className = 'melonman ' + (holding ? 'struggle' : now < slipUntil ? 'slip' : 'walk');
       mm.style.transform = `translateX(${x}px)`;
-      arm.style.width = Math.max(0, x + 34) + 'px';
+      arm.style.width = Math.max(0, x + (scene.clientWidth < 600 ? 44 : 58)) + 'px';
       arm.classList.toggle('on', holding);
       if (holding) $('gMine').textContent = ((now - holdStart) / 1000).toFixed(1) + '초';
       if (x >= doorX()){
