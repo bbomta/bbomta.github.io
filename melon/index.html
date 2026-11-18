@@ -963,16 +963,31 @@ showQuote(); setInterval(()=>{ qi=(qi+1)%quotes.length; showQuote(); }, 9000);
   function say(t){ bubble.textContent = t; bubble.classList.add('on'); }
   function hush(){ bubble.classList.remove('on'); }
 
-  function down(e){ if (e) e.preventDefault(); if (holding || gone) return; holding = true; holdStart = performance.now(); btn.classList.add('on'); btn.textContent = '붙잡는 중…'; li = Math.floor(Math.random() * lines.length); say(lines[li]); lastLine = performance.now(); }
-  function up(){
+  let flushedAt = 0;
+  // 길게 붙잡아도 기록이 잘리지 않게 60초마다 나눠서 저장
+  function flush(now, final){
+    let sec = (now - flushedAt) / 1000;
+    while (sec >= 60){ record(60); flushedAt += 60000; sec -= 60; }
+    if (final && sec >= .3){ record(sec); flushedAt = now; }
+  }
+  function down(e){
+    if (e){ if (e.pointerType === 'mouse' && e.button !== 0) return; e.preventDefault(); try { btn.setPointerCapture(e.pointerId); } catch(_){} }
+    if (holding || gone) return;
+    holding = true; holdStart = flushedAt = performance.now(); btn.classList.add('on'); btn.textContent = '붙잡는 중…';
+    li = Math.floor(Math.random() * lines.length); say(lines[li]); lastLine = performance.now();
+  }
+  function up(e){
+    if (e && e.pointerType === 'mouse' && e.type === 'pointerup' && e.button !== 0) return; // 우클릭을 떼는 건 무시
     if (!holding) return; holding = false; btn.classList.remove('on'); btn.textContent = '꾹 눌러서 붙잡기';
-    const sec = Math.min(120, (performance.now() - holdStart) / 1000);
-    slipUntil = performance.now() + 900; say('그럼 이만~ 👋'); setTimeout(hush, 1100);
-    if (sec >= .3) record(sec);
+    const now = performance.now();
+    flush(now, true);
+    { const t = (now - holdStart) / 1000; $('gMine').textContent = t >= 60 ? fmtDur(t) : t.toFixed(1) + '초'; }
+    slipUntil = now + 900; say('그럼 이만~ 👋'); setTimeout(hush, 1100);
   }
   btn.addEventListener('pointerdown', down);
-  ['pointerup','pointercancel','pointerleave'].forEach(ev => btn.addEventListener(ev, up));
+  ['pointerup','pointercancel','lostpointercapture'].forEach(ev => btn.addEventListener(ev, up));
   btn.addEventListener('contextmenu', e => e.preventDefault());
+  window.addEventListener('blur', () => up());
   btn.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat){ e.preventDefault(); down(); } });
   btn.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); up(); } });
 
@@ -988,7 +1003,7 @@ showQuote(); setInterval(()=>{ qi=(qi+1)%quotes.length; showQuote(); }, 9000);
       mm.style.transform = `translateX(${x}px)`;
       arm.style.width = Math.max(0, x + (scene.clientWidth < 600 ? 44 : 58)) + 'px';
       arm.classList.toggle('on', holding);
-      if (holding) $('gMine').textContent = ((now - holdStart) / 1000).toFixed(1) + '초';
+      if (holding){ const t = (now - holdStart) / 1000; $('gMine').textContent = t >= 60 ? fmtDur(t) : t.toFixed(1) + '초'; flush(now, false); }
       if (x >= doorX()){
         gone = true; hush(); mm.style.opacity = 0; $('goneMsg').classList.add('on'); if (holding) up();
         setTimeout(() => { x = 10; mm.style.transition = 'none'; mm.style.transform = `translateX(${x}px)`; requestAnimationFrame(() => { mm.style.opacity = 1; }); $('goneMsg').classList.remove('on'); gone = false; }, 2400);
@@ -1018,7 +1033,7 @@ showQuote(); setInterval(()=>{ qi=(qi+1)%quotes.length; showQuote(); }, 9000);
     grabs = data; renderGrab();
   }
   async function record(sec){
-    mineTotal += sec; $('gMine').textContent = sec.toFixed(1) + '초';
+    mineTotal += sec;
     const author = $('grabName').value.trim().slice(0, 20) || null;
     try { localStorage.setItem('melon-author', author || ''); } catch(e){}
     grabs.push({ id: 'local' + Date.now(), author, seconds: +sec.toFixed(1) }); renderGrab();
