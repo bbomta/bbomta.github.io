@@ -1607,7 +1607,12 @@ document.documentElement.style.setProperty('--face', 'url("melon-face.png?v=3")'
   const BPM = 120, BEAT = 60 / BPM, OFFSET = 0.155;
   // 노래방 자막: melon/lyrics.json 이 있으면 사용 ({ lines: [...], times: [...] })
   let KARA = { lines: [], times: [] };
-  fetch('lyrics.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => { if (j && Array.isArray(j.lines) && Array.isArray(j.times)) KARA = j; }).catch(() => {});
+  (async () => {
+    for (const path of ['lyrics.json', 'melon/lyrics.json']){   // 두 위치 모두 찾아봄
+      try { const r = await fetch(path, { cache: 'no-store' }); if (!r.ok) continue; const j = await r.json();
+        if (j && Array.isArray(j.lines) && Array.isArray(j.times)){ KARA = j; return; } } catch(e){}
+    }
+  })();
 
   const audio = new Audio('bgm.mp3'); audio.preload = 'none'; audio.loop = true;
   let playing = false, mutedBgm = false, visible = false, lastBeatIdx = -1, t0 = performance.now();
