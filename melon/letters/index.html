@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>멜론님께 🍈</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{--ink:#1d1d1f;--ink-2:#3a3a3c;--mute:#86868b;--paper:#fbfaf7;--line:#e8e4dc;--ease:cubic-bezier(.22,.61,.36,1)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Pretendard Variable',Pretendard,-apple-system,system-ui,sans-serif;background:var(--paper);color:var(--ink);word-break:keep-all;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
+  .note-bar{position:fixed;top:0;left:0;right:0;z-index:20;background:#1d1d1f;color:#fff;text-align:center;font-size:13px;padding:8px 14px}
+
+  /* 시작 */
+  .open{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px}
+  .open .m{font-size:46px;line-height:1}
+  .open h1{margin-top:26px;font-size:clamp(46px,8vw,92px);font-weight:800;letter-spacing:-.05em;line-height:1.05}
+  .open p{margin-top:18px;font-size:clamp(18px,2.2vw,22px);color:var(--mute);line-height:1.6}
+  .open p b{color:var(--ink);font-weight:700}
+  .open .play{margin-top:40px;border:0;border-radius:999px;padding:15px 28px;font:inherit;font-size:17px;font-weight:700;background:var(--ink);color:#fff;cursor:pointer}
+  .open .hint{margin-top:16px;font-size:14px;color:var(--mute)}
+  .open .seq{opacity:0;transform:translateY(14px);transition:opacity 1.4s var(--ease),transform 1.4s var(--ease)}
+  .open .seq.in{opacity:1;transform:none}
+
+  /* 편지 흐름 */
+  .flow{width:min(760px,100%);margin:0 auto;padding:0 24px 40px}
+  .letter{min-height:72svh;display:flex;flex-direction:column;justify-content:center;padding:60px 0}
+  .letter .bar{width:44px;height:6px;border-radius:3px;margin-bottom:26px}
+  .letter p{font-size:clamp(23px,3.2vw,32px);line-height:1.62;font-weight:600;letter-spacing:-.025em;white-space:pre-wrap;color:var(--ink)}
+  .letter p.long{font-size:clamp(20px,2.6vw,26px);line-height:1.7;font-weight:500}
+  .letter .from{margin-top:28px;font-family:'Nanum Pen Script',cursive;font-size:34px;color:var(--ink-2);line-height:1}
+  .letter .from small{display:block;font-family:inherit;font-size:24px;color:var(--mute);margin-top:6px}
+  .letter:nth-of-type(even){align-items:flex-end;text-align:right}
+  .letter:nth-of-type(even) .bar{margin-left:auto}
+
+  .photo{padding:40px 0 70px}
+  .photo figure{width:min(1100px,calc(100vw - 48px));margin-left:50%;transform:translateX(-50%)}
+  .photo img{width:100%;max-height:80svh;object-fit:contain;border-radius:22px;background:#efece5;display:block}
+  .photo figcaption{margin-top:16px;text-align:center;font-size:17px;color:var(--ink-2)}
+  .photo figcaption span{display:block;font-size:14px;color:var(--mute);margin-top:4px}
+
+  .reveal{opacity:0;transform:translateY(40px);transition:opacity 1.3s var(--ease),transform 1.3s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* 마지막 */
+  .close{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px;border-top:1px solid var(--line)}
+  .close h2{font-size:clamp(40px,7vw,80px);font-weight:800;letter-spacing:-.05em;line-height:1.1}
+  .close p{margin-top:20px;font-size:clamp(17px,2vw,21px);color:var(--mute);line-height:1.7}
+  .close .sign{margin-top:36px;font-family:'Nanum Pen Script',cursive;font-size:40px;color:var(--ink-2)}
+  .close .names{margin-top:14px;max-width:640px;font-family:'Nanum Pen Script',cursive;font-size:26px;color:var(--mute);line-height:1.5}
+
+  .progress{position:fixed;left:0;bottom:0;height:3px;background:var(--ink);width:0;z-index:15;transition:width .2s}
+  .stop{position:fixed;right:18px;bottom:18px;z-index:16;border:0;border-radius:999px;padding:10px 16px;font:inherit;font-size:14px;font-weight:600;background:rgba(29,29,31,.85);color:#fff;cursor:pointer;display:none}
+  .stop.on{display:block}
+  .bgm{position:fixed;left:18px;bottom:18px;z-index:16;border:0;border-radius:999px;padding:10px 16px;font:inherit;font-size:14px;font-weight:600;background:rgba(29,29,31,.85);color:#fff;cursor:pointer}
+  .empty{text-align:center;color:var(--mute);padding:60px 0;font-size:17px}
+  .home{display:inline-block;margin-top:30px;font-size:15px;color:#0066cc;text-decoration:none}
+  .home:hover{text-decoration:underline}
+  @media (prefers-reduced-motion: reduce){ .reveal,.open .seq{opacity:1;transform:none;transition:none} html{scroll-behavior:auto} }
+</style>
+</head>
+<body>
+
+<section class="open" id="open">
+  <div class="m seq">🍈</div>
+  <h1 class="seq">멜론님께.</h1>
+  <p class="seq">1,412일 동안 함께한 동료 <b id="cntPeople">0명</b>이<br>마음과 사진 <b id="cntPhotos">0장</b>을 남겼어요.</p>
+  <button class="play seq" id="play">천천히 읽어주기 ▶</button>
+  <div class="hint seq">직접 스크롤해서 읽어도 돼요.</div>
+</section>
+
+<main class="flow" id="flow"></main>
+
+<section class="close" id="end">
+  <h2 class="reveal">그동안 정말<br>고마웠어요.</h2>
+  <p class="reveal">어디서든 지금처럼 웃으며 일하시길.<br>가끔은 이 페이지에 다시 들러주세요.</p>
+  <div class="sign reveal">2026년 11월 20일, 동료 일동</div>
+  <div class="names reveal" id="names"></div>
+  <a class="home reveal" href="../">전체 페이지 둘러보기</a>
+</section>
+
+<div class="progress" id="progress"></div>
+<button class="stop" id="stop">일시정지</button>
+<button class="bgm" id="bgm">♪ 음악 켜기</button>
+
+<script>
+const $ = id => document.getElementById(id);
+// ===== 실제 데이터: 동료들이 남긴 포스트잇과 사진 =====
+const SUPABASE_URL = 'https://mtxzrcaixncoedxymzjp.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_fNrLK8o8hgja9leQKo4KAw_K4ntHTq5';
+const COLORS = ['#fff1a8','#ffd6e0','#cdf2d6','#d4e8ff','#ffe0bf'];
+const flow = $('flow');
+const fmtDate = s => { const d = new Date(s); return `${d.getMonth() + 1}월 ${d.getDate()}일`; };
+
+function build(NOTES, PHOTOS, photoUrl){
+  flow.innerHTML = '';
+  if (!NOTES.length && !PHOTOS.length){ const e = document.createElement('p'); e.className = 'empty'; e.textContent = '아직 남겨진 포스트잇과 사진이 없어요.'; flow.appendChild(e); }
+  // 포스트잇 2장마다 사진 1장씩 끼워 넣고, 남은 사진은 뒤에 이어서
+  const items = []; let pi = 0;
+  const every = PHOTOS.length && NOTES.length ? Math.max(1, Math.min(2, Math.round(NOTES.length / PHOTOS.length))) : 2;
+  NOTES.forEach((n, i) => { items.push({ kind: 'note', n }); if ((i + 1) % every === 0 && pi < PHOTOS.length) items.push({ kind: 'photo', p: PHOTOS[pi++] }); });
+  while (pi < PHOTOS.length) items.push({ kind: 'photo', p: PHOTOS[pi++] });
+  items.forEach(it => {
+    if (it.kind === 'note'){
+      const n = it.n, text = String(n.text || '');
+      const sec = document.createElement('section'); sec.className = 'letter reveal';
+      const bar = document.createElement('div'); bar.className = 'bar'; bar.style.background = COLORS.includes(n.color) ? n.color : COLORS[n.id % COLORS.length];
+      const p = document.createElement('p'); p.textContent = text; if (text.length > 70) p.className = 'long';
+      const f = document.createElement('div'); f.className = 'from'; f.textContent = '— ' + (n.author || '익명의 동료');
+      const sm = document.createElement('small'); sm.textContent = fmtDate(n.created_at); f.appendChild(sm);
+      sec.append(bar, p, f); flow.appendChild(sec);
+    } else {
+      const ph = it.p;
+      const sec = document.createElement('section'); sec.className = 'photo reveal';
+      const fig = document.createElement('figure');
+      const img = document.createElement('img'); img.src = photoUrl(ph.path); img.alt = ph.caption || '함께한 사진'; img.loading = 'lazy';
+      const cap = document.createElement('figcaption'); cap.textContent = ph.caption || '';
+      const by = document.createElement('span'); by.textContent = '📷 ' + (ph.author || '익명의 동료'); cap.appendChild(by);
+      fig.append(img, cap); sec.appendChild(fig); flow.appendChild(sec);
+    }
+  });
+  const people = new Set(); let anon = 0;
+  NOTES.forEach(n => { const a = (n.author || '').trim(); if (a) people.add(a); else anon++; });
+  PHOTOS.forEach(p => { const a = (p.author || '').trim(); if (a) people.add(a); });
+  $('cntPeople').textContent = (people.size + anon) + '명';
+  $('cntPhotos').textContent = PHOTOS.length + '장';
+  $('names').textContent = [...people].join(' · ') + (anon ? `  그리고 이름 없이 마음을 남긴 ${anon}명` : '');
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+}
+
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }), { threshold: .25 });
+(async () => {
+  let sb = null; try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){}
+  if (!sb){ flow.innerHTML = '<p class="empty">포스트잇을 불러오지 못했어요. 새로고침해 주세요.</p>'; return; }
+  const [n, p] = await Promise.all([
+    sb.from('notes').select('*').order('created_at', { ascending: true }).limit(500),
+    sb.from('photos').select('*').order('created_at', { ascending: true }).limit(300),
+  ]);
+  if (n.error) console.error(n.error); if (p.error) console.error(p.error);
+  build(n.data || [], p.data || [], path => sb.storage.from('gallery').getPublicUrl(path).data.publicUrl);
+})();
+
+// 배경음악
+const audio = new Audio('../bgm.mp3'); audio.loop = true; audio.volume = .7; audio.preload = 'auto';
+function bgmUI(){ $('bgm').textContent = audio.paused ? '♪ 음악 켜기' : '♪ 음악 끄기'; }
+$('bgm').onclick = () => { audio.paused ? audio.play().catch(() => {}) : audio.pause(); bgmUI(); };
+audio.addEventListener('play', bgmUI); audio.addEventListener('pause', bgmUI);
+
+// 시작 화면 등장
+document.querySelectorAll('.open .seq').forEach((el, i) => setTimeout(() => el.classList.add('in'), 300 + i * 650));
+
+// 스크롤하면 하나씩 나타남
+document.querySelectorAll('#end .reveal').forEach(el => io.observe(el));
+addEventListener('scroll', () => { const h = document.documentElement; $('progress').style.width = (h.scrollTop / (h.scrollHeight - innerHeight) * 100) + '%'; }, { passive: true });
+
+// 천천히 읽어주기: 한 장씩 자동으로 넘김
+const stops = () => [...document.querySelectorAll('.letter, .photo'), $('end')];
+let auto = null, idx = 0;
+function next(){
+  const list = stops(); if (idx >= list.length){ stopAuto(); return; }
+  const el = list[idx++]; el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const len = el.classList.contains('letter') ? el.innerText.length : 20;
+  auto = setTimeout(next, Math.min(14000, 4200 + len * 60)); // 글이 길면 더 오래 머묾
+}
+function stopAuto(){ clearTimeout(auto); auto = null; $('stop').classList.remove('on'); }
+$('play').onclick = () => { if (audio.paused) audio.play().catch(() => {}); idx = 0; $('stop').classList.add('on'); $('stop').textContent = '일시정지'; next(); };
+$('stop').onclick = () => { if (auto){ clearTimeout(auto); auto = null; $('stop').textContent = '이어서 읽기'; } else { $('stop').textContent = '일시정지'; next(); } };
+['wheel', 'touchstart'].forEach(ev => addEventListener(ev, () => { if (auto){ clearTimeout(auto); auto = null; $('stop').textContent = '이어서 읽기'; } }, { passive: true }));
+</script>
+</body>
+</html>

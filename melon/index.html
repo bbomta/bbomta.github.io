@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>멜론님, 그동안 고마웠어요 🍈</title>
+<script>if (location.hash === '#for-melon') location.replace('letters/');</script>
 <meta name="description" content="멜론님 퇴사까지 남은 시간, 그리고 동료들이 남긴 포스트잇과 사진">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Nanum+Pen+Script&display=swap">
@@ -1677,7 +1678,7 @@ function startEndingWhenReady(){
   go();
 }
 function afterEnter(){
-  if (location.hash === '#ending' || location.hash === '#for-melon') return startEndingWhenReady();
+  if (location.hash === '#ending') return startEndingWhenReady();
   if (Date.now() >= endDate().getTime()){
     let seen = false; try { seen = sessionStorage.getItem('melon-ending-seen') === '1'; sessionStorage.setItem('melon-ending-seen', '1'); } catch(e){}
     if (!seen) startEndingWhenReady();
@@ -1692,7 +1693,7 @@ function enter(withSound){
 $('enterSound').onclick = () => enter(true);
 $('enterQuiet').onclick = () => enter(false);
 setTimeout(() => $('enterSound').focus(), 60);
-window.addEventListener('hashchange', () => { if (location.hash === '#ending' || location.hash === '#for-melon') startEndingWhenReady(); });
+window.addEventListener('hashchange', () => { if (location.hash === '#for-melon') location.replace('letters/'); else if (location.hash === '#ending') startEndingWhenReady(); });
 </script>
 </body>
 </html>
