@@ -596,7 +596,8 @@
   #band .bd-key{left:3%}.bd-gtr{left:21%}.bd-voc{left:42.5%;width:15.5%}.bd-bas{left:63%}.bd-drm{left:80%;width:18%}
   #band .bd-voc .bd-hd{--nod:9deg}
   #band .bd-voc .bd-hd .bd-f{background-image:url("vocal-face2.png");background-position:center bottom}
-  #band .bd-stage.bd-sing .bd-voc .bd-hd{width:86%;transition:width .2s}
+  #band .bd-voc .bd-hd{top:-5.5%}
+  #band .bd-voc .bd-collar{position:absolute;left:24%;width:52%;top:43.5%;height:8%;z-index:4;pointer-events:none}
   #band .bd-stage.bd-sing .bd-beam{opacity:calc(.35 + var(--b)*.5)}
   #band .bd-gtr .bd-hd{--tilt:-8deg;--nod:10deg}
   #band .bd-bas .bd-hd{--tilt:7deg;--nod:7deg}
@@ -848,6 +849,11 @@
 
     <!-- 보컬 멜론 -->
     <div class="bd-mem bd-voc">
+      <svg class="bd-collar" viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 4 Q50 26 100 4 L100 30 L0 30 Z" fill="#16161a"/>
+        <path d="M2 5 Q50 27 98 5" stroke="#2c2c31" stroke-width="3" fill="none"/>
+        <path d="M14 9 Q50 31 86 9" stroke="#0e0e11" stroke-width="2" fill="none" opacity=".8"/>
+      </svg>
       <div class="bd-hd"><div class="bd-f"></div></div>
       <svg viewBox="0 0 120 155">
         <path d="M30 4 c-6 4 -8 10 -8 22 l2 44 h72 l2 -44 c0 -12 -2 -18 -8 -22 c-8 8 -52 8 -60 0z" fill="#16161a"/>
