@@ -658,6 +658,33 @@
   @keyframes bump{40%{transform:scale(1.35)}}
   .bar .logo{margin-right:0}
   footer .visits{display:block;margin-top:6px;font-size:12px;color:#a1a1a6}
+
+  /* 관리자 모드 */
+  body:not(.admin) .adm{display:none!important}
+  .adm{position:absolute;top:8px;right:8px;display:flex;gap:6px;z-index:5}
+  .adm button,.adm span{border:0;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer;background:rgba(29,29,31,.85);color:#fff}
+  .adm .del{background:#d8432a}
+  .thumbs button{position:relative}
+  .req li{position:relative}
+  .req li .adm{top:50%;transform:translateY(-50%)}
+  .admbar{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:640;display:none;align-items:center;gap:10px;background:#d8432a;color:#fff;font-size:14px;font-weight:700;padding:9px 10px 9px 16px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  body.admin .admbar{display:flex}
+  .admbar button{border:0;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;background:rgba(255,255,255,.2);color:#fff;cursor:pointer}
+  .admdlg{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px}
+  .admdlg.open{display:flex}
+  .admbox{width:min(520px,100%);max-height:86vh;overflow:auto;background:#fff;color:var(--ink);border-radius:22px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+  .admbox h4{font-size:20px;font-weight:800;letter-spacing:-.02em}
+  .admbox p{font-size:14px;color:var(--mute);margin-top:4px}
+  .admbox .field{margin-top:12px}
+  .admbox textarea.field{min-height:130px}
+  .admbox .row{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+  .admbox .btn{padding:10px 18px;font-size:15px}
+  .admbox .btn.gray{background:#e8e8ed;color:var(--ink)}
+  .admbox .err{color:#d8432a;font-size:14px;margin-top:8px;min-height:20px}
+  .admlist{list-style:none;margin-top:12px}
+  .admlist li{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--hair);font-size:14px}
+  .admlist li span{flex:1;overflow-wrap:anywhere}
+  .admlist button{border:0;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer;background:#d8432a;color:#fff;flex:none}
 </style>
 </head>
 <body>
@@ -1250,6 +1277,28 @@
     <div class="rank-foot"><span id="rankAnon"></span><span id="rankTotal"></span></div>
   </div>
 </div>
+<div class="admbar" id="admbar">🔧 관리자 모드 <button id="admLive">실황 제보 관리</button><button id="admOut">나가기</button></div>
+<div class="admdlg" id="admLogin" role="dialog" aria-modal="true" aria-label="관리자 로그인">
+  <form class="admbox" id="admLoginForm">
+    <h4>관리자 모드</h4><p>비밀번호를 입력하면 포스트잇 수정·삭제와 장난 글 정리를 할 수 있어요.</p>
+    <input class="field" type="password" id="admPw" placeholder="비밀번호" autocomplete="current-password">
+    <div class="err" id="admErr"></div>
+    <div class="row"><button class="btn gray" type="button" id="admCancel">취소</button><button class="btn" type="submit">들어가기</button></div>
+  </form>
+</div>
+<div class="admdlg" id="admEdit" role="dialog" aria-modal="true" aria-label="포스트잇 수정">
+  <form class="admbox" id="admEditForm">
+    <h4>포스트잇 수정</h4><p>저장하면 모든 사람 화면에 바로 반영돼요. 이름을 비우면 익명으로 바뀌어요.</p>
+    <textarea class="field" id="admText" maxlength="200"></textarea>
+    <input class="field" id="admAuthor" maxlength="20" placeholder="이름 (비우면 익명)">
+    <div class="err" id="admEditErr"></div>
+    <div class="row"><button class="btn gray" type="button" id="admEditCancel">취소</button><button class="btn" type="submit">저장</button></div>
+  </form>
+</div>
+<div class="admdlg" id="admLiveDlg" role="dialog" aria-modal="true" aria-label="실황 제보 관리">
+  <div class="admbox"><h4>실황 제보 관리</h4><p>장난 제보를 지우면 속보 띠에서 바로 사라져요.</p><ul class="admlist" id="admLiveList"></ul>
+    <div class="row"><button class="btn gray" type="button" id="admLiveClose">닫기</button></div></div>
+</div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -1317,6 +1366,78 @@ let sb=null;
 try{ if(window.supabase) sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY); }catch(e){ console.error(e); }
 const errText = e => [e.statusCode||e.code, e.message||e.error, e.hint].filter(Boolean).join(' / ');
 
+// ===== 관리자 모드: 비밀번호는 Supabase 서버에서만 확인 (페이지에는 없음) =====
+const ADM = (() => {
+  let pw = null; try { pw = sessionStorage.getItem('melon-adm'); } catch(e){}
+  const on = () => document.body.classList.contains('admin');
+  function btns(list, stopBubble){
+    const box = document.createElement('div'); box.className = 'adm';
+    list.forEach(([label, fn]) => {
+      const b = document.createElement(stopBubble ? 'span' : 'button'); if (!stopBubble) b.type = 'button'; else { b.setAttribute('role', 'button'); b.tabIndex = 0; }
+      b.textContent = label; if (label === '삭제') b.className = 'del';
+      b.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); fn(); });
+      box.appendChild(b);
+    });
+    return box;
+  }
+  async function check(p){ if (!sb) return false; const { data, error } = await sb.rpc('admin_check', { pw: p }); if (error){ console.error(error); throw error; } return data === true; }
+  function enter(p){ pw = p; try { sessionStorage.setItem('melon-adm', p); } catch(e){} document.body.classList.add('admin'); toast('관리자 모드가 켜졌어요 🔧'); }
+  function exit(){ pw = null; try { sessionStorage.removeItem('melon-adm'); } catch(e){} document.body.classList.remove('admin'); toast('관리자 모드를 껐어요'); if (location.hash === '#admin') history.replaceState(null, '', location.pathname); }
+  function openLogin(){ $('admErr').textContent = ''; $('admPw').value = ''; $('admLogin').classList.add('open'); setTimeout(() => $('admPw').focus(), 30); }
+  $('admCancel').onclick = () => $('admLogin').classList.remove('open');
+  $('admLoginForm').addEventListener('submit', async e => {
+    e.preventDefault(); const p = $('admPw').value; if (!p) return;
+    $('admErr').textContent = '확인하는 중…';
+    try { if (await check(p)){ $('admLogin').classList.remove('open'); enter(p); } else $('admErr').textContent = '비밀번호가 맞지 않아요.'; }
+    catch(err){ $('admErr').textContent = '관리자 설정이 아직 안 됐어요. (SQL을 먼저 실행해 주세요)'; }
+  });
+  // 포스트잇 수정
+  let editing = null;
+  function edit(n){ editing = n; $('admText').value = n.text || ''; $('admAuthor').value = n.author || ''; $('admEditErr').textContent = ''; $('admEdit').classList.add('open'); setTimeout(() => $('admText').focus(), 30); }
+  $('admEditCancel').onclick = () => $('admEdit').classList.remove('open');
+  $('admEditForm').addEventListener('submit', async e => {
+    e.preventDefault(); if (!editing) return;
+    const text = $('admText').value.trim(); if (!text) return $('admEditErr').textContent = '내용을 비울 수는 없어요. 지우려면 삭제를 눌러주세요.';
+    const { error } = await sb.rpc('admin_edit_note', { pw, note_id: editing.id, new_text: text.slice(0, 200), new_author: $('admAuthor').value.trim().slice(0, 20) || null });
+    if (error){ console.error(error); return $('admEditErr').textContent = '저장하지 못했어요: ' + errText(error); }
+    $('admEdit').classList.remove('open'); toast('포스트잇을 수정했어요'); loadNotes();
+  });
+  // 삭제 (포스트잇, 사진, 실황 제보, 채용 공고)
+  async function del(tbl, id, msg){
+    if (!confirmBox(msg)) return;
+    const { error } = await sb.rpc('admin_delete', { pw, tbl, row_id: id });
+    if (error){ console.error(error); return toast('삭제하지 못했어요: ' + errText(error)); }
+    toast('삭제했어요');
+    if (tbl === 'notes') loadNotes(); else if (tbl === 'photos') loadPhotos(); else if (tbl === 'live'){ window.__liveLoad && window.__liveLoad(); renderLive(); } else if (tbl === 'job_reqs') window.__jobLoad && window.__jobLoad();
+  }
+  // 브라우저 확인창은 막힐 수 있어 두 번 누르기 방식으로 확인
+  let pending = null;
+  function confirmBox(msg){ const key = msg; if (pending === key){ pending = null; return true; } pending = key; toast(msg + ' 한 번 더 누르면 삭제돼요'); setTimeout(() => { if (pending === key) pending = null; }, 3000); return false; }
+  // 실황 제보 관리 목록
+  async function renderLive(){
+    const ul = $('admLiveList'); ul.innerHTML = '<li><span>불러오는 중…</span></li>';
+    const { data, error } = await sb.from('live').select('*').order('created_at', { ascending: false }).limit(50);
+    ul.innerHTML = '';
+    if (error || !data.length){ const li = document.createElement('li'); li.innerHTML = '<span></span>'; li.firstChild.textContent = error ? '불러오지 못했어요' : '제보가 없어요'; ul.appendChild(li); return; }
+    data.forEach(it => { const li = document.createElement('li'); const sp = document.createElement('span'); sp.textContent = `[${it.tag || '속보'}] ${it.text}` + (it.author ? ` (${it.author})` : '');
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = '삭제'; b.onclick = () => del('live', it.id, '이 제보를 지울까요?'); li.append(sp, b); ul.appendChild(li); });
+  }
+  $('admLive').onclick = () => { $('admLiveDlg').classList.add('open'); renderLive(); };
+  $('admLiveClose').onclick = () => $('admLiveDlg').classList.remove('open');
+  $('admOut').onclick = exit;
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.admdlg.open').forEach(d => d.classList.remove('open')); });
+  // 들어가는 방법: 주소 끝에 #admin, 또는 왼쪽 위 🍈를 빠르게 5번
+  function maybeOpen(){ if (location.hash === '#admin' && !on()) openLogin(); }
+  addEventListener('hashchange', maybeOpen);
+  let taps = [], logo = document.querySelector('.bar .logo');
+  logo.addEventListener('click', e => { const t = Date.now(); taps = taps.filter(x => t - x < 2000); taps.push(t); if (taps.length >= 5){ e.preventDefault(); taps = []; on() ? exit() : openLogin(); } });
+  // 새로고침해도 같은 탭이면 유지 (비밀번호는 서버에서 다시 확인)
+  if (pw) check(pw).then(ok => { if (ok){ document.body.classList.add('admin'); } else { pw = null; try { sessionStorage.removeItem('melon-adm'); } catch(e){} } }).catch(() => {});
+  setTimeout(maybeOpen, 300);
+  return { btns, edit, del };
+})();
+window.ADM = ADM;
+
 // ===== 포스트잇 =====
 const COLORS=['#fff1a8','#ffd6e0','#cdf2d6','#d4e8ff','#ffe0bf'];
 let color=COLORS[0], notes=new Map(), sortMode='new', posting=false, lastPost=0, freshId=null;
@@ -1341,7 +1462,9 @@ function renderNotes(){
     const m=document.createElement('div'); m.className='meta';
     const w=document.createElement('b'); w.textContent=n.author||'익명의 동료';
     const t=document.createElement('span'); t.textContent=fmt(new Date(n.created_at));
-    m.append(w,t); el.append(p,m); wrap.appendChild(el);
+    m.append(w,t); el.append(p,m); el.style.position='relative';
+    if (window.ADM) el.appendChild(ADM.btns([['수정', () => ADM.edit(n)], ['삭제', () => ADM.del('notes', n.id, '이 포스트잇을 삭제할까요?')]]));
+    wrap.appendChild(el);
   });
   $('boardMsg').textContent = list.length ? '' : '아직 포스트잇이 없어요. 첫 장을 붙여주세요.';
   buildDrift(list);
@@ -1407,7 +1530,9 @@ function renderGallery(){
   $('galleryMsg').textContent = '';
   const th=$('thumbs'); th.innerHTML='';
   photos.forEach((p,i)=>{ const b=document.createElement('button'); b.type='button'; b.setAttribute('aria-label',(p.caption||'사진')+' 보기');
-    const im=document.createElement('img'); im.loading='lazy'; im.alt=''; im.src=url(p.path); b.appendChild(im); b.onclick=()=>show(i,true); th.appendChild(b); });
+    const im=document.createElement('img'); im.loading='lazy'; im.alt=''; im.src=url(p.path); b.appendChild(im); b.onclick=()=>show(i,true);
+    if (window.ADM) b.appendChild(ADM.btns([['삭제', () => ADM.del('photos', p.id, '이 사진을 갤러리에서 뺄까요?')]], true));
+    th.appendChild(b); });
   const dots=$('dots'); dots.innerHTML='';
   if(photos.length>1 && photos.length<=30) photos.forEach((_,i)=>{ const d=document.createElement('i'); d.onclick=()=>show(i,true); dots.appendChild(d); });
   if(photos.length && (cur<0||cur>=photos.length)) show(0); else markUI();
@@ -1612,6 +1737,7 @@ $('certSave').onclick = async () => {
     lastAt = Date.now(); $('liveText').value = ''; $('liveCnt').textContent = '0/60'; panel.classList.remove('open'); tip.setAttribute('aria-expanded', false);
     toast('제보가 접수됐어요. 곧 속보로 나가요 📺'); load();
   });
+  window.__liveLoad = load; window.__liveItems = () => items;
   render(); load();
   if (sb) sb.channel('live-feed').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'live' }, ({ new: it }) => { freshLive = it.id; items = [it, ...items.filter(x => x.id !== it.id)].slice(0, 20); render(); })
     .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'live' }, () => load()).subscribe();
@@ -1626,7 +1752,9 @@ $('certSave').onclick = async () => {
     const ul = $('req'); ul.innerHTML = '';
     const list = [...BASE.map(([text, author], i) => ({ id: 'b' + i, text, author })), ...reqs];
     list.forEach(r => { const li = document.createElement('li'); if (r.id === freshId) li.className = 'fresh';
-      li.innerHTML = '<span class="ck">✓</span><p></p><small></small>'; li.children[1].textContent = r.text; li.children[2].textContent = r.author || '익명'; ul.appendChild(li); });
+      li.innerHTML = '<span class="ck">✓</span><p></p><small></small>'; li.children[1].textContent = r.text; li.children[2].textContent = r.author || '익명';
+      if (window.ADM && typeof r.id === 'number') li.appendChild(ADM.btns([['삭제', () => ADM.del('job_reqs', r.id, '이 자격 요건을 지울까요?')]]));
+      ul.appendChild(li); });
   }
   async function load(){
     if (!sb) return render();
@@ -1648,6 +1776,7 @@ $('certSave').onclick = async () => {
     if (error){ console.error(error); return toast('추가하지 못했어요 (' + errText(error) + ')'); }
     lastAt = Date.now(); $('reqText').value = ''; toast('자격 요건이 하나 늘었어요. 지원 가능한 사람이 더 줄었습니다'); load();
   });
+  window.__jobLoad = load;
   const applyLines = ['서류 검토 결과: 멜론님이 아니시네요. 불합격입니다.', '지원해 주셔서 감사합니다. 멜론님과 비교 전형에서 탈락하셨습니다.', '죄송합니다. 이 자리는 멜론님 전용입니다.'];
   let ap = 0; $('applyBtn').onclick = () => { ap++; $('applicants').textContent = ap + '명 (전원 불합격)'; toast(applyLines[(ap - 1) % applyLines.length]); };
   render(); load();
