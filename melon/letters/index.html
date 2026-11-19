@@ -149,9 +149,9 @@
   @keyframes askIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
   /* 포스트잇이 하나씩 내려와 붙음 */
   .pi{transform-origin:50% 0}
-  .pi.drop{animation:land 1.1s cubic-bezier(.2,.9,.25,1.05) both}
-  @keyframes land{0%{opacity:0;translate:0 -60px;rotate:-6deg;scale:1.06}60%{opacity:1}100%{opacity:1;translate:0 0;rotate:0deg;scale:1}}
-  .ph{opacity:0;transform:scale(.94);transition:opacity 1.2s var(--ease),transform 1.2s var(--ease)}
+  .pi.drop{animation:land .7s cubic-bezier(.2,.9,.25,1.08) both}
+  @keyframes land{0%{opacity:0;translate:0 -28px;rotate:-5deg;scale:1.05}55%{opacity:1}100%{opacity:1;translate:0 0;rotate:0deg;scale:1}}
+  .ph{opacity:0;transform:scale(.94);transition:opacity .7s var(--ease),transform .7s var(--ease)}
   .ph.in{opacity:1;transform:none}
   @media (prefers-reduced-motion: reduce){ .ask .m,.ask .q1,.ask .q2,.ask .acts{animation:none;opacity:1} .pi.drop{animation:none;opacity:1;translate:none} .ph{opacity:1;transform:none} }
 </style>
@@ -335,21 +335,16 @@ new IntersectionObserver(es => es.forEach(e => {
 let opened = false, dataReady = false, revealed = false, following = false;
 function revealAll(){
   if (revealed) return; revealed = true;
-  const notes = [...document.querySelectorAll('.pi')], pics = [...document.querySelectorAll('.ph')];
-  // 전체 약 18초 안에 모두 붙도록 간격 조절
-  const gap = REDUCED ? 0 : Math.max(140, Math.min(650, 16000 / Math.max(1, notes.length)));
-  notes.forEach((el, i) => setTimeout(() => { el.classList.add('in', 'drop'); if (following) follow(el); }, i * gap));
-  const after = notes.length * gap + 600;
-  pics.forEach((el, i) => setTimeout(() => { el.classList.add('in'); if (following && i % 4 === 0) follow(el); }, after + i * (REDUCED ? 0 : 180)));
-  setTimeout(() => { following = false; }, after + pics.length * 180 + 1500);
+  // 화면 위치(위→아래, 왼→오른) 순서로 정렬해서 벽 전체가 한 번에 물결치듯 붙게
+  const pos = el => { const r = el.getBoundingClientRect(); return [Math.round(r.top / 40), r.left]; };
+  const notes = [...document.querySelectorAll('.pi')].map(el => ({ el, p: pos(el) })).sort((a, b) => a.p[0] - b.p[0] || a.p[1] - b.p[1]).map(x => x.el);
+  const pics = [...document.querySelectorAll('.ph')];
+  const total = REDUCED ? 0 : 1300;                                 // 전체가 약 1.3초 안에 차르르
+  const gap = notes.length > 1 ? Math.min(60, total / notes.length) : 0;
+  notes.forEach((el, i) => setTimeout(() => el.classList.add('in', 'drop'), i * gap));
+  const after = notes.length * gap + 250;
+  pics.forEach((el, i) => setTimeout(() => el.classList.add('in'), after + i * (REDUCED ? 0 : 50)));
 }
-// 새로 붙은 포스트잇이 화면 아래로 벗어나면 천천히 따라 내려감
-function follow(el){
-  const r = el.getBoundingClientRect();
-  if (r.bottom > innerHeight * .9) window.scrollBy({ top: r.bottom - innerHeight * .7, behavior: 'smooth' });
-}
-['wheel', 'touchstart', 'keydown'].forEach(ev => addEventListener(ev, () => { following = false; }, { passive: true }));
-
 function openWall(withSound){
   if (opened) return; opened = true;
   if (withSound){ audio.volume = 0; audio.play().catch(() => {}); const t0 = performance.now(); const up = now => { const k = Math.min(1, (now - t0) / 3000); audio.volume = .7 * k; if (k < 1) requestAnimationFrame(up); }; requestAnimationFrame(up); }
@@ -359,9 +354,8 @@ function openWall(withSound){
   setTimeout(() => {
     ask.classList.add('gone'); document.body.style.overflow = ''; introIn();
     setTimeout(() => {
-      following = true;
       document.getElementById('wallHead').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
-      setTimeout(() => { if (dataReady) revealAll(); }, REDUCED ? 0 : 1200);
+      setTimeout(() => { if (dataReady) revealAll(); }, REDUCED ? 0 : 700);
     }, REDUCED ? 0 : 2600);
   }, REDUCED ? 0 : 3200);
 }
