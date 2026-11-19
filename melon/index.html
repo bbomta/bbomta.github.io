@@ -1681,7 +1681,48 @@ document.documentElement.style.setProperty('--face', 'url("melon-face.png?v=3")'
     else { Music.setMuted(false); Music.start(); }
     bgmUI();
   };
-  $('bdCheerBtn').onclick = () => { const r = stg.getBoundingClientRect(); for (let i = 0; i < 10; i++) setTimeout(() => note(Math.random() * r.width), i * 60); };
+  // 환호 소리: 박수 + 관객 함성 + 휘파람을 그 자리에서 합성 (음원 파일 없음)
+  let cheerCtx = null, cheerNoise = null;
+  function cheerSound(){
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    if (!cheerCtx){
+      cheerCtx = new AC();
+      cheerNoise = cheerCtx.createBuffer(1, cheerCtx.sampleRate * 2, cheerCtx.sampleRate);
+      const d = cheerNoise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    const c = cheerCtx; if (c.state === 'suspended') c.resume();
+    const now = c.currentTime + .02, out = c.createGain(), comp = c.createDynamicsCompressor();
+    out.gain.value = 1.8; out.connect(comp); comp.connect(c.destination);
+    const noise = (t, dur, type, freq, q, peak, attack) => {
+      const src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+      src.buffer = cheerNoise; src.loop = true; f.type = type; f.frequency.value = freq; f.Q.value = q;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(peak, t + attack); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      src.connect(f); f.connect(g); g.connect(out); src.start(t, Math.random()); src.stop(t + dur + .05);
+      return { f, g };
+    };
+    // 박수: 짧은 손뼉 소리를 여러 사람이 2.6초 동안 불규칙하게
+    for (let i = 0; i < 150; i++){
+      const t = now + Math.pow(Math.random(), 1.4) * 2.6;
+      noise(t, .03 + Math.random() * .04, 'bandpass', 900 + Math.random() * 1800, 1.2, .18 + Math.random() * .22, .002);
+    }
+    // 함성 "와~": 사람 목소리 대역을 부풀렸다가 가라앉힘
+    [[650, 6], [1100, 7], [2400, 5]].forEach(([fr, q], i) => {
+      const v = noise(now, 3, 'bandpass', fr, q, [.5, .35, .15][i], .35);
+      v.f.frequency.setValueAtTime(fr * .85, now); v.f.frequency.linearRampToValueAtTime(fr * 1.08, now + .6); v.f.frequency.linearRampToValueAtTime(fr * .95, now + 3);
+    });
+    // 휘파람 두어 번
+    [[.3, 2100, 2900], [1.1, 2500, 3300]].forEach(([dt, f1, f2]) => {
+      const o = c.createOscillator(), g = c.createGain(); o.type = 'sine';
+      o.frequency.setValueAtTime(f1, now + dt); o.frequency.exponentialRampToValueAtTime(f2, now + dt + .35); o.frequency.exponentialRampToValueAtTime(f1 * .9, now + dt + .7);
+      g.gain.setValueAtTime(0, now + dt); g.gain.linearRampToValueAtTime(.06, now + dt + .05); g.gain.exponentialRampToValueAtTime(.0001, now + dt + .75);
+      o.connect(g); g.connect(out); o.start(now + dt); o.stop(now + dt + .8);
+    });
+  }
+  $('bdCheerBtn').onclick = () => {
+    cheerSound();
+    const r = stg.getBoundingClientRect(); for (let i = 0; i < 10; i++) setTimeout(() => note(Math.random() * r.width), i * 60);
+    band.querySelectorAll('.bd-fan').forEach((f, i) => f.animate([{ transform: f.style.transform }, { transform: f.style.transform + ' translateY(-18%)' }, { transform: f.style.transform }], { duration: 420, delay: i * 25, iterations: 3 }));
+  };
   // 화면에 보일 때만 그림 (음악은 계속 흐름)
   new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; if (visible) requestAnimationFrame(frame); }), { threshold: .05 }).observe(stg);
 
