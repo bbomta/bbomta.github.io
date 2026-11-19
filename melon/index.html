@@ -1614,22 +1614,17 @@ document.documentElement.style.setProperty('--face', 'url("melon-face.png?v=3")'
     }
   })();
 
-  const audio = new Audio('bgm.mp3'); audio.preload = 'none'; audio.loop = true;
-  let playing = false, mutedBgm = false, visible = false, lastBeatIdx = -1, t0 = performance.now();
-  function start(){
-    if (Music.playing && !Music.muted){ Music.setMuted(true); mutedBgm = true; bgmUI(); }   // 배경음악과 겹치지 않게
-    audio.currentTime = 0;
-    const pr = audio.play(); if (pr && pr.catch) pr.catch(() => { toast('소리를 재생하지 못했어요. 한 번 더 눌러주세요'); stop(); });
-    playing = true; $('bdPlayBtn').textContent = '⏸ 공연 멈추기';
-  }
-  function stop(){
-    audio.pause(); playing = false; $('bdPlayBtn').textContent = '🎤 공연 시작';
-    if (mutedBgm){ Music.setMuted(false); mutedBgm = false; bgmUI(); }
-  }
-  $('bdPlayBtn').onclick = () => playing ? stop() : start();
+  // 밴드는 사이트 배경음악(같은 곡)에 맞춰 공연: 소리 켜고 입장하면 바로 공연 중
+  let visible = false, lastBeatIdx = -1, t0 = performance.now(), wasLive = null;
+  const isLive = () => Music.playing && !Music.muted && Music.time !== null;
+  $('bdPlayBtn').onclick = () => {
+    if (isLive()) Music.setMuted(true);
+    else { Music.setMuted(false); Music.start(); }
+    bgmUI();
+  };
   $('bdCheerBtn').onclick = () => { const r = stg.getBoundingClientRect(); for (let i = 0; i < 10; i++) setTimeout(() => note(Math.random() * r.width), i * 60); };
-  // 화면에서 벗어나면 공연도 쉬기
-  new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; if (!visible && playing) stop(); if (visible) requestAnimationFrame(frame); }), { threshold: .15 }).observe(stg);
+  // 화면에 보일 때만 그림 (음악은 계속 흐름)
+  new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; if (visible) requestAnimationFrame(frame); }), { threshold: .05 }).observe(stg);
 
   function note(x){
     const n = document.createElement('div'); n.className = 'bd-note'; n.textContent = ['♪','♫','♬','🍈'][Math.floor(Math.random() * 4)];
@@ -1640,7 +1635,8 @@ document.documentElement.style.setProperty('--face', 'url("melon-face.png?v=3")'
   }
   function frame(now){
     if (!visible) return;
-    const live = playing && !audio.paused, t = live ? audio.currentTime : (now - t0) / 1000;
+    const live = isLive(), t = live ? Music.time : (now - t0) / 1000;
+    if (live !== wasLive){ wasLive = live; $('bdPlayBtn').textContent = live ? '⏸ 공연 멈추기' : '🎤 공연 시작'; }
     const beatPos = (t - OFFSET) / BEAT, idx = Math.floor(beatPos), ph = beatPos - idx;
     const amp = live ? 1 : .25, kick = Math.exp(-ph * 7) * amp, sway = Math.sin(beatPos * Math.PI) * amp;
     const half = (beatPos * 2) % 1, M = live ? .35 + .4 * Math.exp(-half * 6) : .3, H = live ? (idx % 2 === 1 ? kick : kick * .3) : 0;
@@ -1864,7 +1860,9 @@ const Music = (() => {
   function setMuted(m){ muted = m; if (!ctx) return; const t = ctx.currentTime; master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t); master.gain.linearRampToValueAtTime(m ? 0 : VOL, t + .5); }
   // 탭을 떠나면 잠시 멈춤
   document.addEventListener('visibilitychange', () => { if (!ctx || !playing) return; document.hidden ? ctx.suspend() : ctx.resume(); });
-  return { ensure, start, stop, setMuted, get playing(){ return playing; }, get muted(){ return muted; } };
+  // 지금 곡의 몇 초 지점인지 (밴드 박자·자막 맞춤용)
+  const time = () => (ctx && buffer && src) ? (((ctx.currentTime - startedAt) % buffer.duration) + buffer.duration) % buffer.duration : null;
+  return { ensure, start, stop, setMuted, get playing(){ return playing; }, get muted(){ return muted; }, get time(){ return time(); } };
 })();
 function bgmUI(){
   const on = Music.playing && !Music.muted, b = $('bgm');
