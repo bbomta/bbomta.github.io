@@ -661,6 +661,8 @@
 
   /* 관리자 모드 */
   body:not(.admin) .adm{display:none!important}
+  .note.hid{opacity:.45;outline:2px dashed #d8432a;outline-offset:3px}
+  .note.hid::after{content:'숨김';position:absolute;left:10px;top:8px;font-size:11px;font-weight:800;color:#fff;background:#d8432a;padding:2px 8px;border-radius:999px}
   .adm{position:absolute;top:8px;right:8px;display:flex;gap:6px;z-index:5}
   .adm button,.adm span{border:0;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer;background:rgba(29,29,31,.85);color:#fff}
   .adm .del{background:#d8432a}
@@ -1381,8 +1383,8 @@ const ADM = (() => {
     return box;
   }
   async function check(p){ if (!sb) return false; const { data, error } = await sb.rpc('admin_check', { pw: p }); if (error){ console.error(error); throw error; } return data === true; }
-  function enter(p){ pw = p; try { sessionStorage.setItem('melon-adm', p); } catch(e){} document.body.classList.add('admin'); toast('관리자 모드가 켜졌어요 🔧'); }
-  function exit(){ pw = null; try { sessionStorage.removeItem('melon-adm'); } catch(e){} document.body.classList.remove('admin'); toast('관리자 모드를 껐어요'); if (location.hash === '#admin') history.replaceState(null, '', location.pathname); }
+  function enter(p){ pw = p; try { sessionStorage.setItem('melon-adm', p); } catch(e){} document.body.classList.add('admin'); toast('관리자 모드가 켜졌어요 🔧'); renderNotes(); }
+  function exit(){ pw = null; try { sessionStorage.removeItem('melon-adm'); } catch(e){} document.body.classList.remove('admin'); toast('관리자 모드를 껐어요'); renderNotes(); if (location.hash === '#admin') history.replaceState(null, '', location.pathname); }
   function openLogin(){ $('admErr').textContent = ''; $('admPw').value = ''; $('admLogin').classList.add('open'); setTimeout(() => $('admPw').focus(), 30); }
   $('admCancel').onclick = () => $('admLogin').classList.remove('open');
   $('admLoginForm').addEventListener('submit', async e => {
@@ -1402,6 +1404,12 @@ const ADM = (() => {
     if (error){ console.error(error); return $('admEditErr').textContent = '저장하지 못했어요: ' + errText(error); }
     $('admEdit').classList.remove('open'); toast('포스트잇을 수정했어요'); loadNotes();
   });
+  // 숨김 / 숨김 해제
+  async function hide(n, h){
+    const { error } = await sb.rpc('admin_hide_note', { pw, note_id: n.id, hide: h });
+    if (error){ console.error(error); return toast('바꾸지 못했어요: ' + errText(error)); }
+    toast(h ? '포스트잇을 숨겼어요. 멜론님 페이지의 숨긴 포스트잇 칸에만 보여요' : '다시 보이게 했어요'); loadNotes();
+  }
   // 삭제 (포스트잇, 사진, 실황 제보, 채용 공고)
   async function del(tbl, id, msg){
     if (!confirmBox(msg)) return;
@@ -1432,9 +1440,9 @@ const ADM = (() => {
   let taps = [], logo = document.querySelector('.bar .logo');
   logo.addEventListener('click', e => { const t = Date.now(); taps = taps.filter(x => t - x < 2000); taps.push(t); if (taps.length >= 5){ e.preventDefault(); taps = []; on() ? exit() : openLogin(); } });
   // 새로고침해도 같은 탭이면 유지 (비밀번호는 서버에서 다시 확인)
-  if (pw) check(pw).then(ok => { if (ok){ document.body.classList.add('admin'); } else { pw = null; try { sessionStorage.removeItem('melon-adm'); } catch(e){} } }).catch(() => {});
+  if (pw) check(pw).then(ok => { if (ok){ document.body.classList.add('admin'); renderNotes(); } else { pw = null; try { sessionStorage.removeItem('melon-adm'); } catch(e){} } }).catch(() => {});
   setTimeout(maybeOpen, 300);
-  return { btns, edit, del };
+  return { btns, edit, del, hide };
 })();
 window.ADM = ADM;
 
@@ -1452,22 +1460,24 @@ const fmt = d => `${d.getMonth()+1}월 ${d.getDate()}일 ${String(d.getHours()).
 const colorOf = n => COLORS.includes(n.color) ? n.color : COLORS[n.id%COLORS.length];
 
 function renderNotes(){
-  const list=[...notes.values()].sort((a,b)=>{ const d=new Date(a.created_at)-new Date(b.created_at); return sortMode==='old'?d:-d; });
-  $('boardCount').textContent='포스트잇 '+list.length+'장';
+  const isAdm = document.body.classList.contains('admin');
+  const all=[...notes.values()].sort((a,b)=>{ const d=new Date(a.created_at)-new Date(b.created_at); return sortMode==='old'?d:-d; });
+  const visible = all.filter(n => !n.hidden), list = isAdm ? all : visible;
+  $('boardCount').textContent='포스트잇 '+visible.length+'장' + (isAdm && all.length > visible.length ? ` (숨김 ${all.length - visible.length}장)` : '');
   const wrap=$('notes'); wrap.innerHTML='';
   list.forEach(n=>{
-    const el=document.createElement('article'); el.className='note'+(n.id===freshId?' fresh':''); el.style.background=colorOf(n);
+    const el=document.createElement('article'); el.className='note'+(n.id===freshId?' fresh':'')+(n.hidden?' hid':''); el.style.background=colorOf(n);
     el.style.transform=`rotate(${((n.id%5)-2)*.6}deg)`;
     const p=document.createElement('p'); p.textContent=String(n.text||'').slice(0,200);
     const m=document.createElement('div'); m.className='meta';
     const w=document.createElement('b'); w.textContent=n.author||'익명의 동료';
     const t=document.createElement('span'); t.textContent=fmt(new Date(n.created_at));
     m.append(w,t); el.append(p,m); el.style.position='relative';
-    if (window.ADM) el.appendChild(ADM.btns([['수정', () => ADM.edit(n)], ['삭제', () => ADM.del('notes', n.id, '이 포스트잇을 삭제할까요?')]]));
+    if (window.ADM) el.appendChild(ADM.btns([['수정', () => ADM.edit(n)], [n.hidden ? '숨김 해제' : '숨김', () => ADM.hide(n, !n.hidden)], ['삭제', () => ADM.del('notes', n.id, '이 포스트잇을 삭제할까요?')]]));
     wrap.appendChild(el);
   });
   $('boardMsg').textContent = list.length ? '' : '아직 포스트잇이 없어요. 첫 장을 붙여주세요.';
-  buildDrift(list);
+  buildDrift(visible);
   if (window.renderCert) renderCert();
 }
 
@@ -1679,7 +1689,7 @@ function renderCert(){
   $('certBody').textContent = `위 사람은 2023년 1월 9일 입사하여 ${n.days.toLocaleString()}일 동안 Ad-Dev 유니티 개발자로 일하며 동료들과 함께 웃고 고민하고 수많은 금요일을 함께 맞이하였기에, 회사생활의 모든 과정을 훌륭히 마쳤음을 인정하여 이 졸업장을 수여합니다.`;
   const names = [], seen = new Set(); let anon = 0;
   const add = a => { const v = (a || '').trim(); if (!v){ anon++; return; } if (!seen.has(v)){ seen.add(v); names.push(v); } };
-  [...notes.values()].sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).forEach(x => add(x.author));
+  [...notes.values()].filter(x => !x.hidden).sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).forEach(x => add(x.author));
   (photos || []).forEach(x => { if ((x.author || '').trim()) add(x.author); });
   const box = $('certSigs'); box.innerHTML = '';
   names.forEach((nm, i) => { const sp = document.createElement('span'); sp.textContent = nm; sp.style.transform = `rotate(${((i * 7) % 9 - 4) * .8}deg)`; box.appendChild(sp); });
@@ -2179,7 +2189,7 @@ function playEnding(opts = {}){
   });
 
   // 2) 포스트잇과 사진이 하나씩 내려와 쌓임
-  const items = [...notes.values()].map(x => ({ kind: 'note', x }));
+  const items = [...notes.values()].filter(x => !x.hidden).map(x => ({ kind: 'note', x }));
   photos.slice(0, 12).forEach(x => items.push({ kind: 'photo', x }));
   shuffle(items);
   const list = items.slice(0, innerWidth < 600 ? 24 : 44);
