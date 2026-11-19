@@ -1279,7 +1279,7 @@
     <div class="rank-foot"><span id="rankAnon"></span><span id="rankTotal"></span></div>
   </div>
 </div>
-<div class="admbar" id="admbar">🔧 관리자 모드 <button id="admLive">실황 제보 관리</button><button id="admOut">나가기</button></div>
+<div class="admbar" id="admbar">🔧 관리자 모드 <button id="admHid">숨긴 포스트잇 <span id="admHidN">0</span></button><button id="admLive">실황 제보 관리</button><button id="admOut">나가기</button></div>
 <div class="admdlg" id="admLogin" role="dialog" aria-modal="true" aria-label="관리자 로그인">
   <form class="admbox" id="admLoginForm">
     <h4>관리자 모드</h4><p>비밀번호를 입력하면 포스트잇 수정·삭제와 장난 글 정리를 할 수 있어요.</p>
@@ -1296,6 +1296,10 @@
     <div class="err" id="admEditErr"></div>
     <div class="row"><button class="btn gray" type="button" id="admEditCancel">취소</button><button class="btn" type="submit">저장</button></div>
   </form>
+</div>
+<div class="admdlg" id="admHidDlg" role="dialog" aria-modal="true" aria-label="숨긴 포스트잇">
+  <div class="admbox"><h4>숨긴 포스트잇</h4><p>여기 있는 포스트잇은 메인 페이지에 안 보이고, 멜론님 페이지의 '살짝 숨겨둔 포스트잇' 칸에만 나와요.</p><ul class="admlist" id="admHidList"></ul>
+    <div class="row"><button class="btn gray" type="button" id="admHidClose">닫기</button></div></div>
 </div>
 <div class="admdlg" id="admLiveDlg" role="dialog" aria-modal="true" aria-label="실황 제보 관리">
   <div class="admbox"><h4>실황 제보 관리</h4><p>장난 제보를 지우면 속보 띠에서 바로 사라져요.</p><ul class="admlist" id="admLiveList"></ul>
@@ -1408,7 +1412,7 @@ const ADM = (() => {
   async function hide(n, h){
     const { error } = await sb.rpc('admin_hide_note', { pw, note_id: n.id, hide: h });
     if (error){ console.error(error); return toast('바꾸지 못했어요: ' + errText(error)); }
-    toast(h ? '포스트잇을 숨겼어요. 멜론님 페이지의 숨긴 포스트잇 칸에만 보여요' : '다시 보이게 했어요'); loadNotes();
+    toast(h ? '숨겼어요. 아래 \'숨긴 포스트잇\'에서 다시 꺼낼 수 있어요' : '다시 보이게 했어요'); await loadNotes();
   }
   // 삭제 (포스트잇, 사진, 실황 제보, 채용 공고)
   async function del(tbl, id, msg){
@@ -1431,6 +1435,17 @@ const ADM = (() => {
       const b = document.createElement('button'); b.type = 'button'; b.textContent = '삭제'; b.onclick = () => del('live', it.id, '이 제보를 지울까요?'); li.append(sp, b); ul.appendChild(li); });
   }
   $('admLive').onclick = () => { $('admLiveDlg').classList.add('open'); renderLive(); };
+  function renderHid(){
+    const ul = $('admHidList'); ul.innerHTML = '';
+    const list = [...notes.values()].filter(n => n.hidden);
+    if (!list.length){ const li = document.createElement('li'); li.innerHTML = '<span>숨긴 포스트잇이 없어요</span>'; ul.appendChild(li); return; }
+    list.forEach(n => { const li = document.createElement('li'); const sp = document.createElement('span'); sp.textContent = `${n.text}  — ${n.author || '익명의 동료'}`;
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = '다시 보이기'; b.style.background = '#2d7a3e';
+      b.onclick = async () => { await hide(n, false); setTimeout(renderHid, 400); };
+      li.append(sp, b); ul.appendChild(li); });
+  }
+  $('admHid').onclick = () => { $('admHidDlg').classList.add('open'); renderHid(); };
+  $('admHidClose').onclick = () => $('admHidDlg').classList.remove('open');
   $('admLiveClose').onclick = () => $('admLiveDlg').classList.remove('open');
   $('admOut').onclick = exit;
   document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.admdlg.open').forEach(d => d.classList.remove('open')); });
@@ -1462,8 +1477,9 @@ const colorOf = n => COLORS.includes(n.color) ? n.color : COLORS[n.id%COLORS.len
 function renderNotes(){
   const isAdm = document.body.classList.contains('admin');
   const all=[...notes.values()].sort((a,b)=>{ const d=new Date(a.created_at)-new Date(b.created_at); return sortMode==='old'?d:-d; });
-  const visible = all.filter(n => !n.hidden), list = isAdm ? all : visible;
-  $('boardCount').textContent='포스트잇 '+visible.length+'장' + (isAdm && all.length > visible.length ? ` (숨김 ${all.length - visible.length}장)` : '');
+  const visible = all.filter(n => !n.hidden), list = visible;
+  $('boardCount').textContent='포스트잇 '+visible.length+'장';
+  if ($('admHidN')) $('admHidN').textContent = all.length - visible.length;
   const wrap=$('notes'); wrap.innerHTML='';
   list.forEach(n=>{
     const el=document.createElement('article'); el.className='note'+(n.id===freshId?' fresh':'')+(n.hidden?' hid':''); el.style.background=colorOf(n);
@@ -1473,7 +1489,7 @@ function renderNotes(){
     const w=document.createElement('b'); w.textContent=n.author||'익명의 동료';
     const t=document.createElement('span'); t.textContent=fmt(new Date(n.created_at));
     m.append(w,t); el.append(p,m); el.style.position='relative';
-    if (window.ADM) el.appendChild(ADM.btns([['수정', () => ADM.edit(n)], [n.hidden ? '숨김 해제' : '숨김', () => ADM.hide(n, !n.hidden)], ['삭제', () => ADM.del('notes', n.id, '이 포스트잇을 삭제할까요?')]]));
+    if (window.ADM) el.appendChild(ADM.btns([['수정', () => ADM.edit(n)], ['숨김', () => ADM.hide(n, true)], ['삭제', () => ADM.del('notes', n.id, '이 포스트잇을 삭제할까요?')]]));
     wrap.appendChild(el);
   });
   $('boardMsg').textContent = list.length ? '' : '아직 포스트잇이 없어요. 첫 장을 붙여주세요.';
@@ -1638,6 +1654,7 @@ function live(){
   sb.channel('melon-live')
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'notes'},({new:n})=>{ freshId=n.id; notes.set(n.id,n); renderNotes(); })
     .on('postgres_changes',{event:'DELETE',schema:'public',table:'notes'},({old})=>{ if(old&&notes.delete(old.id)) renderNotes(); })
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'notes'},({new:n})=>{ if(n&&n.id){ notes.set(n.id,n); renderNotes(); } })
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'photos'},()=>loadPhotos())
     .on('postgres_changes',{event:'DELETE',schema:'public',table:'photos'},()=>loadPhotos())
     .subscribe();
