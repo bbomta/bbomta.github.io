@@ -125,6 +125,13 @@
   .final b{display:block;font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:-.04em}
   .final span{display:block;font-size:44px;margin-top:10px}
 
+  /* 숨긴 포스트잇 */
+  .secret{padding-bottom:70px}
+  .secret-box{width:min(1200px,100%);margin:0 auto;padding:0 24px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .secret-box p{color:var(--mute);font-size:16px;flex:1;min-width:240px}
+  .secret-wall .pi{opacity:1;translate:none;filter:blur(9px) saturate(.6);pointer-events:none;transition:filter 1.2s var(--ease)}
+  .secret.open .secret-wall .pi{filter:none;pointer-events:auto}
+  .secret.open .secret-box .btn{display:none}
   .bgm{position:fixed;left:18px;bottom:18px;z-index:40;border:0;border-radius:999px;padding:10px 16px;font-size:14px;font-weight:600;background:rgba(29,29,31,.85);color:#fff;cursor:pointer}
   @media (prefers-reduced-motion: reduce){ .gate .line{transition:none} .credits.go .roll{animation-duration:1ms} .pi{opacity:1;translate:none} .intro .seq{opacity:1;transform:none;transition:none} .card,.pic{animation:none} html{scroll-behavior:auto} }
 
@@ -180,6 +187,15 @@
 <div class="head" id="photoHead"><h2>함께한 장면.</h2><span>사진을 누르면 크게 볼 수 있어요.</span></div>
 <section class="photos" id="photos"></section>
 
+<section class="secret" id="secret" hidden>
+  <div class="head"><h2>살짝 숨겨둔 포스트잇.</h2><span id="secretSub"></span></div>
+  <div class="secret-box">
+    <p>모두가 보는 벽에는 붙이지 못하고, 멜론님께만 몰래 전하는 포스트잇이에요.</p>
+    <button class="btn" id="secretOpen">🙈 몰래 보기</button>
+  </div>
+  <div class="wall secret-wall" id="secretWall"></div>
+</section>
+
 <section class="close" id="end">
   <h2>그동안 정말<br>고마웠어요.</h2>
   <p>어디서든 지금처럼 웃으며 일하시길.<br>가끔은 이 페이지에 다시 들러주세요.</p>
@@ -209,7 +225,7 @@ const COLORS = ['#fff1a8','#ffd6e0','#cdf2d6','#d4e8ff','#ffe0bf'];
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fmtDate = s => { const d = new Date(s); return `${d.getMonth() + 1}월 ${d.getDate()}일`; };
 const colorOf = n => COLORS.includes(n.color) ? n.color : COLORS[n.id % COLORS.length];
-let NOTES = [], PHOTOS = [], photoUrl = () => '';
+let NOTES = [], PHOTOS = [], HIDDEN = [], photoUrl = () => '', seqBackup = null;
 let seq = [], cur = 0, auto = null;   // 크게 보기에서 넘길 순서: 포스트잇 → 사진
 
 // 시작 화면
@@ -265,6 +281,24 @@ function build(){
   dataReady = true; if (opened) revealAll();
 }
 
+// ===== 숨긴 포스트잇 =====
+function buildHidden(){
+  const sec = $('secret'), wall = $('secretWall'); wall.innerHTML = '';
+  sec.hidden = !HIDDEN.length; if (!HIDDEN.length) return;
+  $('secretSub').textContent = HIDDEN.length + '장';
+  HIDDEN.forEach((n, i) => {
+    const b = document.createElement('button'); b.className = 'pi'; b.style.background = colorOf(n);
+    b.style.transform = `rotate(${((n.id % 5) - 2) * .7}deg)`; b.setAttribute('aria-label', (n.author || '익명의 동료') + '의 숨긴 포스트잇 크게 보기');
+    const text = String(n.text || ''); const p = document.createElement('p'); p.textContent = text;
+    const w = document.createElement('div'); w.className = 'who';
+    const a = document.createElement('b'); a.textContent = n.author || '익명의 동료'; const d = document.createElement('small'); d.textContent = fmtDate(n.created_at);
+    w.append(a, d); b.append(p, w);
+    b.onclick = () => { seqBackup = seq; seq = HIDDEN.map(x => ({ kind: 'note', n: x })); openAt(i); };
+    wall.appendChild(b);
+  });
+}
+$('secretOpen').onclick = () => { $('secret').classList.add('open'); };
+
 // ===== 크게 보기 =====
 function render(){
   const it = seq[cur], body = $('vbody'); body.innerHTML = '';
@@ -291,7 +325,7 @@ function render(){
   const nx = seq[cur + 1]; if (nx && nx.kind === 'photo'){ const pre = new Image(); pre.src = photoUrl(nx.p.path); }
 }
 function openAt(i){ if (!seq.length) return; cur = (i + seq.length) % seq.length; render(); $('viewer').classList.add('open'); document.body.style.overflow = 'hidden'; $('vx').focus(); }
-function closeV(){ stopAuto(); $('viewer').classList.remove('open'); document.body.style.overflow = ''; }
+function closeV(){ if (seqBackup){ seq = seqBackup; seqBackup = null; } stopAuto(); $('viewer').classList.remove('open'); document.body.style.overflow = ''; }
 function go(d){ cur = (cur + d + seq.length) % seq.length; render(); if (auto) schedule(); }
 $('vx').onclick = closeV; $('vp').onclick = () => { stopAuto(); go(-1); }; $('vn').onclick = () => { stopAuto(); go(1); };
 $('viewer').addEventListener('click', e => { if (e.target.id === 'viewer' || e.target.id === 'vbody') closeV(); });
@@ -337,7 +371,7 @@ function revealAll(){
   if (revealed) return; revealed = true;
   // 화면 위치(위→아래, 왼→오른) 순서로 정렬해서 벽 전체가 한 번에 물결치듯 붙게
   const pos = el => { const r = el.getBoundingClientRect(); return [Math.round(r.top / 40), r.left]; };
-  const notes = [...document.querySelectorAll('.pi')].map(el => ({ el, p: pos(el) })).sort((a, b) => a.p[0] - b.p[0] || a.p[1] - b.p[1]).map(x => x.el);
+  const notes = [...document.querySelectorAll('#wall .pi')].map(el => ({ el, p: pos(el) })).sort((a, b) => a.p[0] - b.p[0] || a.p[1] - b.p[1]).map(x => x.el);
   const pics = [...document.querySelectorAll('.ph')];
   const total = REDUCED ? 0 : 1300;                                 // 전체가 약 1.3초 안에 차르르
   const gap = notes.length > 1 ? Math.min(60, total / notes.length) : 0;
@@ -373,7 +407,8 @@ $('askQuiet').onclick = () => openWall(false);
     sb.from('photos').select('*').order('created_at', { ascending: true }).limit(300),
   ]);
   if (n.error) console.error(n.error); if (p.error) console.error(p.error);
-  NOTES = n.data || []; PHOTOS = p.data || [];
+  HIDDEN = (n.data || []).filter(x => x.hidden); NOTES = (n.data || []).filter(x => !x.hidden); PHOTOS = p.data || [];
+  buildHidden();
   build();
 })();
 </script>
