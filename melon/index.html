@@ -594,6 +594,7 @@
   /* 각자 위치 */
   #band .bd-key{left:3%}.bd-gtr{left:21%}.bd-voc{left:42.5%;width:15.5%}.bd-bas{left:63%}.bd-drm{left:80%;width:18%}
   #band .bd-voc .bd-hd{--nod:9deg}
+  #band .bd-voc .bd-hd .bd-f{background-image:url("vocal-face.png");background-position:center 88%}
   #band .bd-stage.bd-sing .bd-voc .bd-hd{width:86%;transition:width .2s}
   #band .bd-stage.bd-sing .bd-beam{opacity:calc(.35 + var(--b)*.5)}
   #band .bd-gtr .bd-hd{--tilt:-8deg;--nod:10deg}
@@ -626,7 +627,8 @@
   #band .bd-lyric.on{opacity:1;transform:translateX(-50%) scale(1)}
   #band .bd-lyric span{background:linear-gradient(90deg,#7fff8c var(--fill,0%),rgba(255,255,255,.92) var(--fill,0%));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 10px rgba(0,0,0,.7))}
   #band .bd-ly-next{text-align:center;font-size:.42em;font-weight:700;color:rgba(255,255,255,.55);margin-top:6px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.7))}
-  #band .bd-lyric{max-width:92%;text-align:center;white-space:normal}
+  #band .bd-lyric{width:96%;text-align:center;white-space:nowrap}
+  #band .bd-lyric span,#band .bd-ly-next{display:block;white-space:nowrap}
   #band .bd-bub{position:absolute;left:58%;top:22%;z-index:8;background:#fff;color:#1d1d1f;font-weight:900;font-size:clamp(11px,1.5vw,17px);padding:6px 12px;border-radius:14px;opacity:0;transform:scale(.6);transition:opacity .15s,transform .25s cubic-bezier(.34,1.56,.64,1);white-space:nowrap}
   #band .bd-bub.on{opacity:1;transform:none}
   #band .bd-bub::after{content:'';position:absolute;left:12px;bottom:-6px;border:7px solid transparent;border-top-color:#fff;border-bottom:0}
@@ -1626,6 +1628,15 @@ document.documentElement.style.setProperty('--face', 'url("melon-face.png?v=3")'
   // 화면에 보일 때만 그림 (음악은 계속 흐름)
   new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; if (visible) requestAnimationFrame(frame); }), { threshold: .05 }).observe(stg);
 
+  // 긴 가사도 한 줄로: 무대 폭을 넘으면 글자 크기를 줄임
+  function fitLyric(){
+    const ly = $('bdLyric'), cur = $('bdLyCur'), nx = $('bdLyNext');
+    ly.style.fontSize = '';
+    const max = stg.clientWidth * .94, base = parseFloat(getComputedStyle(ly).fontSize);
+    const w = Math.max(cur.scrollWidth, nx.scrollWidth * .42 / 1);
+    if (cur.scrollWidth > max) ly.style.fontSize = Math.max(14, base * max / cur.scrollWidth) + 'px';
+  }
+  addEventListener('resize', () => { if ($('bdLyric').classList.contains('on')) fitLyric(); });
   function note(x){
     const n = document.createElement('div'); n.className = 'bd-note'; n.textContent = ['♪','♫','♬','🍈'][Math.floor(Math.random() * 4)];
     const r = stg.getBoundingClientRect();
@@ -1654,7 +1665,7 @@ document.documentElement.style.setProperty('--face', 'url("melon-face.png?v=3")'
     if (live && KARA.times.length){ for (let i = 0; i < KARA.times.length; i++) if (t >= KARA.times[i]) li = i; }
     const end = li >= 0 ? Math.min(KARA.times[li + 1] ?? Infinity, KARA.times[li] + 8 * BEAT) : 0;
     if (li >= 0 && t < end){
-      if ($('bdLyCur').textContent !== String(KARA.lines[li] || '')){ $('bdLyCur').textContent = String(KARA.lines[li] || ''); $('bdLyNext').textContent = String(KARA.lines[li + 1] || ''); }
+      if ($('bdLyCur').textContent !== String(KARA.lines[li] || '')){ $('bdLyCur').textContent = String(KARA.lines[li] || ''); $('bdLyNext').textContent = String(KARA.lines[li + 1] || ''); fitLyric(); }
       ly.classList.add('on'); bub.classList.add('on'); stg.classList.add('bd-sing');
       ly.style.setProperty('--fill', Math.min(100, ((t - KARA.times[li]) / Math.max(.5, (end - KARA.times[li]) * .85)) * 100).toFixed(1) + '%');
     } else { ly.classList.remove('on'); bub.classList.remove('on'); stg.classList.remove('bd-sing'); }
