@@ -410,6 +410,136 @@
   .cert .seal em{font-style:normal;font-size:30px;line-height:1}
   .cert-acts{display:flex;justify-content:center;gap:10px;margin-top:28px;flex-wrap:wrap}
   @media (max-width:600px){ .cert{padding:40px 26px 34px} .cert::before{inset:9px} .cert::after{inset:14px} .cert h3{letter-spacing:.3em;padding-left:.3em} .cert .seal{width:78px;height:78px;right:0;top:10px;font-size:10px} .cert .seal em{font-size:22px} .cert .sigs{font-size:24px} }
+
+  /* ===== 채용 공고 · 굿즈샵 ===== */
+  /* ===== 1. 후임자 채용 공고 ===== */
+  .job-sec{background:var(--mist);padding-bottom:110px}
+  .job{width:min(720px,100%);margin:0 auto;background:#fff;border-radius:28px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+  .job-top{padding:34px 36px 26px;border-bottom:1px solid #ececf0}
+  .job-tags{display:flex;gap:6px;flex-wrap:wrap}
+  .job-tags span{font-size:13px;font-weight:700;padding:5px 11px;border-radius:999px;background:#eef6f0;color:var(--rind)}
+  .job-tags span.hot{background:#fdecea;color:var(--red)}
+  .job h3{margin-top:14px;font-size:clamp(26px,3.6vw,34px);font-weight:800;letter-spacing:-.035em;line-height:1.25}
+  .job .co{margin-top:6px;color:var(--mute);font-size:16px}
+  .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#ececf0;border-bottom:1px solid #ececf0}
+  .facts div{background:#fff;padding:16px 18px}
+  .facts small{display:block;font-size:13px;color:var(--mute)}
+  .facts b{display:block;font-size:16px;font-weight:700;margin-top:2px}
+  @media (max-width:640px){ .facts{grid-template-columns:1fr 1fr} .job-top{padding:28px 24px 22px} }
+  .job-body{padding:30px 36px 8px}
+  @media (max-width:640px){ .job-body{padding:26px 24px 6px} }
+  .job-body h4{font-size:19px;font-weight:800;letter-spacing:-.02em;margin:0 0 10px}
+  .job-body h4:not(:first-child){margin-top:30px}
+  .req{list-style:none}
+  .req li{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #f0f0f3}
+  .req li:last-child{border:0}
+  .req li .ck{flex:none;width:22px;height:22px;border-radius:50%;background:var(--rind);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:2px}
+  .req li p{flex:1}
+  .req li small{flex:none;font-size:13px;color:var(--mute);margin-top:3px}
+  .req li.fresh{animation:jpop .6s var(--ease)}
+  @keyframes jpop{from{opacity:0;transform:translateY(-8px)}}
+  .add{display:flex;gap:8px;margin-top:14px}
+  .add .field{flex:1}
+  .add-name{margin-top:8px;max-width:240px}
+  .steps{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:15px;font-weight:600}
+  .steps span{padding:8px 14px;border-radius:12px;background:var(--mist)}
+  .steps span.fail{background:#fdecea;color:var(--red)}
+  .steps i{font-style:normal;color:#aeaeb2}
+  .job-end{margin-top:30px;padding:26px 36px 32px;background:#fafafa;border-top:1px dashed #d8d8de;text-align:center;position:relative}
+  .job-end b{display:block;font-size:22px;font-weight:800;letter-spacing:-.03em}
+  .job-end p{color:var(--mute);font-size:15px;margin-top:4px}
+  .job-end .stamp{display:inline-block;margin-top:16px;border:3px solid var(--red);color:var(--red);font-weight:800;font-size:18px;padding:6px 16px;border-radius:10px;transform:rotate(-6deg);letter-spacing:.06em}
+  .apply{margin-top:18px}
+
+  /* ===== 5. 굿즈샵 ===== */
+  .shop-sec{background:#fff;padding-bottom:120px}
+  .shop{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media (max-width:860px){ .shop{grid-template-columns:1fr 1fr} }
+  @media (max-width:520px){ .shop{grid-template-columns:1fr} }
+  .gitem{background:var(--mist);border-radius:26px;overflow:hidden;display:flex;flex-direction:column}
+  .gstage{position:relative;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .gbadge{position:absolute;left:16px;top:16px;font-size:12px;font-weight:800;padding:5px 10px;border-radius:999px;background:#1d1d1f;color:#fff;z-index:3}
+  .gbadge.red{background:var(--red)}
+  .ginfo{padding:18px 22px 22px;display:flex;flex-direction:column;gap:4px;flex:1}
+  .ginfo h5{font-size:19px;font-weight:800;letter-spacing:-.02em}
+  .ginfo p{font-size:15px;color:var(--mute);line-height:1.45;flex:1}
+  .buy{display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:10px}
+  .price{font-size:16px;font-weight:800}
+  .price s{font-weight:500;color:#aeaeb2;margin-right:6px;font-size:14px}
+  .gitem .btn{padding:10px 18px;font-size:15px}
+  .gitem .btn.out{background:#e8e8ed;color:#86868b;cursor:default}
+  .gitem.soldout .gstage::after{content:'SOLD OUT';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.55);font-size:30px;font-weight:900;letter-spacing:.08em;color:#1d1d1f;z-index:4;animation:jpop .4s var(--ease)}
+
+  /* 상품 목업들 (모두 CSS로 그림) */
+  .gface{background-image:var(--face);background-size:contain;background-repeat:no-repeat;background-position:center}
+  /* 머그컵 */
+  .mug{position:relative;width:52%;height:56%}
+  .mug .gbody{position:absolute;inset:0 18% 0 0;background:linear-gradient(90deg,#f0f0f2,#fff 40%,#e6e6ea);border-radius:10px 10px 26px 26px;box-shadow:0 18px 30px -12px rgba(0,0,0,.25)}
+  .mug .gbody::before{content:'';position:absolute;left:0;right:0;top:-8px;height:16px;border-radius:50%;background:#dcdce1;border:4px solid #f4f4f6}
+  .mug .handle{position:absolute;right:0;top:20%;width:30%;height:46%;border:12px solid #d6d6dc;border-left:0;border-radius:0 40px 40px 0}
+  .mug .print{position:absolute;left:14%;right:32%;top:18%;bottom:16%}
+  .mug .gtxt{position:absolute;left:0;right:18%;bottom:6%;text-align:center;font-size:11px;font-weight:800;color:var(--rind);letter-spacing:.04em}
+  /* 스티커 */
+  .stickers{position:relative;width:70%;height:70%}
+  .stk{position:absolute;width:56%;aspect-ratio:1/1;border-radius:50%;background:#fff;box-shadow:0 8px 20px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center}
+  .stk .gface{width:86%;height:86%;border-radius:50%;background-color:#cdf2d6;background-size:78%;background-position:center 30%}
+  .stk.s1{left:0;top:0;transform:rotate(-10deg)}
+  .stk.s2{right:0;top:20%;transform:rotate(12deg);width:46%}
+  .stk.s2 .gface{background-color:#ffe0bf}
+  .stk.s3{left:22%;bottom:0;transform:rotate(4deg);width:40%}
+  .stk.s3 .gface{background-color:#d4e8ff}
+  .stk .bub{position:absolute;right:-18%;top:-6%;background:#1d1d1f;color:#fff;font-size:11px;font-weight:800;padding:4px 8px;border-radius:10px;white-space:nowrap}
+  /* 등신대 */
+  .standee{position:relative;width:46%;height:86%;display:flex;flex-direction:column;align-items:center}
+  .standee .gface{width:78%;height:40%;background-position:center bottom;position:relative;z-index:2}
+  .standee .bod{width:70%;flex:1;margin-top:-6%;background:#1e1e21;border-radius:30px 30px 8px 8px;position:relative}
+  .standee .bod::before{content:'';position:absolute;left:50%;top:10%;bottom:30%;width:2px;background:#3d3d42}
+  .standee .bod::after{content:'대신 출근 중';position:absolute;left:50%;bottom:12%;transform:translateX(-50%);font-size:11px;font-weight:800;color:#fff;background:var(--red);padding:3px 8px;border-radius:6px;white-space:nowrap}
+  .standee .base{width:90%;height:12px;background:#c7c7cc;border-radius:50%;margin-top:4px}
+  /* 쿠션 */
+  .pillow{position:relative;width:64%;aspect-ratio:1/1;background:radial-gradient(circle at 35% 30%,#fff,#eaf4ec 60%,#d7e9db);border-radius:26% ;box-shadow:0 18px 30px -12px rgba(0,0,0,.25),inset 0 0 0 6px rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;transform:rotate(-4deg)}
+  .pillow .gface{width:62%;height:76%}
+  .pillow .gtxt{position:absolute;bottom:9%;font-size:11px;font-weight:800;color:var(--rind)}
+  /* 키링 */
+  .keyring{position:relative;width:46%;height:76%;display:flex;flex-direction:column;align-items:center}
+  .keyring .ring{width:38%;aspect-ratio:1/1;border:6px solid #b8b8c0;border-radius:50%}
+  .keyring .chain{width:4px;height:12%;background:repeating-linear-gradient(#b8b8c0 0 5px,transparent 5px 8px)}
+  .keyring .acr{width:100%;flex:1;border-radius:44% 44% 40% 40%;background:rgba(255,255,255,.55);border:3px solid rgba(255,255,255,.9);box-shadow:0 10px 24px rgba(0,0,0,.15),inset 0 0 18px rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;animation:swing 3s ease-in-out infinite;transform-origin:50% -20%}
+  .keyring .acr .gface{width:84%;height:84%}
+  @keyframes swing{50%{transform:rotate(6deg)}}
+  /* 마우스패드 */
+  .pad{position:relative;width:80%;aspect-ratio:3/2;background:#1d1d1f;border-radius:18px;box-shadow:0 18px 30px -12px rgba(0,0,0,.35);overflow:hidden;transform:perspective(500px) rotateX(18deg)}
+  .pad .gface{position:absolute;right:6%;bottom:0;width:44%;height:92%;background-position:center bottom}
+  .pad .gtxt{position:absolute;left:8%;top:16%;color:#fff;font-weight:800;font-size:15px;line-height:1.3}
+  .pad .gtxt small{display:block;font-size:11px;color:#a1a1a6;font-weight:600;margin-top:4px}
+  .pad .eye{position:absolute;left:8%;bottom:14%;font-size:11px;color:#ffb46b;font-weight:700}
+  .bg1{background:linear-gradient(160deg,#f5f5f7,#e9e9ee)}
+  .bg2{background:linear-gradient(160deg,#fff6e8,#ffe9cc)}
+  .bg3{background:linear-gradient(160deg,#eef6f0,#d9ecdf)}
+  .bg4{background:linear-gradient(160deg,#eef3ff,#dbe6ff)}
+  .bg5{background:linear-gradient(160deg,#fdeef0,#fbdbe0)}
+  .bg6{background:linear-gradient(160deg,#2b2b2f,#141416)}
+
+  /* 붙잡기 전체 순위 */
+  .rank-all{margin-top:10px;border:0;background:none;color:#0066cc;font-size:14px;font-weight:600;cursor:pointer;padding:0}
+  .rank-all:hover{text-decoration:underline}
+  .rank-dlg{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:20px}
+  .rank-dlg.open{display:flex}
+  .rank-box{width:min(460px,100%);max-height:80vh;background:#fff;border-radius:24px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.3)}
+  .rank-box header{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 14px;border-bottom:1px solid #ececf0}
+  .rank-box header b{font-size:20px;font-weight:800;letter-spacing:-.02em}
+  .rank-box header small{display:block;font-size:13px;color:var(--mute);font-weight:500;margin-top:2px}
+  .rank-box header button{width:36px;height:36px;border-radius:50%;border:0;background:var(--mist);font-size:16px;cursor:pointer}
+  .rank-list{list-style:none;overflow:auto;padding:6px 10px 14px}
+  .rank-list li{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:8px;padding:11px 12px;border-radius:12px;font-variant-numeric:tabular-nums}
+  .rank-list li:nth-child(odd){background:#fafafa}
+  .rank-list li .r{font-weight:800;color:var(--mute);text-align:center}
+  .rank-list li.top1 .r,.rank-list li.top2 .r,.rank-list li.top3 .r{font-size:20px}
+  .rank-list li .n{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rank-list li .n small{font-weight:500;color:var(--mute);margin-left:6px;font-size:13px}
+  .rank-list li .t{font-weight:700}
+  .rank-list li.me{outline:2px solid var(--rind)}
+  .rank-foot{padding:12px 22px 18px;border-top:1px solid #ececf0;font-size:14px;color:var(--mute);display:flex;justify-content:space-between;gap:8px}
 </style>
 </head>
 <body>
@@ -436,6 +566,8 @@
   <a class="nav opt" href="#cert">졸업장</a>
   <a class="nav opt" href="#numbers">숫자로 보기</a>
   <a class="nav opt" href="#grab">붙잡기</a>
+  <a class="nav opt" href="#job">채용</a>
+  <a class="nav opt" href="#shop-sec">굿즈샵</a>
 </div></header>
 
 <section class="hero" id="top">
@@ -538,6 +670,93 @@
     </div>
     <div class="wall" id="notes"></div>
     <div class="msg" id="boardMsg">포스트잇을 불러오는 중이에요.</div>
+  </div>
+</section>
+
+<section class="job-sec" id="job">
+  <div class="wrap">
+    <div class="s-head">
+      <h2>멜론님 후임자를 찾습니다.</h2>
+      <p>동료들이 직접 자격 요건을 채워가는 채용 공고예요. 한 줄씩 더할수록 지원 가능한 사람이 줄어들어요.</p>
+    </div>
+    <article class="job">
+      <div class="job-top">
+        <div class="job-tags"><span class="hot">긴급 채용</span><span>정규직</span><span>경력 1,412일 이상</span></div>
+        <h3>Ad-Dev 유니티 개발자 (멜론님 후임)</h3>
+        <div class="co">🍈 멜론님이 떠난 자리 · 지금 바로 비어 있음</div>
+      </div>
+      <div class="facts">
+        <div><small>모집 인원</small><b>멜론 1명분</b></div>
+        <div><small>마감</small><b>영원히</b></div>
+        <div><small>지원자 수</small><b id="applicants">0명</b></div>
+        <div><small>경쟁률</small><b>측정 불가</b></div>
+      </div>
+      <div class="job-body">
+        <h4>자격 요건</h4>
+        <ul class="req" id="req"></ul>
+        <p class="msg" id="reqMsg"></p>
+        <form class="add" id="addReq">
+          <input class="field" id="reqText" maxlength="60" placeholder="멜론님 후임이라면 이 정도는…">
+          <button class="btn" type="submit">추가</button>
+        </form>
+        <input class="field add-name" id="reqName" maxlength="20" placeholder="작성자 이름 (선택)">
+
+        <h4>우대 사항</h4>
+        <ul class="req">
+          <li><span class="ck">+</span><p>얼굴이 멜론님과 닮은 분</p><small>인사팀</small></li>
+          <li><span class="ck">+</span><p>멜론님과 1,412일 이상 함께 일해본 분 (본인 제외)</p><small>인사팀</small></li>
+        </ul>
+
+        <h4>전형 절차</h4>
+        <div class="steps"><span>서류 전형</span><i>›</i><span>실무 면접</span><i>›</i><span>멜론님과 비교</span><i>›</i><span class="fail">불합격</span></div>
+      </div>
+      <div class="job-end">
+        <b>※ 현재 지원자 없음. 대체 불가.</b>
+        <p>자격 요건을 모두 갖춘 사람은 멜론님뿐이라는 결론에 도달했습니다.</p>
+        <div class="stamp">채용 보류</div>
+        <div class="apply"><button class="btn" id="applyBtn">지원하기</button></div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="shop-sec" id="shop-sec">
+  <div class="wrap">
+    <div class="s-head">
+      <h2>멜론님 공식 굿즈샵.</h2>
+      <p>멜론님이 떠나도 곁에 둘 수 있도록. 전 상품 포스트잇 1장으로 교환 가능합니다. (재고가 있다면요)</p>
+    </div>
+    <div class="shop" id="shop">
+      <div class="gitem"><div class="gstage bg1"><span class="gbadge">BEST</span>
+        <div class="mug"><div class="gbody"></div><div class="handle"></div><div class="print gface"></div><div class="gtxt">CHEERS, MELON</div></div></div>
+        <div class="ginfo"><h5>멜론님 머그컵</h5><p>커피를 따르면 멜론님이 웃어줍니다. 회의 전 한 모금이면 마음이 편해져요.</p>
+        <div class="buy"><span class="price"><s>12,000원</s>포스트잇 1장</span><button class="btn">담기</button></div></div></div>
+
+      <div class="gitem"><div class="gstage bg2"><span class="gbadge red">한정판</span>
+        <div class="stickers"><div class="stk s1"><div class="gface"></div><span class="bub">넵!</span></div><div class="stk s2"><div class="gface"></div></div><div class="stk s3"><div class="gface"></div></div></div></div>
+        <div class="ginfo"><h5>"넵" 끄덕임 스티커 3종</h5><p>노트북에 붙이면 회의 중 대신 끄덕여 드립니다. 슬랙 이모지로도 출시 예정(미정).</p>
+        <div class="buy"><span class="price">포스트잇 1장</span><button class="btn">담기</button></div></div></div>
+
+      <div class="gitem"><div class="gstage bg3"><span class="gbadge">신상품</span>
+        <div class="standee"><div class="gface"></div><div class="bod"></div><div class="base"></div></div></div>
+        <div class="ginfo"><h5>대신 출근해 주는 등신대</h5><p>멜론님 자리에 세워두면 아무도 퇴사한 줄 모릅니다. 월요일 아침 효과 최고.</p>
+        <div class="buy"><span class="price"><s>99,000원</s>포스트잇 1장</span><button class="btn">담기</button></div></div></div>
+
+      <div class="gitem"><div class="gstage bg4">
+        <div class="pillow"><div class="gface"></div><div class="gtxt">야근 메이트</div></div></div>
+        <div class="ginfo"><h5>야근 메이트 쿠션</h5><p>늦게 남은 날, 옆자리 멜론님이 그리울 때 꼭 안아주세요.</p>
+        <div class="buy"><span class="price">포스트잇 1장</span><button class="btn">담기</button></div></div></div>
+
+      <div class="gitem"><div class="gstage bg5">
+        <div class="keyring"><div class="ring"></div><div class="chain"></div><div class="acr"><div class="gface"></div></div></div></div>
+        <div class="ginfo"><h5>흔들리는 아크릴 키링</h5><p>퇴근길 가방에서 달랑달랑. 멜론님도 이렇게 가볍게 떠나셨습니다.</p>
+        <div class="buy"><span class="price">포스트잇 1장</span><button class="btn">담기</button></div></div></div>
+
+      <div class="gitem"><div class="gstage bg6"><span class="gbadge red">품귀</span>
+        <div class="pad"><div class="gtxt">빌드 성공을<br>기원합니다<small>Ad-Dev 공식 부적</small></div><div class="eye">👀 지켜보는 중</div><div class="gface"></div></div></div>
+        <div class="ginfo"><h5>지켜보는 마우스패드</h5><p>멜론님이 내 모니터를 지켜봅니다. 버그가 슬금슬금 도망가는 효과(체감).</p>
+        <div class="buy"><span class="price">포스트잇 1장</span><button class="btn">담기</button></div></div></div>
+    </div>
   </div>
 </section>
 
@@ -683,7 +902,7 @@
     <div class="grab-stats">
       <div><div class="k">방금 내가 붙잡은 시간</div><div class="v" id="gMine">0.0초</div></div>
       <div><div class="k">모두가 붙잡은 시간</div><div class="v" id="gTotal">0초</div></div>
-      <div><div class="k">가장 오래 붙잡은 동료</div><ol id="gTop"><li><span>아직 없어요</span></li></ol></div>
+      <div><div class="k">가장 오래 붙잡은 동료</div><ol id="gTop"><li><span>아직 없어요</span></li></ol><button class="rank-all" id="rankAllBtn" type="button">전체 순위 보기</button></div>
     </div>
   </div>
 </section>
@@ -734,6 +953,13 @@
   <div class="acts"><button class="btn" id="enterSound">🔊 소리 켜고 입장</button><button class="btn dim" id="enterQuiet">조용히 입장</button></div>
 </div>
 <button class="bgm" id="bgm" aria-label="음악 켜기" hidden><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span id="bgmT">음악 켜기</span></button>
+<div class="rank-dlg" id="rankDlg" role="dialog" aria-modal="true" aria-labelledby="rankTitle">
+  <div class="rank-box">
+    <header><div><b id="rankTitle">바짓가랑이 붙잡기 전체 순위</b><small id="rankSub"></small></div><button id="rankClose" aria-label="닫기">✕</button></header>
+    <ol class="rank-list" id="rankList"></ol>
+    <div class="rank-foot"><span id="rankAnon"></span><span id="rankTotal"></span></div>
+  </div>
+</div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -1101,6 +1327,55 @@ $('certSave').onclick = async () => {
     .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'live' }, () => load()).subscribe();
 })();
 
+// ===== 후임자 채용 공고 (동료들이 자격 요건 추가) =====
+(function(){
+  const BASE = [['Ad-Dev 유니티 개발 경력 1,412일 이상 (멜론님과 동일 조건)', '인사팀'], ['금요일 오후 3시에 절대 퇴사하지 않을 분', '인사팀']];
+  let reqs = [], posting = false, lastAt = 0, freshId = null;
+  try { $('reqName').value = localStorage.getItem('melon-author') || ''; } catch(e){}
+  function render(){
+    const ul = $('req'); ul.innerHTML = '';
+    const list = [...BASE.map(([text, author], i) => ({ id: 'b' + i, text, author })), ...reqs];
+    list.forEach(r => { const li = document.createElement('li'); if (r.id === freshId) li.className = 'fresh';
+      li.innerHTML = '<span class="ck">✓</span><p></p><small></small>'; li.children[1].textContent = r.text; li.children[2].textContent = r.author || '익명'; ul.appendChild(li); });
+  }
+  async function load(){
+    if (!sb) return render();
+    const { data, error } = await sb.from('job_reqs').select('*').order('created_at', { ascending: true }).limit(200);
+    if (error){ console.error(error); $('reqMsg').textContent = '자격 요건을 불러오지 못했어요 (' + errText(error) + ')'; return render(); }
+    $('reqMsg').textContent = ''; reqs = data; render();
+  }
+  $('addReq').addEventListener('submit', async e => {
+    e.preventDefault();
+    const text = $('reqText').value.trim();
+    if (!text) return toast('자격 요건을 써주세요');
+    if (!sb || posting) return;
+    if (Date.now() - lastAt < 10000) return toast('10초 뒤에 다시 추가할 수 있어요');
+    const author = $('reqName').value.trim().slice(0, 20) || null;
+    try { localStorage.setItem('melon-author', author || ''); } catch(_){}
+    posting = true;
+    const { error } = await sb.from('job_reqs').insert({ text: text.slice(0, 60), author });
+    posting = false;
+    if (error){ console.error(error); return toast('추가하지 못했어요 (' + errText(error) + ')'); }
+    lastAt = Date.now(); $('reqText').value = ''; toast('자격 요건이 하나 늘었어요. 지원 가능한 사람이 더 줄었습니다'); load();
+  });
+  const applyLines = ['서류 검토 결과: 멜론님이 아니시네요. 불합격입니다.', '지원해 주셔서 감사합니다. 멜론님과 비교 전형에서 탈락하셨습니다.', '죄송합니다. 이 자리는 멜론님 전용입니다.'];
+  let ap = 0; $('applyBtn').onclick = () => { ap++; $('applicants').textContent = ap + '명 (전원 불합격)'; toast(applyLines[(ap - 1) % applyLines.length]); };
+  render(); load();
+  if (sb) sb.channel('job-live').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'job_reqs' }, ({ new: r }) => { freshId = r.id; reqs = [...reqs.filter(x => x.id !== r.id), r]; render(); })
+    .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'job_reqs' }, () => load()).subscribe();
+})();
+
+// ===== 멜론님 굿즈샵 =====
+document.documentElement.style.setProperty('--face', 'url("melon-face.png?v=3")');
+(function(){
+  const soldLines = ['품절: 원본이 퇴사했습니다', '재입고 예정 없음. 원본이 다른 회사로 출고되었습니다', '품절: 포스트잇 먼저 붙이고 오세요 😉'];
+  let si = 0;
+  document.querySelectorAll('#shop .gitem').forEach(item => {
+    const b = item.querySelector('.btn');
+    b.onclick = () => { if (item.classList.contains('soldout')) return; item.classList.add('soldout'); b.classList.add('out'); b.textContent = '품절'; toast(soldLines[si++ % soldLines.length]); };
+  });
+})();
+
 // ===== 명언 =====
 const quotes=[['퇴사는 끝이 아니라, 알람 없는 아침의 시작이다.','멜론, 출근길에서'],['인수인계 문서는 길게, 송별사는 짧게.','고대 직장인 격언'],
   ['멜론은 원래 잘 익으면 떠나는 법이다.','과일가게 사장님'],['“제가 없어도 잘 돌아갈 거예요”는 거짓말이다. 서로 알고 있다.','남겨진 팀원 일동'],
@@ -1176,7 +1451,36 @@ showQuote(); setInterval(()=>{ qi=(qi+1)%quotes.length; showQuote(); }, 9000);
   requestAnimationFrame(frame);
 
   const fmtDur = t => { t = Math.round(t); const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), s = t % 60; return h ? `${h}시간 ${m}분` : m ? `${m}분 ${s}초` : `${s}초`; };
+  function rankRows(){
+    const by = {}, cnt = {};
+    grabs.forEach(g => { if (g.author){ by[g.author] = (by[g.author] || 0) + (+g.seconds || 0); cnt[g.author] = (cnt[g.author] || 0) + 1; } });
+    return Object.entries(by).sort((a, b) => b[1] - a[1]).map(([n, t]) => ({ n, t, c: cnt[n] }));
+  }
+  function renderRankAll(){
+    const rows = rankRows(), me = ($('grabName').value || '').trim();
+    const ul = $('rankList'); ul.innerHTML = '';
+    const medal = ['🥇','🥈','🥉'];
+    if (!rows.length){ const li = document.createElement('li'); li.style.gridTemplateColumns = '1fr'; li.textContent = '아직 이름을 남긴 기록이 없어요. 이름을 쓰고 붙잡아 보세요!'; ul.appendChild(li); }
+    rows.forEach((r, i) => {
+      const li = document.createElement('li'); li.className = (i < 3 ? 'top' + (i + 1) : '') + (me && r.n === me ? ' me' : '');
+      const a = document.createElement('span'); a.className = 'r'; a.textContent = medal[i] || (i + 1);
+      const b = document.createElement('span'); b.className = 'n'; b.textContent = r.n; const sm = document.createElement('small'); sm.textContent = r.c + '번'; b.appendChild(sm);
+      const c = document.createElement('span'); c.className = 't'; c.textContent = fmtDur(r.t);
+      li.append(a, b, c); ul.appendChild(li);
+    });
+    const anon = grabs.filter(g => !g.author).reduce((a, g) => a + (+g.seconds || 0), 0);
+    const total = grabs.reduce((a, g) => a + (+g.seconds || 0), 0);
+    $('rankSub').textContent = `참여한 동료 ${rows.length}명`;
+    $('rankAnon').textContent = anon ? `익명으로 붙잡은 시간 ${fmtDur(anon)}` : '';
+    $('rankTotal').textContent = `전체 ${fmtDur(total)}`;
+  }
+  $('rankAllBtn').onclick = () => { renderRankAll(); $('rankDlg').classList.add('open'); $('rankClose').focus(); };
+  const closeRank = () => $('rankDlg').classList.remove('open');
+  $('rankClose').onclick = closeRank;
+  $('rankDlg').addEventListener('click', e => { if (e.target.id === 'rankDlg') closeRank(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeRank(); });
   function renderGrab(){
+    if ($('rankDlg').classList.contains('open')) renderRankAll();
     const total = grabs.reduce((a, g) => a + (+g.seconds || 0), 0);
     $('gTotal').textContent = fmtDur(total);
     const by = {}; grabs.forEach(g => { if (g.author) by[g.author] = (by[g.author] || 0) + (+g.seconds || 0); });
