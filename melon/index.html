@@ -1035,7 +1035,7 @@ function renderCert(){
   const e0 = new Date(endDate()); e0.setHours(0,0,0,0); const h0 = new Date(HIRE); h0.setHours(0,0,0,0);
   const n = { days: Math.round((e0 - h0) / 86400000) + 1 };
   $('certNo').textContent = `제 ${n.days} 호`;
-  $('certBody').textContent = `위 사람은 2023년 1월 9일 입사하여 ${n.days.toLocaleString()}일 동안 마케팅 유니티 개발자로 일하며 동료들과 함께 웃고 고민하고 수많은 금요일을 함께 맞이하였기에, 회사생활의 모든 과정을 훌륭히 마쳤음을 인정하여 이 졸업장을 수여합니다.`;
+  $('certBody').textContent = `위 사람은 2023년 1월 9일 입사하여 ${n.days.toLocaleString()}일 동안 Ad-Dev 유니티 개발자로 일하며 동료들과 함께 웃고 고민하고 수많은 금요일을 함께 맞이하였기에, 회사생활의 모든 과정을 훌륭히 마쳤음을 인정하여 이 졸업장을 수여합니다.`;
   const names = [], seen = new Set(); let anon = 0;
   const add = a => { const v = (a || '').trim(); if (!v){ anon++; return; } if (!seen.has(v)){ seen.add(v); names.push(v); } };
   [...notes.values()].sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).forEach(x => add(x.author));
