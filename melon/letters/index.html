@@ -297,7 +297,7 @@ $('vplay').onclick = () => { if (auto) stopAuto(); else { auto = 1; startAuto();
 $('play').onclick = () => { if (audio.paused) audio.play().catch(() => {}); openAt(0); auto = 1; startAuto(); };
 
 // ===== 배경음악 =====
-const audio = new Audio('../bgm.mp3'); audio.loop = true; audio.volume = .7; audio.preload = 'auto';
+const audio = new Audio('letters-bgm.mp3'); audio.loop = true; audio.volume = .7; audio.preload = 'auto';
 function bgmUI(){ $('bgm').textContent = audio.paused ? '♪ 음악 켜기' : '♪ 음악 끄기'; }
 $('bgm').onclick = () => { audio.paused ? audio.play().catch(() => {}) : audio.pause(); };
 audio.addEventListener('play', bgmUI); audio.addEventListener('pause', bgmUI);
