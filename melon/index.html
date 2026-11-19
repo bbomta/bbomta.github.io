@@ -66,6 +66,58 @@
   .cue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;color:#86868b;font-size:13px;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:6px}
   .cue i{width:1px;height:28px;background:linear-gradient(#86868b,transparent);animation:cue 2s ease-in-out infinite}
   @keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+  /* 첫 화면: 멜론님의 마지막 퇴근길 */
+  .hero.has-sky{background:#4f9fe6;justify-content:flex-start;padding-top:clamp(88px,12vh,132px)}
+  .hero.has-sky::after{background:linear-gradient(180deg,rgba(8,22,48,.34),rgba(8,22,48,.12) 34%,rgba(8,22,48,0) 52%)}
+  .hero.has-sky .drift{display:none}
+  .sky{position:absolute;inset:0;z-index:0}
+  .sky-svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .hero.has-sky .hero-copy{text-shadow:0 1px 20px rgba(0,28,64,.28);transition:opacity 1s var(--ease)}
+  .hero.has-sky .melon{font-size:34px;margin-bottom:10px}
+  .hero.has-sky h1{font-size:clamp(32px,5vw,62px)}
+  .hero.has-sky h1 .l2{color:rgba(255,255,255,.84)}
+  .hero.has-sky .dday{display:none}
+  .hero.has-sky .timer{margin-top:14px}
+  .hero.has-sky .when{color:rgba(255,255,255,.86)}
+  .hero.has-sky .status{margin-top:16px;background:rgba(10,24,48,.22);color:#fff;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);text-shadow:none}
+  .hero.has-sky .cue{color:rgba(255,255,255,.9);text-shadow:0 1px 10px rgba(0,0,0,.3)}
+  .hero.has-sky .cue i{background:linear-gradient(#fff,transparent)}
+  .hero.sky-focus .hero-copy,.hero.sky-focus .cue,.hero.sky-focus .sky-birds{opacity:0}
+  .sky-cap{position:absolute;left:0;right:0;bottom:15%;z-index:3;text-align:center;color:#fff;font-size:clamp(24px,3.6vw,40px);font-weight:800;letter-spacing:-.04em;line-height:1.25;
+    text-shadow:0 2px 24px rgba(0,0,0,.45);opacity:0;transform:translateY(10px);filter:blur(6px);transition:opacity 1.4s var(--ease),transform 1.4s var(--ease),filter 1.4s var(--ease);pointer-events:none;padding:0 22px}
+  .sky-cap.on{opacity:1;transform:none;filter:none}
+  .sky-cap small{display:block;margin-top:8px;font-size:.5em;font-weight:500;letter-spacing:-.01em;opacity:.88}
+  .sky-birds{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;transition:opacity .8s}
+  .pg{position:absolute;left:0;top:0;display:flex;flex-direction:column;align-items:flex-end;will-change:transform}
+  .pg.rtl{align-items:flex-start}
+  .pg.rtl svg{transform:scaleX(-1)}
+  .pg svg{display:block;margin:0 6px}
+  .pg-bub{position:relative;max-width:min(260px,62vw);margin-bottom:10px;padding:11px 15px 10px;border-radius:18px;background:rgba(255,255,255,.9);
+    -webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);box-shadow:0 10px 30px rgba(10,30,60,.16);color:#1d1d1f;text-shadow:none;text-align:left}
+  .pg-bub p{margin:0;font-size:14px;line-height:1.45;font-weight:500;letter-spacing:-.01em;word-break:keep-all}
+  .pg-bub span{display:block;margin-top:4px;font-size:12px;color:#6e6e73}
+  .pg-bub::after{content:'';position:absolute;bottom:-6px;right:30px;width:14px;height:14px;background:inherit;transform:rotate(45deg);border-radius:0 0 4px 0}
+  .pg.rtl .pg-bub::after{right:auto;left:30px}
+  .pg-wing{transform-box:fill-box;transform-origin:40% 95%;animation:pgFlap .3s ease-in-out infinite alternate}
+  @keyframes pgFlap{from{transform:scaleY(1)}to{transform:scaleY(-.6)}}
+  #skMelon .sk-leg{transform-box:fill-box;transform-origin:50% 0}
+  #skMelon.sk-walking .sk-l{animation:skStep .55s ease-in-out infinite alternate}
+  #skMelon.sk-walking .sk-r{animation:skStep .55s ease-in-out infinite alternate-reverse}
+  #skMelon.sk-walking .sk-bob{animation:skBob .275s ease-in-out infinite alternate}
+  @keyframes skStep{from{transform:rotate(16deg)}to{transform:rotate(-16deg)}}
+  @keyframes skBob{from{transform:translateY(0)}to{transform:translateY(-2.5px)}}
+  #skArmR{transform-origin:19px -76px}
+  #skMelon.sk-waving #skArmR{animation:skWave .5s ease-in-out infinite alternate}
+  @keyframes skWave{from{transform:rotate(-150deg)}to{transform:rotate(-115deg)}}
+  #skMelon.sk-typing #skArmL,#skMelon.sk-typing #skArmR{animation:skType .18s ease-in-out infinite alternate}
+  @keyframes skType{to{transform:translateY(-1.5px)}}
+  .sk-sil .sk-hand{transform-box:fill-box;transform-origin:50% 100%}
+  .sk-sil.wav .sk-hand{animation:skHand .6s ease-in-out infinite alternate}
+  @keyframes skHand{from{transform:rotate(-25deg)}to{transform:rotate(25deg)}}
+  .sk-tw{animation:skTw 2.4s ease-in-out infinite alternate}
+  @keyframes skTw{from{opacity:.3}to{opacity:1}}
+  #skAvi{animation:skTw 1.2s steps(2) infinite}
+  @media (prefers-reduced-motion: reduce){ .sky *{animation:none!important} }
   /* 한 번의 등장 연출 */
   .seq{opacity:0;transform:translateY(18px);filter:blur(6px);transition:opacity 1.2s var(--ease),transform 1.2s var(--ease),filter 1.2s var(--ease)}
   .seq.in{opacity:1;transform:none;filter:none}
@@ -719,7 +771,8 @@
   <a class="nav opt" href="#shop-sec">굿즈샵</a>
 </div></header>
 
-<section class="hero" id="top">
+<section class="hero has-sky" id="top">
+  <div class="sky" id="sky"></div>
   <div class="drift" id="drift" aria-hidden="true"></div>
   <div class="hero-copy">
     <button class="melon seq" id="melon" aria-label="멜론 쓰다듬기">🍈</button>
@@ -2242,7 +2295,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && endPlaying
 // 언제 재생할까: 마지막 퇴근 순간(페이지를 열어둔 경우), 퇴근 후 첫 방문, 또는 #for-melon 링크
 let endArmed = Date.now() < endDate().getTime();
 function maybeEnding(){
-  if (endArmed && Date.now() >= endDate().getTime()){ endArmed = false; playEnding(); }
+  if (endArmed && Date.now() >= endDate().getTime()){ endArmed = false; (window.SKY ? SKY.finale() : Promise.resolve()).then(() => playEnding()); }
 }
 setInterval(maybeEnding, 1000);
 function startEndingWhenReady(){
@@ -2262,7 +2315,7 @@ function afterEnter(){
 function enter(withSound){
   if (withSound){ Music.setMuted(false); Music.start(); }
   $('enter').classList.add('gone'); bgmUI();
-  setTimeout(() => { intro(); afterEnter(); }, 500);
+  setTimeout(() => { intro(); afterEnter(); if (window.SKY) SKY.start(); }, 500);
 }
 $('enterSound').onclick = () => enter(true);
 $('enterQuiet').onclick = () => enter(false);
@@ -2283,5 +2336,6 @@ $('enterQuiet').onclick = () => enter(false);
 })();
 window.addEventListener('hashchange', () => { if (location.hash === '#for-melon') location.replace('letters/'); else if (location.hash === '#ending') startEndingWhenReady(); });
 </script>
+<script src="sky.js?v=3"></script>
 </body>
 </html>
