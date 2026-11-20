@@ -66,46 +66,50 @@
   .cue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;color:#86868b;font-size:13px;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:6px}
   .cue i{width:1px;height:28px;background:linear-gradient(#86868b,transparent);animation:cue 2s ease-in-out infinite}
   @keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
-  /* 첫 화면: 갤러리 사진 상영 + 포스트잇 */
-  .hero{justify-content:flex-start;padding:clamp(104px,13vh,124px) 22px 64px}
-  .hero::after{background:radial-gradient(ellipse 90% 80% at 50% 50%,rgba(0,0,0,.38) 0%,rgba(0,0,0,.84) 100%)}
+  /* 첫 화면: 멜론 밴드 + 갤러리 사진 + 포스트잇 (서로 겹치지 않게 칸을 나눔) */
+  .hero{justify-content:flex-start;padding:clamp(102px,12.5vh,120px) 22px 56px;--W:min(1360px,calc(100vw - 44px));--G:32px}
+  .hero::after{background:radial-gradient(ellipse 90% 80% at 50% 45%,rgba(0,0,0,.42) 0%,rgba(0,0,0,.86) 100%)}
   .hero .drift,.hero .cue,.hero .dday,.hero .status,.hero .melon{display:none}
   .film-bg{position:absolute;inset:-60px;z-index:0;pointer-events:none}
   .film-bg i{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(56px) saturate(1.3);transform:scale(1.1);opacity:0;transition:opacity 2.4s var(--ease)}
-  .film-bg i.on{opacity:.55}
-  .hero h1{font-size:clamp(24px,2.9vw,38px);line-height:1.2;font-weight:700;letter-spacing:-.035em;color:#f5f5f7}
+  .film-bg i.on{opacity:.5}
+  .hero h1{font-size:clamp(24px,2.7vw,36px);line-height:1.2;font-weight:700;letter-spacing:-.035em;color:#f5f5f7}
   .hero h1 .l2{display:inline;color:#86868b}
-  .film{position:relative;z-index:2;width:min(1440px,100%);margin-top:clamp(18px,2.6vh,28px);display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);column-gap:clamp(20px,2.4vw,40px);row-gap:18px;align-items:stretch}
-  #filmL{grid-column:1;grid-row:1} #filmR{grid-column:3;grid-row:1} .film-frame{grid-column:2;grid-row:1}
-  .film-frame{margin:0;position:relative;width:min(56vw,1000px);height:clamp(300px,64vh,760px)}
-  .film-frame img{position:absolute;left:50%;top:50%;max-width:100%;max-height:100%;border-radius:20px;box-shadow:0 40px 100px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);
+  .film{position:relative;z-index:2;width:var(--W);margin-top:clamp(16px,2.4vh,26px);display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);
+    grid-template-areas:"band photo" "notes notes";gap:22px var(--G);text-align:left}
+  .film-band{grid-area:band;min-width:0}
+  .hero #band .bd-stage-wrap{width:100%;margin:0;padding:0}
+  .hero #band .bd-stage{border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+  .hero #band .bd-members{display:none}
+  .hero #band .bd-ctrl{margin-top:14px}
+  .hero #band .bd-lyric{font-size:clamp(18px,2.5vw,38px)}
+  .film-photo{grid-area:photo;min-width:0;display:flex;flex-direction:column}
+  .film-frame{margin:0;position:relative;width:100%;height:calc((var(--W) - var(--G)) * 1.12 / 2.12 * 9 / 16)}
+  .film-frame img{position:absolute;left:50%;top:50%;max-width:100%;max-height:100%;border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);
     opacity:0;transform:translate(-50%,-50%) scale(1);transition:opacity 1.8s var(--ease),transform 10s linear}
-  .film-frame img.on{opacity:1;transform:translate(-50%,-50%) scale(1.035)}
+  .film-frame img.on{opacity:1;transform:translate(-50%,-50%) scale(1.03)}
   .film-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#86868b;font-size:15px}
-  .film-ph[hidden],.upload-toggle[hidden],.upload[hidden]{display:none!important}
-  .film-side{position:relative;display:grid;min-width:0}
-  #filmL{justify-items:end;align-items:end;padding-bottom:6%}
-  #filmR{justify-items:start;align-items:start;padding-top:6%}
-  .fp{grid-area:1/1;width:min(270px,100%);padding:24px 22px 18px;border-radius:3px 3px 22px 3px;color:#1d1d1f;box-shadow:0 28px 60px rgba(0,0,0,.5);text-align:left;
+  .film-ph[hidden]{display:none!important}
+  .film-cap{margin-top:16px;min-height:46px;text-align:center}
+  .film-cap b{display:block;font-size:18px;font-weight:600;letter-spacing:-.022em;color:#f5f5f7;transition:opacity .6s}
+  .film-cap span{display:block;margin-top:5px;font-size:13px;letter-spacing:-.01em;color:#86868b;font-variant-numeric:tabular-nums}
+  .film-notes{grid-area:notes;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--G);min-height:196px}
+  .film-notes .slot{display:grid;justify-items:center;align-items:start;min-width:0}
+  .fp{grid-area:1/1;width:min(300px,100%);padding:22px 22px 16px;border-radius:3px 3px 22px 3px;color:#1d1d1f;box-shadow:0 26px 56px rgba(0,0,0,.5);text-align:left;
     opacity:0;transform:translateY(24px) rotate(var(--r,0deg));filter:blur(10px);transition:opacity 2s var(--ease),transform 2s var(--ease),filter 2s var(--ease)}
   .fp.in{opacity:1;transform:translateY(0) rotate(var(--r,0deg));filter:none}
   .fp.out{opacity:0;transform:translateY(-18px) rotate(var(--r,0deg));filter:blur(8px)}
-  .fp p{margin:0;font-family:'Nanum Pen Script',cursive;font-size:clamp(25px,2vw,30px);line-height:1.18;word-break:keep-all;overflow-wrap:anywhere}
-  .fp span{display:block;margin-top:14px;font-size:13px;font-weight:600;letter-spacing:-.01em;color:rgba(0,0,0,.5)}
-  .film-cap{grid-column:2;grid-row:2;min-height:48px;text-align:center}
-  .film-cap b{display:block;font-size:19px;font-weight:600;letter-spacing:-.022em;color:#f5f5f7;transition:opacity .6s}
-  .film-cap span{display:block;margin-top:6px;font-size:13px;letter-spacing:-.01em;color:#86868b;font-variant-numeric:tabular-nums}
-  .hero-meta{position:relative;z-index:2;margin-top:clamp(18px,3vh,30px);display:flex;flex-direction:column;align-items:center;text-align:center}
+  .fp p{margin:0;font-family:'Nanum Pen Script',cursive;font-size:clamp(24px,1.9vw,29px);line-height:1.18;word-break:keep-all;overflow-wrap:anywhere}
+  .fp span{display:block;margin-top:12px;font-size:13px;font-weight:600;letter-spacing:-.01em;color:rgba(0,0,0,.5)}
+  .hero-meta{position:relative;z-index:2;margin-top:clamp(14px,2.4vh,26px);display:flex;flex-direction:column;align-items:center;text-align:center}
   .hero .timer{margin-top:0;font-size:clamp(18px,1.7vw,22px);font-weight:600;letter-spacing:-.02em}
   .hero .when{margin-top:6px;font-size:15px;letter-spacing:-.01em;color:#86868b}
-  @media (max-width:760px){
-    .hero{padding-top:104px}
-    .film{grid-template-columns:1fr}
-    #filmL,.film-frame,.film-cap{grid-column:1;grid-row:auto}
-    .film-frame{width:100%;height:clamp(280px,54vh,560px);order:1}
-    .film-cap{order:2}
-    #filmL{order:3;justify-items:center;align-items:start;padding:0;min-height:190px} #filmR{display:none}
-    .fp{width:min(320px,90%)}
+  @media (max-width:860px){
+    .hero{padding-top:104px;--G:18px}
+    .film{grid-template-columns:1fr;grid-template-areas:"band" "photo" "notes"}
+    .film-frame{height:clamp(220px,38vh,440px)}
+    .film-notes{grid-template-columns:1fr;min-height:180px}
+    .film-notes .slot:not(:first-child){display:none}
   }
   @media (prefers-reduced-motion: reduce){ .film-frame img,.film-frame img.on{transition:opacity .01s;transform:translate(-50%,-50%)} .fp{transition:opacity .4s} }
   /* 한 번의 등장 연출 */
@@ -723,7 +727,8 @@
   .req li .adm{top:50%;transform:translateY(-50%)}
   .admbar{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:640;display:none;align-items:center;gap:10px;background:#d8432a;color:#fff;font-size:14px;font-weight:700;padding:9px 10px 9px 16px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
   body.admin .admbar{display:flex}
-  .admbar button{border:0;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;background:rgba(255,255,255,.2);color:#fff;cursor:pointer}
+  .admbar{max-width:calc(100vw - 16px);overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+  .admbar button{white-space:nowrap;flex:none;border:0;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;background:rgba(255,255,255,.2);color:#fff;cursor:pointer}
   .admdlg{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px}
   .admdlg.open{display:flex}
   .admbox{width:min(520px,100%);max-height:86vh;overflow:auto;background:#fff;color:var(--ink);border-radius:22px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
@@ -753,6 +758,18 @@
   .admph .acts .ok{background:var(--ink);color:#fff}
   .admph .acts .del{background:#d8432a;color:#fff}
   @media (max-width:640px){ .admadd{grid-template-columns:1fr 1fr} .admadd .pickbtn,.admadd .btn{grid-column:span 2;justify-content:center} .admph li{grid-template-columns:56px 1fr} .admph .no{display:none} .admph img{width:56px;height:56px} .admph .acts{grid-column:1/-1} }
+  #admLyDlg,#admPhDlg{align-items:flex-start;padding-top:max(20px,5vh)}
+  #admLyText{min-height:150px;font-size:14px;line-height:1.55}
+  .lyctl{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+  .lyctl .btn{padding:10px 16px;font-size:14px}
+  .lyctl .tap{background:#2d7a3e;min-width:140px}
+  .lyctl .tap:disabled{opacity:.4}
+  .lynow{font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums}
+  .lylist{list-style:none;margin-top:10px;max-height:38vh;overflow:auto;border-top:1px solid var(--hair)}
+  .lylist li{display:grid;grid-template-columns:76px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--hair);font-size:14px}
+  .lylist li.next{background:#f0f8f1}
+  .lylist input{width:76px;border:1px solid var(--hair);border-radius:8px;padding:5px 6px;font:inherit;font-variant-numeric:tabular-nums}
+  .lylist button{border:0;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:700;background:#e8e8ed;cursor:pointer}
   .admlist{list-style:none;margin-top:12px}
   .admlist li{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--hair);font-size:14px}
   .admlist li span{flex:1;overflow-wrap:anywhere}
@@ -784,7 +801,7 @@
   <a class="nav opt" href="#cert">졸업장</a>
   <a class="nav opt" href="#numbers">숫자로 보기</a>
   <a class="nav opt" href="#grab">붙잡기</a>
-  <a class="nav opt" href="#band-sec">밴드</a>
+  <a class="nav opt" href="#top">밴드</a>
   <a class="nav opt" href="#job">채용</a>
   <a class="nav opt" href="#shop-sec">굿즈샵</a>
 </div></header>
@@ -797,107 +814,7 @@
     <h1><span class="seq" id="l1">멜론님,</span> <span class="l2 seq" id="l2">그동안 정말 고마웠어요.</span></h1>
   </div>
   <div class="film seq" id="film">
-    <div class="film-side" id="filmL" aria-live="polite"></div>
-    <figure class="film-frame" id="filmFrame" aria-label="동료들이 올린 멜론님 사진"><div class="film-ph" id="filmPh">사진을 불러오는 중이에요</div></figure>
-    <div class="film-side" id="filmR"></div>
-    <div class="film-cap seq" id="filmCap"><b></b><span></span></div>
-  </div>
-  <div class="hero-meta">
-    <div class="dday seq" id="dday">D-?</div>
-    <div class="timer seq" id="timer">&nbsp;</div>
-    <div class="when seq" id="when">&nbsp;</div>
-    <div class="status seq" id="status">&nbsp;</div>
-  </div>
-  <a class="cue seq" id="cue" href="#together">아래로 내려보세요<i></i></a>
-</section>
-
-<section class="together" id="together">
-  <div class="wrap">
-    <div class="date">2023년 1월 9일.</div>
-    <p class="lead">오전 11시 22분, 이런 인사로 멜론님을 처음 만났어요.</p>
-    <figure class="hello">
-      <div class="av" aria-hidden="true">🍈</div>
-      <div>
-        <div class="who">멜론<span>오전 11:22</span></div>
-        <p>안녕하세요! 오늘 마케팅 유니티 개발자로 입사한 멜론입니다!<br>앞으로 잘부탁드리겠습니다! 😁</p>
-        <div class="reacts" id="reacts" aria-label="이모지 반응 200개"></div>
-      </div>
-    </figure>
-    <p class="hello-note">그날 받은 환영 이모지는 모두 200개였어요.</p>
-
-    <div class="span" id="span">
-      <div><b data-to="0" id="dTogether">0<small>일</small></b><i>함께한 날</i></div>
-      <div><b data-to="0" id="dMonths">0<small>개월</small></b><i>함께한 달</i></div>
-      <div><b data-to="0" id="dFri">0<small>번</small></b><i>함께 맞이한 금요일</i></div>
-      <div><b data-to="0" id="dNY">0<small>번</small></b><i>함께 맞이한 새해</i></div>
-    </div>
-
-    <div class="line" id="line" aria-hidden="true"><i id="lineFill"></i></div>
-    <div class="line-ends"><span>2023. 1. 9</span><span>2026. 11. 20</span></div>
-
-    <div class="finale">
-      <div class="date">그리고 2026년 11월 20일.</div>
-      <p class="lead" id="finaleLead">오후 7시, 마지막 퇴근. 그동안 정말 수고 많으셨어요.</p>
-    </div>
-  </div>
-</section>
-
-<section class="gallery-sec" id="gallery">
-  <div class="wrap s-head">
-    <h2>함께한 장면들.</h2>
-    <p>동료들이 올린 멜론님 사진이 천천히 넘어가요.</p>
-  </div>
-  <div class="stage" id="stage">
-    <div class="empty" id="stageEmpty"><b>첫 장면을 기다리는 중</b><span>갤러리가 마감되었어요.</span></div>
-    <div class="slide" id="slideA"></div>
-    <div class="slide" id="slideB"></div>
-    <div class="shade"></div>
-    <div class="cap" id="stageCap"><b></b><span></span></div>
-    <div class="ctrl">
-      <button id="stPrev" aria-label="이전 사진">‹</button>
-      <button id="stPlay" aria-label="일시정지">❚❚</button>
-      <button id="stNext" aria-label="다음 사진">›</button>
-      <button id="stZoom" aria-label="크게 보기">⤢</button>
-    </div>
-  </div>
-  <div class="progress" id="dots"></div>
-  <div class="thumbs" id="thumbs"></div>
-  <div class="msg" id="galleryMsg">사진을 불러오는 중이에요.</div>
-</section>
-
-<section class="wall-sec" id="wall">
-  <div class="wrap">
-    <div class="s-head">
-      <h2>한 마디씩, 붙여주세요.</h2>
-      <p>감사, 추억, 소소한 폭로까지. 붙이는 순간 모두의 화면에 나타나요. 로그인은 필요 없어요.</p>
-    </div>
-    <form class="compose" id="compose">
-      <label for="noteText" style="position:absolute;left:-9999px">메시지</label>
-      <textarea class="field" id="noteText" maxlength="200" placeholder="멜론님 덕분에 회의가 덜 지루했어요. 근데 제 마우스는 언제 돌려주시나요?"></textarea>
-      <input class="field name" id="author" maxlength="20" placeholder="이름 (비워두면 익명)">
-      <div class="row2">
-        <div class="swatches" id="swatches" role="group" aria-label="포스트잇 색"></div>
-        <span class="count" id="count">0/200</span>
-        <button class="btn" type="submit" id="postBtn">붙이기</button>
-      </div>
-    </form>
-    <div class="wall-tools">
-      <b id="boardCount">포스트잇 0장</b>
-      <div class="seg" role="group" aria-label="정렬">
-        <button type="button" data-sort="new" aria-pressed="true">최신순</button>
-        <button type="button" data-sort="old" aria-pressed="false">오래된순</button>
-      </div>
-    </div>
-    <div class="wall" id="notes"></div>
-    <div class="msg" id="boardMsg">포스트잇을 불러오는 중이에요.</div>
-  </div>
-</section>
-
-<section class="band-sec" id="band-sec">
-  <div class="wrap s-head">
-    <h2>멜론 밴드, 마지막 공연.</h2>
-    <p>보컬도, 기타도, 드럼도 전부 멜론님. 오늘 단 하루, 퇴근 기념 단독 콘서트를 엽니다. 소리를 켜고 공연 시작을 눌러주세요.</p>
-  </div>
+    <div class="film-band">
   <div id="band">
 <div class="bd-stage-wrap">
   <div class="bd-stage" id="bdStage">
@@ -1055,6 +972,102 @@
   <div><b>🎸 베이스 멜론</b><span>팀의 리듬을 묵묵히 받쳐온 사람</span></div>
   <div><b>🥁 드럼 멜론</b><span>금요일 오후 7시를 향해 두드리는 비트</span></div>
 </div>
+  </div>
+    </div>
+    <div class="film-photo">
+      <figure class="film-frame" id="filmFrame" aria-label="동료들이 올린 멜론님 사진"><div class="film-ph" id="filmPh">사진을 불러오는 중이에요</div></figure>
+      <div class="film-cap" id="filmCap"><b></b><span></span></div>
+    </div>
+    <div class="film-notes" id="filmNotes" aria-live="polite"><div class="slot"></div><div class="slot"></div><div class="slot"></div></div>
+  </div>
+  <div class="hero-meta">
+    <div class="dday seq" id="dday">D-?</div>
+    <div class="timer seq" id="timer">&nbsp;</div>
+    <div class="when seq" id="when">&nbsp;</div>
+    <div class="status seq" id="status">&nbsp;</div>
+  </div>
+  <a class="cue seq" id="cue" href="#together">아래로 내려보세요<i></i></a>
+</section>
+
+<section class="together" id="together">
+  <div class="wrap">
+    <div class="date">2023년 1월 9일.</div>
+    <p class="lead">오전 11시 22분, 이런 인사로 멜론님을 처음 만났어요.</p>
+    <figure class="hello">
+      <div class="av" aria-hidden="true">🍈</div>
+      <div>
+        <div class="who">멜론<span>오전 11:22</span></div>
+        <p>안녕하세요! 오늘 마케팅 유니티 개발자로 입사한 멜론입니다!<br>앞으로 잘부탁드리겠습니다! 😁</p>
+        <div class="reacts" id="reacts" aria-label="이모지 반응 200개"></div>
+      </div>
+    </figure>
+    <p class="hello-note">그날 받은 환영 이모지는 모두 200개였어요.</p>
+
+    <div class="span" id="span">
+      <div><b data-to="0" id="dTogether">0<small>일</small></b><i>함께한 날</i></div>
+      <div><b data-to="0" id="dMonths">0<small>개월</small></b><i>함께한 달</i></div>
+      <div><b data-to="0" id="dFri">0<small>번</small></b><i>함께 맞이한 금요일</i></div>
+      <div><b data-to="0" id="dNY">0<small>번</small></b><i>함께 맞이한 새해</i></div>
+    </div>
+
+    <div class="line" id="line" aria-hidden="true"><i id="lineFill"></i></div>
+    <div class="line-ends"><span>2023. 1. 9</span><span>2026. 11. 20</span></div>
+
+    <div class="finale">
+      <div class="date">그리고 2026년 11월 20일.</div>
+      <p class="lead" id="finaleLead">오후 7시, 마지막 퇴근. 그동안 정말 수고 많으셨어요.</p>
+    </div>
+  </div>
+</section>
+
+<section class="gallery-sec" id="gallery">
+  <div class="wrap s-head">
+    <h2>함께한 장면들.</h2>
+    <p>동료들이 올린 멜론님 사진이 천천히 넘어가요.</p>
+  </div>
+  <div class="stage" id="stage">
+    <div class="empty" id="stageEmpty"><b>첫 장면을 기다리는 중</b><span>갤러리가 마감되었어요.</span></div>
+    <div class="slide" id="slideA"></div>
+    <div class="slide" id="slideB"></div>
+    <div class="shade"></div>
+    <div class="cap" id="stageCap"><b></b><span></span></div>
+    <div class="ctrl">
+      <button id="stPrev" aria-label="이전 사진">‹</button>
+      <button id="stPlay" aria-label="일시정지">❚❚</button>
+      <button id="stNext" aria-label="다음 사진">›</button>
+      <button id="stZoom" aria-label="크게 보기">⤢</button>
+    </div>
+  </div>
+  <div class="progress" id="dots"></div>
+  <div class="thumbs" id="thumbs"></div>
+  <div class="msg" id="galleryMsg">사진을 불러오는 중이에요.</div>
+</section>
+
+<section class="wall-sec" id="wall">
+  <div class="wrap">
+    <div class="s-head">
+      <h2>한 마디씩, 붙여주세요.</h2>
+      <p>감사, 추억, 소소한 폭로까지. 붙이는 순간 모두의 화면에 나타나요. 로그인은 필요 없어요.</p>
+    </div>
+    <form class="compose" id="compose">
+      <label for="noteText" style="position:absolute;left:-9999px">메시지</label>
+      <textarea class="field" id="noteText" maxlength="200" placeholder="멜론님 덕분에 회의가 덜 지루했어요. 근데 제 마우스는 언제 돌려주시나요?"></textarea>
+      <input class="field name" id="author" maxlength="20" placeholder="이름 (비워두면 익명)">
+      <div class="row2">
+        <div class="swatches" id="swatches" role="group" aria-label="포스트잇 색"></div>
+        <span class="count" id="count">0/200</span>
+        <button class="btn" type="submit" id="postBtn">붙이기</button>
+      </div>
+    </form>
+    <div class="wall-tools">
+      <b id="boardCount">포스트잇 0장</b>
+      <div class="seg" role="group" aria-label="정렬">
+        <button type="button" data-sort="new" aria-pressed="true">최신순</button>
+        <button type="button" data-sort="old" aria-pressed="false">오래된순</button>
+      </div>
+    </div>
+    <div class="wall" id="notes"></div>
+    <div class="msg" id="boardMsg">포스트잇을 불러오는 중이에요.</div>
   </div>
 </section>
 
@@ -1350,7 +1363,7 @@
     <div class="rank-foot"><span id="rankAnon"></span><span id="rankTotal"></span></div>
   </div>
 </div>
-<div class="admbar" id="admbar">🔧 관리자 모드 <button id="admPh">사진 관리</button><button id="admLive">실황 제보 관리</button><button id="admOut">나가기</button></div>
+<div class="admbar" id="admbar">🔧 관리자 모드 <button id="admPh">사진 관리</button><button id="admLy">밴드 자막</button><button id="admLive">실황 제보 관리</button><button id="admOut">나가기</button></div>
 <div class="admdlg" id="admLogin" role="dialog" aria-modal="true" aria-label="관리자 로그인">
   <form class="admbox" id="admLoginForm">
     <h4>관리자 모드</h4><p>비밀번호를 입력하면 포스트잇과 사진을 관리하고 장난 글을 정리할 수 있어요.</p>
@@ -1379,6 +1392,19 @@
     <div class="err" id="admPhErr"></div>
     <ul class="admph" id="admPhList"></ul>
     <div class="row"><button class="btn gray" type="button" id="admPhClose">닫기</button></div></div>
+</div>
+<div class="admdlg" id="admLyDlg" role="dialog" aria-modal="true" aria-label="밴드 자막">
+  <div class="admbox wide"><h4>밴드 자막</h4>
+    <p>가사를 한 줄에 한 소절씩 붙여넣고 ‘처음부터 맞추기’를 누르세요. 노래가 처음부터 나오면, 각 줄이 시작될 때 ‘다음 줄’(또는 스페이스)을 누르면 돼요. 시간은 아래 목록에서 0.1초 단위로 고칠 수 있어요.</p>
+    <textarea class="field" id="admLyText" placeholder="한 줄에 한 소절씩"></textarea>
+    <div class="lyctl">
+      <button class="btn" type="button" id="admLyStart">처음부터 맞추기</button>
+      <button class="btn tap" type="button" id="admLyTap" disabled>다음 줄 ⏎</button>
+      <span class="lynow" id="admLyNow"></span>
+    </div>
+    <ol class="lylist" id="admLyList"></ol>
+    <div class="err" id="admLyErr"></div>
+    <div class="row"><button class="btn gray" type="button" id="admLyClose">닫기</button><button class="btn" type="button" id="admLySave">저장하고 모두에게 적용</button></div></div>
 </div>
 <div class="admdlg" id="admLiveDlg" role="dialog" aria-modal="true" aria-label="실황 제보 관리">
   <div class="admbox"><h4>실황 제보 관리</h4><p>장난 제보를 지우면 속보 띠에서 바로 사라져요.</p><ul class="admlist" id="admLiveList"></ul>
@@ -1437,7 +1463,7 @@ function numbers(w, dd){
 
 // ===== 첫 화면 연출 =====
 function intro(){
-  const order=[['melon',100],['l1',300],['l2',700],['film',1100],['filmCap',1500],['timer',2100],['when',2300],['status',2600]];
+  const order=[['melon',100],['l1',300],['l2',700],['film',1000],['timer',1800],['when',2000],['status',2300]];
   setTimeout(()=>window.Film && Film.start(), REDUCED?0:1000);
   order.forEach(([id,t])=> setTimeout(()=>$(id).classList.add('in'), REDUCED?0:t));
   setTimeout(()=>$('drift').classList.add('on'), REDUCED?0:2600);
@@ -1570,6 +1596,57 @@ const ADM = (() => {
     $('admPhErr').textContent = err ? '일부를 올리지 못했어요: ' + errText(err) : '';
     if (ok){ $('admPhFile').value = ''; $('admPhPick').textContent = '사진 고르기'; $('admPhCap').value = ''; $('admPhAuth').value = ''; toast(`사진 ${ok}장을 맨 앞에 추가했어요`); await loadPhotos(); phRender(); }
   });
+  // 밴드 자막: 가사를 붙여넣고 노래에 맞춰 탭해서 시간 기록
+  let lyLines = [], lyTimes = [], lyIdx = -1;
+  const lyParse = () => $('admLyText').value.split('\n').map(x => x.trim()).filter(Boolean);
+  function lyRender(){
+    const ol = $('admLyList'); ol.innerHTML = '';
+    lyLines.forEach((line, k) => {
+      const li = document.createElement('li'); if (k === lyIdx) li.className = 'next';
+      const inp = document.createElement('input'); inp.type = 'number'; inp.step = '0.1'; inp.min = '0'; inp.placeholder = '초'; inp.value = lyTimes[k] != null ? lyTimes[k].toFixed(1) : '';
+      inp.addEventListener('change', () => { const v = parseFloat(inp.value); lyTimes[k] = isNaN(v) ? null : v; window.__setKara(lyDraft()); });
+      const tx = document.createElement('span'); tx.textContent = line;
+      const pl = document.createElement('button'); pl.type = 'button'; pl.textContent = '▶ 듣기'; pl.onclick = () => { if (lyTimes[k] == null) return; Music.setMuted(false); Music.start(); Music.seek(Math.max(0, lyTimes[k] - 1.5)); bgmUI(); };
+      li.append(inp, tx, pl); ol.appendChild(li);
+    });
+  }
+  function lyDraft(){ const lines = [], times = []; lyLines.forEach((l, k) => { if (lyTimes[k] != null){ lines.push(l); times.push(lyTimes[k]); } });
+    const idx = times.map((t, k) => k).sort((a, b) => times[a] - times[b]); return { lines: idx.map(k => lines[k]), times: idx.map(k => +times[k].toFixed(2)) }; }
+  function lyOpen(){
+    const k = window.__getKara ? window.__getKara() : { lines: [], times: [] };
+    if (!$('admLyText').value && k.lines.length){ $('admLyText').value = k.lines.join('\n'); }
+    lyLines = lyParse(); lyTimes = lyLines.map((l, i) => k.lines[i] === l && k.times[i] != null ? k.times[i] : null); lyIdx = -1;
+    $('admLyErr').textContent = ''; $('admLyDlg').classList.add('open'); lyRender();
+  }
+  $('admLyText').addEventListener('input', () => { const old = new Map(lyLines.map((l, i) => [l, lyTimes[i]])); lyLines = lyParse(); lyTimes = lyLines.map(l => old.get(l) ?? null); lyRender(); });
+  $('admLyStart').onclick = () => {
+    lyLines = lyParse(); if (!lyLines.length) return $('admLyErr').textContent = '가사를 먼저 붙여넣어 주세요.';
+    lyTimes = lyLines.map(() => null); lyIdx = 0; $('admLyErr').textContent = '';
+    Music.setMuted(false); Music.start(); Music.seek(0); bgmUI();
+    $('admLyTap').disabled = false; $('admLyTap').focus(); lyRender();
+  };
+  function lyTap(){
+    if (lyIdx < 0 || lyIdx >= lyLines.length) return;
+    const t = Music.time; if (t == null) return;
+    lyTimes[lyIdx] = t; lyIdx++;
+    if (lyIdx >= lyLines.length){ lyIdx = -1; $('admLyTap').disabled = true; $('admLyErr').textContent = '끝까지 맞췄어요. 확인한 뒤 저장해 주세요.'; }
+    window.__setKara(lyDraft()); lyRender();
+    const cur = $('admLyList').querySelector('.next'); if (cur) cur.scrollIntoView({ block: 'nearest' });
+  }
+  $('admLyTap').onclick = lyTap;
+  document.addEventListener('keydown', e => {
+    if (!$('admLyDlg').classList.contains('open') || lyIdx < 0) return;
+    if ((e.key === ' ' || e.key === 'Enter') && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'INPUT'){ e.preventDefault(); if (!e.repeat) lyTap(); }
+  });
+  setInterval(() => { if ($('admLyDlg').classList.contains('open')){ const t = Music.time; $('admLyNow').textContent = t == null ? '노래가 멈춰 있어요' : `지금 ${t.toFixed(1)}초` + (lyIdx >= 0 ? ` · ${lyIdx + 1}번째 줄 대기 중` : ''); } }, 100);
+  $('admLySave').onclick = async () => {
+    const v = lyDraft(); if (!v.lines.length) return $('admLyErr').textContent = '시간이 정해진 줄이 없어요.';
+    const { error } = await sb.rpc('admin_set_setting', { pw, k: 'lyrics', v });
+    if (error){ console.error(error); return $('admLyErr').textContent = '저장하지 못했어요: ' + errText(error) + ' (SQL을 먼저 실행해 주세요)'; }
+    window.__setKara(v); toast(`자막 ${v.lines.length}줄을 저장했어요. 모두의 화면에 적용돼요`);
+  };
+  $('admLy').onclick = lyOpen;
+  $('admLyClose').onclick = () => { lyIdx = -1; $('admLyTap').disabled = true; $('admLyDlg').classList.remove('open'); };
   $('admPh').onclick = phOpen;
   $('admPhClose').onclick = () => $('admPhDlg').classList.remove('open');
   $('admLive').onclick = () => { $('admLiveDlg').classList.add('open'); renderLive(); };
@@ -1740,16 +1817,16 @@ function shrink(file,max=1800){ return new Promise((res,rej)=>{ const img=new Im
 
 // ===== 첫 화면: 갤러리 사진을 순서대로 상영하고, 옆에 포스트잇이 한 장씩 =====
 window.Film = (() => {
-  const frame = $('filmFrame'), L = $('filmL'), R = $('filmR'), cap = $('filmCap'), bgs = [$('fbA'), $('fbB')];
+  const frame = $('filmFrame'), slots = [...$('filmNotes').children], cap = $('filmCap'), bgs = [$('fbA'), $('fbB')];
   const MS = 6500;
   let i = -1, t = null, started = false, side = 0, ni = 0, bgI = 0;
   const noteList = () => [...notes.values()].filter(n => !n.hidden && n.text).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
   function postIt(){
     const ns = noteList(); if (!ns.length) return;
-    const n = ns[ni++ % ns.length], narrow = innerWidth <= 760, box = narrow ? L : (side++ % 2 ? R : L);
+    const n = ns[ni++ % ns.length], narrow = innerWidth <= 860, box = narrow ? slots[0] : slots[side++ % slots.length];
     [...box.children].forEach(o => { o.classList.remove('in'); o.classList.add('out'); setTimeout(() => o.remove(), 1900); });
     const d = document.createElement('div'); d.className = 'fp'; d.style.background = colorOf(n);
-    d.style.setProperty('--r', (box === R ? 1 : -1) * (1 + Math.random() * 1.6) .toFixed(1) + 'deg');
+    d.style.setProperty('--r', ((Math.random() < .5 ? -1 : 1) * (.6 + Math.random() * 1.8)).toFixed(1) + 'deg');
     const tx = String(n.text).trim(), p = document.createElement('p'), a = document.createElement('span');
     p.textContent = tx.length > 90 ? tx.slice(0, 90) + '…' : tx; a.textContent = n.author || '익명의 동료';
     d.append(p, a); box.appendChild(d);
@@ -1986,14 +2063,15 @@ document.documentElement.style.setProperty('--face', 'url("melon-face.png?v=3")'
   const fans = [...band.querySelectorAll('.bd-fan')], keys = $('bdKeys').children, bars = [...$('bdMeter').children];
 
   // 박자표: 120 BPM, 첫 박 0.155초 (곡 분석 결과)
-  const BPM = 120, BEAT = 60 / BPM, OFFSET = 0.155;
-  // 노래방 자막: melon/lyrics.json 이 있으면 사용 ({ lines: [...], times: [...] })
+  const BPM = 152, BEAT = 60 / BPM, OFFSET = 0.305;   // 새 배경음악 기준
+  // 노래방 자막: 관리자 모드 '밴드 자막'에서 저장한 것 ({ lines: [...], times: [...] })
   let KARA = { lines: [], times: [] };
+  window.__setKara = k => { KARA = (k && Array.isArray(k.lines) && Array.isArray(k.times)) ? k : { lines: [], times: [] }; $('bdLyCur').textContent = ''; };
+  window.__getKara = () => KARA;
   (async () => {
-    for (const path of ['lyrics.json', 'melon/lyrics.json']){   // 두 위치 모두 찾아봄
-      try { const r = await fetch(path, { cache: 'no-store' }); if (!r.ok) continue; const j = await r.json();
-        if (j && Array.isArray(j.lines) && Array.isArray(j.times)){ KARA = j; return; } } catch(e){}
-    }
+    if (!sb) return;
+    try { const { data, error } = await sb.from('site_settings').select('value').eq('key', 'lyrics').limit(1);
+      if (!error && data && data[0]) window.__setKara(data[0].value); } catch(e){}
   })();
 
   // 밴드는 사이트 배경음악(같은 곡)에 맞춰 공연: 소리 켜고 입장하면 바로 공연 중
@@ -2084,7 +2162,7 @@ document.documentElement.style.setProperty('--face', 'url("melon-face.png?v=3")'
     const ly = $('bdLyric'), bub = $('bdBub');
     let li = -1;
     if (live && KARA.times.length){ for (let i = 0; i < KARA.times.length; i++) if (t >= KARA.times[i]) li = i; }
-    const end = li >= 0 ? Math.min(KARA.times[li + 1] ?? Infinity, KARA.times[li] + 8 * BEAT) : 0;
+    const end = li >= 0 ? Math.min(KARA.times[li + 1] ?? Infinity, KARA.times[li] + 6.5) : 0;
     if (li >= 0 && t < end){
       if ($('bdLyCur').textContent !== String(KARA.lines[li] || '')){ $('bdLyCur').textContent = String(KARA.lines[li] || ''); $('bdLyNext').textContent = String(KARA.lines[li + 1] || ''); fitLyric(); }
       ly.classList.add('on'); bub.classList.add('on'); stg.classList.add('bd-sing');
@@ -2320,8 +2398,9 @@ const Music = (() => {
   // 탭을 떠나면 잠시 멈춤
   document.addEventListener('visibilitychange', () => { if (!ctx || !playing) return; document.hidden ? ctx.suspend() : ctx.resume(); });
   // 지금 곡의 몇 초 지점인지 (밴드 박자·자막 맞춤용)
+  function seek(sec){ offset = Math.max(0, sec); if (src){ const s0 = src; src = null; try { s0.stop(); } catch(e){} } if (want && buffer) begin(); }
   const time = () => (ctx && buffer && src) ? (((ctx.currentTime - startedAt) % buffer.duration) + buffer.duration) % buffer.duration : null;
-  return { ensure, start, stop, setMuted, get playing(){ return playing; }, get muted(){ return muted; }, get time(){ return time(); } };
+  return { ensure, start, stop, seek, setMuted, get duration(){ return buffer ? buffer.duration : 0; }, get playing(){ return playing; }, get muted(){ return muted; }, get time(){ return time(); } };
 })();
 function bgmUI(){
   const on = Music.playing && !Music.muted, b = $('bgm');
