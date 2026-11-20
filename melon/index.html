@@ -79,10 +79,10 @@
   .hero #band .bd-sign{top:5%}
   .hero #band .bd-bub{left:54%;top:auto;bottom:calc(14% + 0.21 * 58vw * 1.6)}
   .hero #band .bd-lyric{width:58%;bottom:17%;font-size:clamp(20px,2.8vw,44px)}
-  .hero #band .bd-crowd{left:18%;right:18%}
+  .hero #band .bd-crowd{left:0;right:0;height:20%}
   .hero #band .bd-ctrl{position:absolute;right:2.2%;bottom:3%;margin:0;z-index:12;gap:8px}
   .hero #band .btn{padding:11px 18px;font-size:15px}
-  .bd-photo{position:absolute;left:2.4%;width:16.6%;top:16%;bottom:16%;z-index:9;display:flex;flex-direction:column}
+  .bd-photo{position:absolute;left:2.4%;width:16.6%;top:16%;bottom:21%;z-index:9;display:flex;flex-direction:column}
   .bd-photo .film-frame{margin:0;position:relative;flex:1;min-height:0}
   .film-frame img{position:absolute;left:50%;top:50%;max-width:100%;max-height:100%;border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.08);
     opacity:0;transform:translate(-50%,-50%) scale(1);transition:opacity 1.8s var(--ease),transform 10s linear}
@@ -92,7 +92,7 @@
   .film-cap{margin-top:14px;min-height:40px;text-align:center}
   .film-cap b{display:block;font-size:15px;font-weight:600;letter-spacing:-.02em;color:#f5f5f7;transition:opacity .6s;word-break:keep-all}
   .film-cap span{display:block;margin-top:4px;font-size:12px;color:#86868b;font-variant-numeric:tabular-nums}
-  .bd-memo{position:absolute;right:2.4%;width:16.6%;top:20%;bottom:20%;z-index:9;display:grid}
+  .bd-memo{position:absolute;right:2.4%;width:16.6%;top:20%;bottom:23%;z-index:9;display:grid}
   .bd-memo .slot{display:grid;justify-items:center;align-items:center;min-width:0}
   .fp{grid-area:1/1;width:100%;max-width:300px;padding:22px 20px 16px;border-radius:3px 3px 22px 3px;color:#1d1d1f;box-shadow:0 26px 56px rgba(0,0,0,.6);text-align:left;
     opacity:0;transform:translateY(24px) rotate(var(--r,0deg));filter:blur(10px);transition:opacity 2s var(--ease),transform 2s var(--ease),filter 2s var(--ease)}
@@ -677,6 +677,7 @@
   #band .bd-drm .bd-stick-r{transform-box:view-box;transform-origin:96px 52px;transform:rotate(calc(30deg - var(--dr,0)*40deg))}
   #band .bd-drm .bd-cym{transform-box:fill-box;transform-origin:50% 50%;transform:rotate(calc(var(--h)*-10deg))}
   #band .bd-key .bd-keys rect.on{fill:#7fff8c}
+  #band .bd-voc .bd-sparkle{opacity:calc(.18 + var(--b,0) * .55);mix-blend-mode:screen}
   #band .bd-voc .bd-mic-hand{transform-box:view-box;transform-origin:58px 30px;transform:rotate(calc(var(--b)*-6deg))}
 
   /* 음표 */
@@ -684,13 +685,14 @@
   #band .bd-note{position:absolute;font-size:clamp(14px,2vw,24px);color:#7fff8c;text-shadow:0 0 10px rgba(127,255,140,.8);animation:float 2.4s ease-out forwards}
   @keyframes float{from{opacity:0;transform:translate(0,0) scale(.6)}15%{opacity:1}to{opacity:0;transform:translate(var(--dx),-140px) scale(1.2) rotate(var(--rt))}}
   /* 관객 */
-  #band .bd-crowd{position:absolute;left:0;right:0;bottom:-4%;height:20%;z-index:7;display:flex;justify-content:space-around;align-items:flex-end;padding:0 2%}
-  #band .bd-fan{position:relative;width:5.5%;aspect-ratio:1/1.4;background:#050408;border-radius:50% 50% 10% 10%/40% 40% 10% 10%}
-  #band .bd-fan::before{content:'';position:absolute;left:30%;top:-26%;width:40%;aspect-ratio:1;border-radius:50%;background:#050408}
-  #band .bd-fan i{position:absolute;left:62%;bottom:70%;width:7%;height:70%;border-radius:3px;background:linear-gradient(#b8ffbe,#3fd65a);box-shadow:0 0 10px #7fff8c;transform-origin:50% 100%;
-    transform:rotate(calc(var(--sway,0) * 1deg))}
-  #band .bd-fan:nth-child(odd) i{background:linear-gradient(#ffe0b8,#ff9f45);box-shadow:0 0 10px #ff9f45}
-
+  #band .bd-crowd{position:absolute;left:0;right:0;bottom:0;height:24%;z-index:7;pointer-events:none;overflow:hidden}
+  #band .bd-crowd::after{content:'';position:absolute;inset:auto 0 0 0;height:40%;background:linear-gradient(transparent,rgba(5,4,8,.85))}
+  #band .bd-fan{position:absolute;transform:translateX(-50%) translateY(calc(var(--b,0) * -7% * (1 - var(--ph,0))));transition:none}
+  #band .bd-fan svg{display:block;width:100%;height:auto;overflow:visible}
+  #band .bd-fan.r0{bottom:18%;width:5.2%;opacity:.7;filter:brightness(.8)}
+  #band .bd-fan.r1{bottom:-14%;width:7.4%}
+  #band .bd-fan .fa{transform-box:view-box;transform-origin:30px 44px;transform:rotate(calc(var(--sway,0) * 1deg))}
+  #band .bd-fan .fa.sg{transform:rotate(calc(var(--sway,0) * .2deg)) translateY(calc(var(--b,0) * -6px))}
   /* 가사 */
   #band .bd-lyric{position:absolute;left:50%;bottom:19%;transform:translateX(-50%) scale(.9);z-index:8;font-size:clamp(22px,4.4vw,52px);font-weight:900;letter-spacing:-.03em;white-space:nowrap;opacity:0;transition:opacity .2s,transform .3s}
   #band .bd-lyric.on{opacity:1;transform:translateX(-50%) scale(1)}
@@ -844,8 +846,16 @@
     <path d="M95 -38 L91 16" stroke="#fff" stroke-opacity=".16" stroke-width="8" stroke-linecap="round"/>
   </g></svg></div>
       <svg viewBox="0 0 120 155">
-        <path d="M30 4 c-6 4 -8 10 -8 22 l2 44 h72 l2 -44 c0 -12 -2 -18 -8 -22 c-8 8 -52 8 -60 0z" fill="#1e1e22"/>
-        <path d="M44 70 h14 l-1 70 h-12z M62 70 h14 l-1 70 h-12z" fill="#3a4b6e"/>
+        <defs><linearGradient id="oKey" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34343c"/><stop offset=".55" stop-color="#18181d"/><stop offset="1" stop-color="#0b0b0e"/></linearGradient></defs>
+        <path d="M44 70 h14 l-1 70 h-12z M62 70 h14 l-1 70 h-12z" fill="#16161b"/><path d="M50 72 v66 M70 72 v66" stroke="#2c2c34" stroke-width="1.6"/>
+        <ellipse cx="50" cy="142" rx="10" ry="4.5" fill="#050506"/><ellipse cx="70" cy="142" rx="10" ry="4.5" fill="#050506"/><path d="M43 141 h6 M63 141 h6" stroke="#fff" stroke-opacity=".35" stroke-width="1.2"/>
+        <path d="M30 4 c-6 4 -8 10 -8 22 l2 44 h72 l2 -44 c0 -12 -2 -18 -8 -22 c-8 8 -52 8 -60 0z" fill="url(#oKey)"/>
+        <path d="M46 7 L60 42 L74 7 Q60 14 46 7Z" fill="#f4f4f6"/><path d="M60 22 v18" stroke="#d6d6dc" stroke-width="1"/>
+        <path d="M45 6 L60 42 L53 46 L37 12 Z" fill="#0a0a0d"/><path d="M75 6 L60 42 L67 46 L83 12 Z" fill="#0a0a0d"/>
+        <path d="M44 9 L56 38" stroke="#fff" stroke-opacity=".18" stroke-width="1.4"/><path d="M76 9 L64 38" stroke="#fff" stroke-opacity=".18" stroke-width="1.4"/>
+        <path d="M51 11 L60 15 L51 19 Z M69 11 L60 15 L69 19 Z" fill="#d61f36"/><circle cx="60" cy="15" r="2.4" fill="#a3142a"/>
+        <circle cx="60" cy="50" r="1.8" fill="#2a2a30"/><circle cx="60" cy="60" r="1.8" fill="#2a2a30"/>
+        <path d="M71 30 l7 -3 l1 5 z" fill="#f4f4f6"/>
         <rect x="-6" y="62" width="132" height="22" rx="4" fill="#2b2b30"/>
         <g class="bd-keys" id="bdKeys"></g>
         <path d="M20 98 l-8 50 M100 98 l8 50" stroke="#555" stroke-width="4"/>
@@ -871,13 +881,21 @@
     <circle cx="71" cy="139" r="2.2" fill="#c9c9cf"/><circle cx="213" cy="139" r="2.2" fill="#c9c9cf"/>
   </g></svg></div>
       <svg viewBox="0 0 120 155">
-        <path d="M30 4 c-6 4 -8 10 -8 22 l2 44 h72 l2 -44 c0 -12 -2 -18 -8 -22 c-8 8 -52 8 -60 0z" fill="#2a2a2e"/>
-        <path d="M42 70 h15 l-2 70 h-13z M63 70 h15 l-1 70 h-13z" fill="#3a4b6e"/>
+        <defs><linearGradient id="oGtr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a3a32"/><stop offset=".5" stop-color="#241b16"/><stop offset="1" stop-color="#110c09"/></linearGradient></defs>
+        <path d="M42 70 h15 l-2 70 h-13z M63 70 h15 l-1 70 h-13z" fill="#202229"/><path d="M45 104 l8 2 M66 98 l7 2 M47 108 l6 1" stroke="#9aa0ad" stroke-width="1.3" stroke-linecap="round"/>
+        <ellipse cx="49" cy="142" rx="10" ry="4.5" fill="#3a2414"/><ellipse cx="71" cy="142" rx="10" ry="4.5" fill="#3a2414"/><path d="M40 136 h18 M62 136 h18" stroke="#2a1a0e" stroke-width="3"/>
+        <path d="M30 4 c-6 4 -8 10 -8 22 l2 44 h72 l2 -44 c0 -12 -2 -18 -8 -22 c-8 8 -52 8 -60 0z" fill="url(#oGtr)"/>
+        <path d="M47 7 Q60 20 73 7 L70 40 L50 40 Z" fill="#e6e6e8"/><path d="M52 24 h16" stroke="#c8102e" stroke-width="3"/>
+        <path d="M44 6 L53 30 L46 36 L33 14 Z" fill="#17110d"/><path d="M76 6 L67 30 L74 36 L87 14 Z" fill="#17110d"/>
+        <path d="M68 10 L58 70" stroke="#c9ccd3" stroke-width="1.6" stroke-dasharray="2 1.4"/>
+        <path d="M24 66 h72" stroke="#0d0907" stroke-width="5"/><rect x="56" y="63" width="9" height="6" rx="1" fill="#c9ccd3"/>
+        <circle cx="30" cy="10" r="1.6" fill="#d8d8de"/><circle cx="35" cy="7" r="1.6" fill="#d8d8de"/><circle cx="85" cy="7" r="1.6" fill="#d8d8de"/><circle cx="90" cy="10" r="1.6" fill="#d8d8de"/>
+        <path d="M28 20 L36 50" stroke="#fff" stroke-opacity=".12" stroke-width="3" stroke-linecap="round"/>
         <g><path d="M8 18 L64 62" stroke="#6b4a2b" stroke-width="7" stroke-linecap="round"/>
           <ellipse cx="72" cy="70" rx="24" ry="19" fill="#d8432a" transform="rotate(38 72 70)"/><ellipse cx="58" cy="58" rx="15" ry="12" fill="#d8432a" transform="rotate(38 58 58)"/>
           <circle cx="68" cy="66" r="5" fill="#2a1a12"/><path d="M8 18 L76 74" stroke="#eee" stroke-width=".8"/></g>
         <circle cx="16" cy="24" r="7" fill="#f1c4a0"/>
-        <g class="bd-arm-r"><path d="M96 26 Q 92 44 74 54" stroke="#2a2a2e" stroke-width="12" fill="none" stroke-linecap="round"/><circle cx="72" cy="56" r="7" fill="#f1c4a0"/></g>
+        <g class="bd-arm-r"><path d="M96 26 Q 92 44 74 54" stroke="#2a1f19" stroke-width="12" fill="none" stroke-linecap="round"/><circle cx="72" cy="56" r="7" fill="#f1c4a0"/></g>
       </svg>
       <div class="bd-who">기타 멜론</div>
     </div>
@@ -891,13 +909,20 @@
       </svg>
       <div class="bd-hd"><div class="bd-f"></div></div>
       <svg viewBox="0 0 120 155">
-        <path d="M30 4 c-6 4 -8 10 -8 22 l2 44 h72 l2 -44 c0 -12 -2 -18 -8 -22 c-8 8 -52 8 -60 0z" fill="#16161a"/>
-        <path d="M60 10 v60" stroke="#3d3d42" stroke-width="2"/>
-        <path d="M42 70 h15 l-2 70 h-13z M63 70 h15 l-1 70 h-13z" fill="#3a4b6e"/>
+        <defs><linearGradient id="oVoc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3fbf5f"/><stop offset=".5" stop-color="#1f7a3a"/><stop offset="1" stop-color="#0f4220"/></linearGradient>
+          <pattern id="oSeq" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1.1" fill="#b8ffc4"/><circle cx="4" cy="4" r=".8" fill="#fff"/></pattern></defs>
+        <path d="M42 70 h15 l-2 70 h-13z M63 70 h15 l-1 70 h-13z" fill="#121216"/>
+        <ellipse cx="49" cy="142" rx="10" ry="4.5" fill="#f2f2f4"/><ellipse cx="71" cy="142" rx="10" ry="4.5" fill="#f2f2f4"/><path d="M40 143 h18 M62 143 h18" stroke="#c9c9cf" stroke-width="1.6"/>
+        <path d="M30 4 c-6 4 -8 10 -8 22 l2 44 h72 l2 -44 c0 -12 -2 -18 -8 -22 c-8 8 -52 8 -60 0z" fill="url(#oVoc)"/>
+        <path class="bd-sparkle" d="M30 4 c-6 4 -8 10 -8 22 l2 44 h72 l2 -44 c0 -12 -2 -18 -8 -22 c-8 8 -52 8 -60 0z" fill="url(#oSeq)"/>
+        <path d="M48 7 L60 30 L72 7 Q60 12 48 7Z" fill="#101013"/>
+        <path d="M46 6 L60 34 L54 40 L38 12 Z" fill="#0c0c0f"/><path d="M74 6 L60 34 L66 40 L82 12 Z" fill="#0c0c0f"/>
+        <path d="M45 9 L57 32" stroke="#7fff8c" stroke-opacity=".35" stroke-width="1"/><path d="M75 9 L63 32" stroke="#7fff8c" stroke-opacity=".35" stroke-width="1"/>
+        <circle cx="60" cy="48" r="2" fill="#0c0c0f"/><circle cx="60" cy="58" r="2" fill="#0c0c0f"/>
         <path d="M60 30 L60 150 M44 150 h32" stroke="#9a9aa2" stroke-width="3"/>
-        <g class="bd-mic-hand"><path d="M28 28 Q 34 18 52 10" stroke="#16161a" stroke-width="12" fill="none" stroke-linecap="round"/>
+        <g class="bd-mic-hand"><path d="M28 28 Q 34 18 52 10" stroke="#1f7a3a" stroke-width="12" fill="none" stroke-linecap="round"/>
           <rect x="52" y="0" width="7" height="20" rx="3" fill="#333" transform="rotate(-40 55 10)"/><circle cx="50" cy="-2" r="7" fill="#777"/><circle cx="54" cy="10" r="7" fill="#f1c4a0"/></g>
-        <path d="M92 24 Q 112 6 104 -10" stroke="#16161a" stroke-width="12" fill="none" stroke-linecap="round"/><circle cx="103" cy="-12" r="7" fill="#f1c4a0"/>
+        <path d="M92 24 Q 112 6 104 -10" stroke="#1f7a3a" stroke-width="12" fill="none" stroke-linecap="round"/><circle cx="103" cy="-12" r="7" fill="#f1c4a0"/>
       </svg>
       <div class="bd-who">보컬 멜론</div>
     </div>
@@ -921,13 +946,20 @@
     <path d="M40 100 Q122 86 206 100" stroke="#fff" stroke-opacity=".25" stroke-width="3" fill="none"/>
   </g></svg></div>
       <svg viewBox="0 0 120 155">
-        <path d="M30 4 c-6 4 -8 10 -8 22 l2 44 h72 l2 -44 c0 -12 -2 -18 -8 -22 c-8 8 -52 8 -60 0z" fill="#232326"/>
-        <path d="M42 70 h15 l-2 70 h-13z M63 70 h15 l-1 70 h-13z" fill="#3a4b6e"/>
+        <defs><linearGradient id="oBas" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6f97d1"/><stop offset=".55" stop-color="#3f6aa8"/><stop offset="1" stop-color="#284a7c"/></linearGradient></defs>
+        <path d="M42 70 h15 l-2 70 h-13z M63 70 h15 l-1 70 h-13z" fill="#1d1f26"/>
+        <ellipse cx="49" cy="142" rx="10" ry="4.5" fill="#d8432a"/><ellipse cx="71" cy="142" rx="10" ry="4.5" fill="#d8432a"/><path d="M40 144 h18 M62 144 h18" stroke="#fff" stroke-width="2"/>
+        <path d="M30 4 c-6 4 -8 10 -8 22 l2 44 h72 l2 -44 c0 -12 -2 -18 -8 -22 c-8 8 -52 8 -60 0z" fill="url(#oBas)"/>
+        <path d="M47 7 Q60 20 73 7 L71 68 L49 68 Z" fill="#141418"/><circle cx="60" cy="34" r="5" fill="#7fff8c" opacity=".85"/><path d="M57 30 q3 -3 6 0" stroke="#2d7a3e" stroke-width="1.4" fill="none"/>
+        <path d="M45 6 L50 26 L42 30 L34 12 Z" fill="#5a84c0"/><path d="M75 6 L70 26 L78 30 L86 12 Z" fill="#5a84c0"/>
+        <rect x="28" y="30" width="15" height="12" rx="2" fill="none" stroke="#e0b860" stroke-width="1" stroke-dasharray="2 1.5"/><rect x="77" y="30" width="15" height="12" rx="2" fill="none" stroke="#e0b860" stroke-width="1" stroke-dasharray="2 1.5"/>
+        <path d="M24 56 h24 M72 56 h24" stroke="#e0b860" stroke-width="1" stroke-dasharray="2 1.5"/>
+        <circle cx="35" cy="33" r="1.4" fill="#d8d8de"/><circle cx="85" cy="33" r="1.4" fill="#d8d8de"/>
         <g><path d="M118 8 L56 64" stroke="#4a3626" stroke-width="7" stroke-linecap="round"/>
           <ellipse cx="48" cy="72" rx="24" ry="18" fill="#3b6fd8" transform="rotate(-40 48 72)"/><ellipse cx="62" cy="60" rx="14" ry="11" fill="#3b6fd8" transform="rotate(-40 62 60)"/>
           <rect x="44" y="66" width="10" height="4" fill="#222" transform="rotate(-40 49 68)"/></g>
         <circle cx="110" cy="16" r="7" fill="#f1c4a0"/>
-        <g class="bd-arm-r"><path d="M26 26 Q 30 44 46 54" stroke="#232326" stroke-width="12" fill="none" stroke-linecap="round"/><circle cx="48" cy="56" r="7" fill="#f1c4a0"/></g>
+        <g class="bd-arm-r"><path d="M26 26 Q 30 44 46 54" stroke="#3f6aa8" stroke-width="12" fill="none" stroke-linecap="round"/><circle cx="48" cy="56" r="7" fill="#f1c4a0"/></g>
       </svg>
       <div class="bd-who">베이스 멜론</div>
     </div>
@@ -946,7 +978,11 @@
     <circle cx="232" cy="120" r="7" fill="#ff8f2e"/>
   </g></svg></div>
       <svg viewBox="0 0 140 155">
-        <path d="M44 4 c-6 4 -8 10 -8 22 l2 40 h64 l2 -40 c0 -12 -2 -18 -8 -22 c-8 8 -44 8 -52 0z" fill="#1e1e22"/>
+        <path d="M44 4 c-6 4 -8 10 -8 22 l2 40 h64 l2 -40 c0 -12 -2 -18 -8 -22 c-8 8 -44 8 -52 0z" fill="#f3f3f1"/>
+        <path d="M44 4 c-6 4 -8 10 -8 22 l1 6 l14 -3 l5 -24 Z" fill="#2d7a3e"/><path d="M96 4 c6 4 8 10 8 22 l-1 6 l-14 -3 l-5 -24 Z" fill="#2d7a3e"/>
+        <path d="M52 8 Q70 18 88 8" stroke="#2d7a3e" stroke-width="3" fill="none"/>
+        <text x="70" y="36" text-anchor="middle" font-size="11" font-weight="900" font-style="italic" fill="#2d7a3e" font-family="Pretendard Variable,system-ui,sans-serif">Melon</text>
+        <text x="70" y="54" text-anchor="middle" font-size="15" font-weight="900" fill="#ff9f45" stroke="#2d7a3e" stroke-width=".8" font-family="Pretendard Variable,system-ui,sans-serif">19</text>
         <g class="bd-cym"><ellipse cx="122" cy="40" rx="20" ry="4" fill="#d4b14a"/><path d="M122 40 v60" stroke="#777" stroke-width="2"/></g>
         <ellipse cx="18" cy="70" rx="17" ry="5" fill="#d4b14a"/><path d="M18 70 v40" stroke="#777" stroke-width="2"/>
         <g class="bd-stick-l"><path d="M44 52 L18 70" stroke="#e8c48a" stroke-width="4" stroke-linecap="round"/><circle cx="44" cy="52" r="7" fill="#f1c4a0"/></g>
@@ -2070,7 +2106,34 @@ document.documentElement.style.setProperty('--face', 'url("melon-face.png?v=3")'
   const band = $('band'), stg = band.querySelector('.bd-stage');
   // 키보드 건반, 관객
   { const g = $('bdKeys'); for (let i = 0; i < 14; i++){ const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); r.setAttribute('x', -4 + i * 9.2); r.setAttribute('y', 66); r.setAttribute('width', 8); r.setAttribute('height', 14); r.setAttribute('rx', 1.5); r.setAttribute('fill', '#f5f5f7'); g.appendChild(r); } }
-  { const c = $('bdCrowd'); for (let i = 0; i < 14; i++){ const f = document.createElement('div'); f.className = 'bd-fan'; f.innerHTML = '<i></i>'; f.style.transform = `translateY(${(i % 3) * 8}%) scale(${.9 + (i % 4) * .06})`; c.appendChild(f); } }
+  { const c = $('bdCrowd'), SIGNS = ['멜론님 ♥', '가지마요', '앵콜!', '🍈 FOREVER', '수고했어요'];
+    const HAIR = [
+      'M14 20 Q14 4 30 4 Q46 4 46 20 Q46 12 30 11 Q14 12 14 20Z',                       // 짧은 머리
+      'M13 22 Q12 3 30 3 Q48 3 47 22 L48 40 Q44 30 44 22 Q30 14 16 22 Q16 30 12 40 Z',  // 긴 머리
+      'M18 8 Q30 -6 42 8 Q44 2 30 -1 Q16 2 18 8Z M22 2 a8 8 0 1 1 16 0 a8 8 0 1 1 -16 0',// 똥머리
+      'M12 16 Q14 2 30 2 Q46 2 48 16 L56 18 L48 20 Q30 14 12 20Z'                         // 모자
+    ];
+    let k = 0;
+    const make = (row, n, i) => {
+      const f = document.createElement('div'); f.className = 'bd-fan r' + row;
+      const kind = row === 1 && i % 4 === 1 ? 'sign' : i % 5 === 3 ? 'phone' : 'stick';
+      const hair = HAIR[(i * 7 + row) % HAIR.length], arm = i % 2 ? 1 : -1;
+      const glow = kind === 'phone' ? '#ffffff' : (i % 3 ? '#7fff8c' : '#ff9f45');
+      let hand = '';
+      if (kind === 'sign') hand = `<g class="fa sg"><rect x="2" y="-30" width="56" height="26" rx="3" fill="#fff8d6"/><text x="30" y="-12" text-anchor="middle" font-size="11" font-weight="900" fill="#d8432a" font-family="Pretendard Variable,system-ui,sans-serif">${SIGNS[k++ % SIGNS.length]}</text><path d="M10 -4 L14 30 M50 -4 L46 30" stroke="#0a0910" stroke-width="5" stroke-linecap="round"/></g>`;
+      else hand = `<g class="fa" style="--d:${arm}"><path d="M${30 + arm * 12} 42 L${30 + arm * 20} 8" stroke="#0a0910" stroke-width="6" stroke-linecap="round"/>` +
+        (kind === 'phone' ? `<rect x="${30 + arm * 20 - 4}" y="-2" width="8" height="12" rx="1.5" fill="#1d1d24"/><circle cx="${30 + arm * 20}" cy="1" r="9" fill="${glow}" opacity=".55" filter="url(#fanGlow)"/>`
+                          : `<rect x="${30 + arm * 20 - 2.2}" y="-16" width="4.4" height="24" rx="2.2" fill="${glow}"/><rect x="${30 + arm * 20 - 5}" y="-18" width="10" height="28" rx="5" fill="${glow}" opacity=".35" filter="url(#fanGlow)"/>`) + '</g>';
+      f.innerHTML = `<svg viewBox="-4 -34 68 124" preserveAspectRatio="xMidYMax meet"><circle cx="30" cy="22" r="15" fill="#0a0910"/><path d="${hair}" fill="#0a0910"/>
+        <path d="M2 90 Q2 46 30 44 Q58 46 58 90Z" fill="#0a0910"/><path d="M8 60 Q14 46 30 45 Q46 46 52 60" stroke="var(--rim,#7fff8c)" stroke-opacity=".28" stroke-width="2" fill="none"/>
+        <path d="M17 12 Q30 3 43 12" stroke="var(--rim,#7fff8c)" stroke-opacity=".3" stroke-width="1.6" fill="none"/>${hand}</svg>`;
+      f.style.left = (i + .5) / n * 100 + '%'; f.style.setProperty('--ph', (i % 3) * .33); f.style.setProperty('--rim', ['#7fff8c', '#ffb46b', '#a99bff'][i % 3]);
+      c.appendChild(f);
+    };
+    for (let i = 0; i < 16; i++) make(0, 16, i);
+    for (let i = 0; i < 12; i++) make(1, 12, i);
+    if (!document.getElementById('fanGlowDefs')) document.body.insertAdjacentHTML('beforeend', '<svg id="fanGlowDefs" width="0" height="0" style="position:absolute"><filter id="fanGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3"/></filter></svg>');
+  }
   const fans = [...band.querySelectorAll('.bd-fan')], keys = $('bdKeys').children, bars = [...$('bdMeter').children];
 
   // 박자표: 120 BPM, 첫 박 0.155초 (곡 분석 결과)
@@ -2133,7 +2196,7 @@ document.documentElement.style.setProperty('--face', 'url("melon-face.png?v=3")'
   $('bdCheerBtn').onclick = () => {
     cheerSound();
     const r = stg.getBoundingClientRect(); for (let i = 0; i < 10; i++) setTimeout(() => note(Math.random() * r.width), i * 60);
-    band.querySelectorAll('.bd-fan').forEach((f, i) => f.animate([{ transform: f.style.transform }, { transform: f.style.transform + ' translateY(-18%)' }, { transform: f.style.transform }], { duration: 420, delay: i * 25, iterations: 3 }));
+    band.querySelectorAll('.bd-fan').forEach((f, i) => f.animate([{ translate: '0 0' }, { translate: '0 -22%' }, { translate: '0 0' }], { duration: 420, delay: (i % 16) * 25, iterations: 3 }));
   };
   // 화면에 보일 때만 그림 (음악은 계속 흐름)
   new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; if (visible) requestAnimationFrame(frame); }), { threshold: .05 }).observe(stg);
@@ -2173,11 +2236,13 @@ document.documentElement.style.setProperty('--face', 'url("melon-face.png?v=3")'
     const ly = $('bdLyric'), bub = $('bdBub');
     let li = -1;
     if (live && KARA.times.length){ for (let i = 0; i < KARA.times.length; i++) if (t >= KARA.times[i]) li = i; }
-    const end = li >= 0 ? Math.min(KARA.times[li + 1] ?? Infinity, KARA.times[li] + 6.5) : 0;
+    const next = li >= 0 ? (KARA.times[li + 1] ?? Infinity) : 0;
+    const sing = li >= 0 ? Math.min(next - KARA.times[li] - .15, .45 + String(KARA.lines[li] || '').replace(/[\s,.!?~-]/g, '').length * .3) : 0;   // 한 글자 약 0.3초
+    const end = li >= 0 ? Math.min(next, KARA.times[li] + Math.max(sing, 1) + 2.5) : 0;
     if (li >= 0 && t < end){
       if ($('bdLyCur').textContent !== String(KARA.lines[li] || '')){ $('bdLyCur').textContent = String(KARA.lines[li] || ''); $('bdLyNext').textContent = String(KARA.lines[li + 1] || ''); fitLyric(); }
       ly.classList.add('on'); bub.classList.add('on'); stg.classList.add('bd-sing');
-      ly.style.setProperty('--fill', Math.min(100, ((t - KARA.times[li]) / Math.max(.5, (end - KARA.times[li]) * .85)) * 100).toFixed(1) + '%');
+      ly.style.setProperty('--fill', Math.min(100, ((t - KARA.times[li]) / Math.max(.5, sing)) * 100).toFixed(1) + '%');
     } else { ly.classList.remove('on'); bub.classList.remove('on'); stg.classList.remove('bd-sing'); }
     requestAnimationFrame(frame);
   }
