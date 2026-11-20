@@ -66,58 +66,43 @@
   .cue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;color:#86868b;font-size:13px;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:6px}
   .cue i{width:1px;height:28px;background:linear-gradient(#86868b,transparent);animation:cue 2s ease-in-out infinite}
   @keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
-  /* 첫 화면: 멜론님의 마지막 퇴근길 */
-  .hero.has-sky{background:#4f9fe6;justify-content:flex-start;padding-top:clamp(88px,12vh,132px)}
-  .hero.has-sky::after{background:linear-gradient(180deg,rgba(8,22,48,.34),rgba(8,22,48,.12) 34%,rgba(8,22,48,0) 52%)}
-  .hero.has-sky .drift{display:none}
-  .sky{position:absolute;inset:0;z-index:0}
-  .sky-svg{position:absolute;inset:0;width:100%;height:100%;display:block}
-  .hero.has-sky .hero-copy{text-shadow:0 1px 20px rgba(0,28,64,.28);transition:opacity 1s var(--ease)}
-  .hero.has-sky .melon{font-size:34px;margin-bottom:10px}
-  .hero.has-sky h1{font-size:clamp(32px,5vw,62px)}
-  .hero.has-sky h1 .l2{color:rgba(255,255,255,.84)}
-  .hero.has-sky .dday{display:none}
-  .hero.has-sky .timer{margin-top:14px}
-  .hero.has-sky .when{color:rgba(255,255,255,.86)}
-  .hero.has-sky .status{margin-top:16px;background:rgba(10,24,48,.22);color:#fff;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);text-shadow:none}
-  .hero.has-sky .cue{color:rgba(255,255,255,.9);text-shadow:0 1px 10px rgba(0,0,0,.3)}
-  .hero.has-sky .cue i{background:linear-gradient(#fff,transparent)}
-  .hero.sky-focus .hero-copy,.hero.sky-focus .cue,.hero.sky-focus .sky-birds{opacity:0}
-  .sky-cap{position:absolute;left:0;right:0;bottom:15%;z-index:3;text-align:center;color:#fff;font-size:clamp(24px,3.6vw,40px);font-weight:800;letter-spacing:-.04em;line-height:1.25;
-    text-shadow:0 2px 24px rgba(0,0,0,.45);opacity:0;transform:translateY(10px);filter:blur(6px);transition:opacity 1.4s var(--ease),transform 1.4s var(--ease),filter 1.4s var(--ease);pointer-events:none;padding:0 22px}
-  .sky-cap.on{opacity:1;transform:none;filter:none}
-  .sky-cap small{display:block;margin-top:8px;font-size:.5em;font-weight:500;letter-spacing:-.01em;opacity:.88}
-  .sky-birds{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;transition:opacity .8s}
-  .pg{position:absolute;left:0;top:0;display:flex;flex-direction:column;align-items:flex-end;will-change:transform}
-  .pg.rtl{align-items:flex-start}
-  .pg.rtl svg{transform:scaleX(-1)}
-  .pg svg{display:block;margin:0 6px}
-  .pg-bub{position:relative;max-width:min(260px,62vw);margin-bottom:10px;padding:11px 15px 10px;border-radius:18px;background:rgba(255,255,255,.9);
-    -webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);box-shadow:0 10px 30px rgba(10,30,60,.16);color:#1d1d1f;text-shadow:none;text-align:left}
-  .pg-bub p{margin:0;font-size:14px;line-height:1.45;font-weight:500;letter-spacing:-.01em;word-break:keep-all}
-  .pg-bub span{display:block;margin-top:4px;font-size:12px;color:#6e6e73}
-  .pg-bub::after{content:'';position:absolute;bottom:-6px;right:30px;width:14px;height:14px;background:inherit;transform:rotate(45deg);border-radius:0 0 4px 0}
-  .pg.rtl .pg-bub::after{right:auto;left:30px}
-  .pg-wing{transform-box:fill-box;transform-origin:40% 95%;animation:pgFlap .3s ease-in-out infinite alternate}
-  @keyframes pgFlap{from{transform:scaleY(1)}to{transform:scaleY(-.6)}}
-  #skMelon .sk-leg{transform-box:fill-box;transform-origin:50% 0}
-  #skMelon.sk-walking .sk-l{animation:skStep .55s ease-in-out infinite alternate}
-  #skMelon.sk-walking .sk-r{animation:skStep .55s ease-in-out infinite alternate-reverse}
-  #skMelon.sk-walking .sk-bob{animation:skBob .275s ease-in-out infinite alternate}
-  @keyframes skStep{from{transform:rotate(16deg)}to{transform:rotate(-16deg)}}
-  @keyframes skBob{from{transform:translateY(0)}to{transform:translateY(-2.5px)}}
-  #skArmR{transform-origin:19px -76px}
-  #skMelon.sk-waving #skArmR{animation:skWave .5s ease-in-out infinite alternate}
-  @keyframes skWave{from{transform:rotate(-150deg)}to{transform:rotate(-115deg)}}
-  #skMelon.sk-typing #skArmL,#skMelon.sk-typing #skArmR{animation:skType .18s ease-in-out infinite alternate}
-  @keyframes skType{to{transform:translateY(-1.5px)}}
-  .sk-sil .sk-hand{transform-box:fill-box;transform-origin:50% 100%}
-  .sk-sil.wav .sk-hand{animation:skHand .6s ease-in-out infinite alternate}
-  @keyframes skHand{from{transform:rotate(-25deg)}to{transform:rotate(25deg)}}
-  .sk-tw{animation:skTw 2.4s ease-in-out infinite alternate}
-  @keyframes skTw{from{opacity:.3}to{opacity:1}}
-  #skAvi{animation:skTw 1.2s steps(2) infinite}
-  @media (prefers-reduced-motion: reduce){ .sky *{animation:none!important} }
+  /* 첫 화면: 갤러리 사진 상영 + 포스트잇 */
+  .hero{justify-content:flex-start;padding:clamp(78px,10vh,104px) 22px 56px}
+  .hero::after{background:radial-gradient(ellipse 85% 75% at 50% 48%,rgba(0,0,0,.42) 0%,rgba(0,0,0,.82) 100%)}
+  .hero .drift,.hero .cue,.hero .dday{display:none}
+  .film-bg{position:absolute;inset:-60px;z-index:0;pointer-events:none}
+  .film-bg i{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(48px) saturate(1.25);transform:scale(1.08);opacity:0;transition:opacity 2.2s var(--ease)}
+  .film-bg i.on{opacity:.6}
+  .hero .melon{font-size:34px;margin-bottom:8px}
+  .hero h1{font-size:clamp(28px,4vw,50px);line-height:1.15}
+  .hero h1 .l2{display:inline}
+  .film{position:relative;z-index:2;width:min(1320px,100%);margin-top:clamp(16px,3vh,30px);display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:clamp(18px,2.6vw,40px);align-items:center}
+  .film-frame{margin:0;position:relative;width:min(58vw,880px);height:clamp(260px,50vh,600px)}
+  .film-frame img{position:absolute;left:50%;top:50%;max-width:100%;max-height:100%;border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.6);
+    opacity:0;transform:translate(-50%,-50%) scale(1);transition:opacity 1.6s var(--ease),transform 9s linear}
+  .film-frame img.on{opacity:1;transform:translate(-50%,-50%) scale(1.04)}
+  .film-ph[hidden],.upload-toggle[hidden],.upload[hidden]{display:none!important}
+  .film-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#86868b;font-size:15px}
+  .film-side{position:relative;grid-row:1;height:100%;min-height:180px;display:grid;place-items:center}
+  .fp{grid-area:1/1;width:min(230px,100%);padding:20px 18px 16px;border-radius:4px 4px 18px 4px;color:#1d1d1f;box-shadow:0 22px 50px rgba(0,0,0,.5);text-align:left;
+    opacity:0;transform:translateY(22px) rotate(var(--r,0deg));filter:blur(8px);transition:opacity 1.8s var(--ease),transform 1.8s var(--ease),filter 1.8s var(--ease)}
+  .fp.in{opacity:1;transform:translateY(0) rotate(var(--r,0deg));filter:none}
+  .fp.out{opacity:0;transform:translateY(-16px) rotate(var(--r,0deg));filter:blur(6px)}
+  .fp p{margin:0;font-family:'Nanum Pen Script',cursive;font-size:25px;line-height:1.2;word-break:keep-all}
+  .fp span{display:block;margin-top:10px;font-size:12px;font-weight:600;color:rgba(0,0,0,.55)}
+  #filmL{grid-column:1} #filmR{grid-column:3} .film-frame{grid-column:2;grid-row:1}
+  .film-cap{grid-column:2;grid-row:2;margin-top:-4px;min-height:44px;text-align:center}
+  .film-cap b{display:block;font-size:17px;font-weight:600;color:#f5f5f7;transition:opacity .6s}
+  .film-cap span{display:block;margin-top:4px;font-size:13px;color:#a1a1a6;font-variant-numeric:tabular-nums}
+  .hero-meta{position:relative;z-index:2;margin-top:clamp(10px,2vh,22px);display:flex;flex-direction:column;align-items:center;text-align:center}
+  .hero .timer{margin-top:0}
+  .hero .status{margin-top:14px}
+  @media (max-width:760px){
+    .film{grid-template-columns:1fr;gap:14px}
+    .film-frame{width:100%;height:clamp(220px,38vh,440px);order:1}
+    #filmL,.film-frame,.film-cap{grid-column:1;grid-row:auto} #filmL{order:3;min-height:170px} #filmR{display:none} .film-cap{order:2;margin-top:0}
+  }
+  @media (prefers-reduced-motion: reduce){ .film-frame img,.film-frame img.on{transition:opacity .01s;transform:translate(-50%,-50%)} .fp{transition:opacity .4s} }
   /* 한 번의 등장 연출 */
   .seq{opacity:0;transform:translateY(18px);filter:blur(6px);transition:opacity 1.2s var(--ease),transform 1.2s var(--ease),filter 1.2s var(--ease)}
   .seq.in{opacity:1;transform:none;filter:none}
@@ -771,12 +756,20 @@
   <a class="nav opt" href="#shop-sec">굿즈샵</a>
 </div></header>
 
-<section class="hero has-sky" id="top">
-  <div class="sky" id="sky"></div>
+<section class="hero" id="top">
+  <div class="film-bg" aria-hidden="true"><i id="fbA"></i><i id="fbB"></i></div>
   <div class="drift" id="drift" aria-hidden="true"></div>
   <div class="hero-copy">
     <button class="melon seq" id="melon" aria-label="멜론 쓰다듬기">🍈</button>
-    <h1><span class="seq" id="l1">멜론님,</span><span class="l2 seq" id="l2">그동안 정말 고마웠어요.</span></h1>
+    <h1><span class="seq" id="l1">멜론님,</span> <span class="l2 seq" id="l2">그동안 정말 고마웠어요.</span></h1>
+  </div>
+  <div class="film seq" id="film">
+    <div class="film-side" id="filmL" aria-live="polite"></div>
+    <figure class="film-frame" id="filmFrame" aria-label="동료들이 올린 멜론님 사진"><div class="film-ph" id="filmPh">사진을 불러오는 중이에요</div></figure>
+    <div class="film-side" id="filmR"></div>
+    <div class="film-cap seq" id="filmCap"><b></b><span></span></div>
+  </div>
+  <div class="hero-meta">
     <div class="dday seq" id="dday">D-?</div>
     <div class="timer seq" id="timer">&nbsp;</div>
     <div class="when seq" id="when">&nbsp;</div>
@@ -819,10 +812,10 @@
 <section class="gallery-sec" id="gallery">
   <div class="wrap s-head">
     <h2>함께한 장면들.</h2>
-    <p>동료들이 올린 멜론님 사진이 천천히 넘어가요. 갖고 있는 사진이 있다면 여기에 더해주세요.</p>
+    <p>동료들이 올린 멜론님 사진이 천천히 넘어가요.</p>
   </div>
   <div class="stage" id="stage">
-    <div class="empty" id="stageEmpty"><b>첫 장면을 기다리는 중</b><span>아래 ‘사진 올리기’로 멜론님 사진을 올려주세요.</span></div>
+    <div class="empty" id="stageEmpty"><b>첫 장면을 기다리는 중</b><span>갤러리가 마감되었어요.</span></div>
     <div class="slide" id="slideA"></div>
     <div class="slide" id="slideB"></div>
     <div class="shade"></div>
@@ -837,8 +830,8 @@
   <div class="progress" id="dots"></div>
   <div class="thumbs" id="thumbs"></div>
   <div class="msg" id="galleryMsg">사진을 불러오는 중이에요.</div>
-  <div class="upload-toggle"><button class="btn" id="openUpload" aria-expanded="false">사진 올리기</button></div>
-  <form class="upload" id="uploadForm">
+  <div class="upload-toggle" hidden><button class="btn" id="openUpload" aria-expanded="false">사진 올리기</button></div>
+  <form class="upload" id="uploadForm" hidden>
     <label class="pick"><span id="pickLabel">사진 고르기 · 한 번에 5장까지</span><input type="file" id="photoInput" accept="image/*" multiple></label>
     <div class="previews" id="previews"></div>
     <input class="field" id="caption" maxlength="60" placeholder="한 줄 설명 (예: 2024 워크숍, 노래방 98점)">
@@ -1406,7 +1399,8 @@ function numbers(w, dd){
 
 // ===== 첫 화면 연출 =====
 function intro(){
-  const order=[['melon',100],['l1',350],['l2',1100],['dday',2100],['timer',2700],['when',2900],['status',3300],['cue',3900]];
+  const order=[['melon',100],['l1',300],['l2',700],['film',1100],['filmCap',1500],['timer',2100],['when',2300],['status',2600]];
+  setTimeout(()=>window.Film && Film.start(), REDUCED?0:1000);
   order.forEach(([id,t])=> setTimeout(()=>$(id).classList.add('in'), REDUCED?0:t));
   setTimeout(()=>$('drift').classList.add('on'), REDUCED?0:2600);
 }
@@ -1584,7 +1578,7 @@ $('compose').addEventListener('submit', async e=>{
 
 // ===== 갤러리 =====
 let photos=[], cur=-1, playing=!REDUCED, timer=null, front='A', picked=[], uploading=false;
-const SLIDE_MS=7000;
+const SLIDE_MS=7000, GALLERY_LOCKED=true;  // 갤러리 마감: 더 이상 사진을 올리거나 지울 수 없음
 const url = p => sb.storage.from('gallery').getPublicUrl(p).data.publicUrl;
 document.documentElement.style.setProperty('--slide', SLIDE_MS+'ms');
 
@@ -1594,7 +1588,6 @@ function renderGallery(){
   const th=$('thumbs'); th.innerHTML='';
   photos.forEach((p,i)=>{ const b=document.createElement('button'); b.type='button'; b.setAttribute('aria-label',(p.caption||'사진')+' 보기');
     const im=document.createElement('img'); im.loading='lazy'; im.alt=''; im.src=url(p.path); b.appendChild(im); b.onclick=()=>show(i,true);
-    if (window.ADM) b.appendChild(ADM.btns([['삭제', () => ADM.del('photos', p.id, '이 사진을 갤러리에서 뺄까요?')]], true));
     th.appendChild(b); });
   const dots=$('dots'); dots.innerHTML='';
   if(photos.length>1 && photos.length<=30) photos.forEach((_,i)=>{ const d=document.createElement('i'); d.onclick=()=>show(i,true); dots.appendChild(d); });
@@ -1639,7 +1632,55 @@ async function loadPhotos(){
   photos=data;
   const idx = photos.findIndex(p=>p.id===keep); if(idx>=0) cur=idx;
   renderGallery();
+  if (window.Film) Film.update();
 }
+
+// ===== 첫 화면: 갤러리 사진을 순서대로 상영하고, 옆에 포스트잇이 한 장씩 =====
+window.Film = (() => {
+  const frame = $('filmFrame'), L = $('filmL'), R = $('filmR'), cap = $('filmCap'), bgs = [$('fbA'), $('fbB')];
+  const MS = 6500;
+  let i = -1, t = null, started = false, side = 0, ni = 0, bgI = 0;
+  const noteList = () => [...notes.values()].filter(n => !n.hidden && n.text).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+  function postIt(){
+    const ns = noteList(); if (!ns.length) return;
+    const n = ns[ni++ % ns.length], narrow = innerWidth <= 760, box = narrow ? L : (side++ % 2 ? R : L);
+    [...box.children].forEach(o => { o.classList.remove('in'); o.classList.add('out'); setTimeout(() => o.remove(), 1900); });
+    const d = document.createElement('div'); d.className = 'fp'; d.style.background = colorOf(n);
+    d.style.setProperty('--r', (Math.random() * 6 - 3).toFixed(1) + 'deg');
+    if (!narrow) d.style.marginTop = Math.round((Math.random() * 2 - 1) * 70) + 'px';
+    const tx = String(n.text).trim(), p = document.createElement('p'), a = document.createElement('span');
+    p.textContent = tx.length > 90 ? tx.slice(0, 90) + '…' : tx; a.textContent = n.author || '익명의 동료';
+    d.append(p, a); box.appendChild(d);
+    setTimeout(() => d.classList.add('in'), REDUCED ? 0 : 1100);
+  }
+  function next(){
+    clearTimeout(t);
+    if (!photos.length) return;
+    i = (i + 1) % photos.length;
+    const p = photos[i], src = url(p.path), im = new Image(), n = i;
+    im.alt = p.caption || '멜론님 사진';
+    im.onload = () => {
+      frame.appendChild(im); $('filmPh').hidden = true;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        im.classList.add('on');
+        [...frame.querySelectorAll('img')].forEach(o => { if (o !== im){ o.classList.remove('on'); setTimeout(() => o.remove(), 1700); } });
+      }));
+      bgI = 1 - bgI; bgs[bgI].style.backgroundImage = `url("${src}")`; bgs[bgI].classList.add('on'); bgs[1 - bgI].classList.remove('on');
+      const b = cap.querySelector('b'); b.style.opacity = 0;
+      setTimeout(() => { b.textContent = p.caption || ''; b.style.opacity = 1; }, 400);
+      cap.querySelector('span').textContent = `${n + 1} / ${photos.length}` + (p.author ? `  ·  📷 ${p.author}` : '');
+      postIt();
+      if (photos.length > 1) new Image().src = url(photos[(n + 1) % photos.length].path);
+    };
+    im.onerror = () => { t = setTimeout(next, 400); };
+    im.src = src;
+    if (photos.length > 1) t = setTimeout(next, MS);
+  }
+  function start(){ if (started) return; started = true; if (photos.length) next(); else if (!sb) $('filmPh').textContent = '사진을 불러오지 못했어요'; }
+  function update(){ if (started && i < 0 && photos.length) next(); }
+  document.addEventListener('visibilitychange', () => { if (!started || !photos.length) return; clearTimeout(t); if (!document.hidden) t = setTimeout(next, 2500); });
+  return { start, update };
+})();
 
 $('openUpload').onclick=()=>{ const f=$('uploadForm'), o=!f.classList.contains('open'); f.classList.toggle('open',o); $('openUpload').setAttribute('aria-expanded',o); $('openUpload').textContent=o?'닫기':'사진 올리기'; };
 $('photoInput').addEventListener('change',e=>{
@@ -1655,7 +1696,7 @@ function shrink(file,max=1800){ return new Promise((res,rej)=>{ const img=new Im
   img.src=u; }); }
 $('uploadForm').addEventListener('submit', async e=>{
   e.preventDefault();
-  if(!sb||uploading) return;
+  if(!sb||uploading||GALLERY_LOCKED) return;
   if(!picked.length) return toast('사진을 먼저 골라주세요');
   const caption=$('caption').value.trim().slice(0,60)||null, author=$('photoAuthor').value.trim().slice(0,20)||null;
   try{ localStorage.setItem('melon-author',author||''); }catch(e){}
@@ -2295,7 +2336,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && endPlaying
 // 언제 재생할까: 마지막 퇴근 순간(페이지를 열어둔 경우), 퇴근 후 첫 방문, 또는 #for-melon 링크
 let endArmed = Date.now() < endDate().getTime();
 function maybeEnding(){
-  if (endArmed && Date.now() >= endDate().getTime()){ endArmed = false; (window.SKY ? SKY.finale() : Promise.resolve()).then(() => playEnding()); }
+  if (endArmed && Date.now() >= endDate().getTime()){ endArmed = false; playEnding(); }
 }
 setInterval(maybeEnding, 1000);
 function startEndingWhenReady(){
@@ -2315,7 +2356,7 @@ function afterEnter(){
 function enter(withSound){
   if (withSound){ Music.setMuted(false); Music.start(); }
   $('enter').classList.add('gone'); bgmUI();
-  setTimeout(() => { intro(); afterEnter(); if (window.SKY) SKY.start(); }, 500);
+  setTimeout(() => { intro(); afterEnter(); }, 500);
 }
 $('enterSound').onclick = () => enter(true);
 $('enterQuiet').onclick = () => enter(false);
@@ -2336,6 +2377,5 @@ $('enterQuiet').onclick = () => enter(false);
 })();
 window.addEventListener('hashchange', () => { if (location.hash === '#for-melon') location.replace('letters/'); else if (location.hash === '#ending') startEndingWhenReady(); });
 </script>
-<script src="sky.js?v=3"></script>
 </body>
 </html>
