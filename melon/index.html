@@ -691,6 +691,10 @@
   #band .bd-fan svg{display:block;width:100%;height:auto;overflow:visible}
   #band .bd-fan.r0{bottom:18%;width:5.2%;opacity:.7;filter:brightness(.8)}
   #band .bd-fan.r1{bottom:-14%;width:7.4%}
+  #band .bd-fan .nm{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);z-index:2;font-size:clamp(9px,.72vw,12px);font-weight:700;letter-spacing:-.02em;color:#fff;white-space:nowrap;
+    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);padding:1px 7px 2px;border-radius:999px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);text-shadow:0 1px 4px rgba(0,0,0,.6)}
+  #band .bd-fan.r1 .nm{font-size:clamp(10px,.9vw,14px);top:46%;background:rgba(255,255,255,.18)}
+  @media (max-width:760px){ #band .bd-fan .nm{font-size:8px;padding:0 4px} #band .bd-fan.r1 .nm{font-size:9px} }
   #band .bd-fan .fa{transform-box:view-box;transform-origin:30px 44px;transform:rotate(calc(var(--sway,0) * 1deg))}
   #band .bd-fan .fa.sg{transform:rotate(calc(var(--sway,0) * .2deg)) translateY(calc(var(--b,0) * -6px))}
   /* 가사 */
@@ -1725,7 +1729,16 @@ document.querySelectorAll('.seg button').forEach(b=> b.onclick=()=>{ sortMode=b.
 const fmt = d => `${d.getMonth()+1}월 ${d.getDate()}일 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 const colorOf = n => COLORS.includes(n.color) ? n.color : COLORS[n.id%COLORS.length];
 
+// 포스트잇에 이름을 남긴 사람들 (먼저 남긴 순서, 중복 없이)
+function crowdNames(){
+  const seen = new Set(), out = [];
+  [...notes.values()].filter(n => !n.hidden).sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+    .forEach(n => { const a = String(n.author || '').trim(); if (a && !/^익명/.test(a) && !seen.has(a)){ seen.add(a); out.push(a.slice(0, 10)); } });
+  return out;
+}
+window.crowdNames = crowdNames;
 function renderNotes(){
+  if (window.__crowd) setTimeout(() => window.__crowd(crowdNames()), 0);
   const isAdm = document.body.classList.contains('admin');
   const all=[...notes.values()].sort((a,b)=>{ const d=new Date(a.created_at)-new Date(b.created_at); return sortMode==='old'?d:-d; });
   const visible = all.filter(n => !n.hidden), list = isAdm ? all : visible;
@@ -2106,7 +2119,8 @@ document.documentElement.style.setProperty('--face', 'url("melon-face.png?v=3")'
   const band = $('band'), stg = band.querySelector('.bd-stage');
   // 키보드 건반, 관객
   { const g = $('bdKeys'); for (let i = 0; i < 14; i++){ const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); r.setAttribute('x', -4 + i * 9.2); r.setAttribute('y', 66); r.setAttribute('width', 8); r.setAttribute('height', 14); r.setAttribute('rx', 1.5); r.setAttribute('fill', '#f5f5f7'); g.appendChild(r); } }
-  { const c = $('bdCrowd'), SIGNS = ['멜론님 ♥', '가지마요', '앵콜!', '🍈 FOREVER', '수고했어요'];
+  // 관객: 포스트잇을 남긴 사람마다 한 명씩, 머리에 이름표
+  const buildCrowd = (names = []) => { const c = $('bdCrowd'), SIGNS = ['멜론님 ♥', '가지마요', '앵콜!', '🍈 FOREVER', '수고했어요']; c.innerHTML = '';
     const HAIR = [
       'M14 20 Q14 4 30 4 Q46 4 46 20 Q46 12 30 11 Q14 12 14 20Z',                       // 짧은 머리
       'M13 22 Q12 3 30 3 Q48 3 47 22 L48 40 Q44 30 44 22 Q30 14 16 22 Q16 30 12 40 Z',  // 긴 머리
@@ -2114,7 +2128,7 @@ document.documentElement.style.setProperty('--face', 'url("melon-face.png?v=3")'
       'M12 16 Q14 2 30 2 Q46 2 48 16 L56 18 L48 20 Q30 14 12 20Z'                         // 모자
     ];
     let k = 0;
-    const make = (row, n, i) => {
+    const make = (row, n, i, name) => {
       const f = document.createElement('div'); f.className = 'bd-fan r' + row;
       const kind = row === 1 && i % 4 === 1 ? 'sign' : i % 5 === 3 ? 'phone' : 'stick';
       const hair = HAIR[(i * 7 + row) % HAIR.length], arm = i % 2 ? 1 : -1;
@@ -2127,14 +2141,25 @@ document.documentElement.style.setProperty('--face', 'url("melon-face.png?v=3")'
       f.innerHTML = `<svg viewBox="-4 -34 68 124" preserveAspectRatio="xMidYMax meet"><circle cx="30" cy="22" r="15" fill="#0a0910"/><path d="${hair}" fill="#0a0910"/>
         <path d="M2 90 Q2 46 30 44 Q58 46 58 90Z" fill="#0a0910"/><path d="M8 60 Q14 46 30 45 Q46 46 52 60" stroke="var(--rim,#7fff8c)" stroke-opacity=".28" stroke-width="2" fill="none"/>
         <path d="M17 12 Q30 3 43 12" stroke="var(--rim,#7fff8c)" stroke-opacity=".3" stroke-width="1.6" fill="none"/>${hand}</svg>`;
-      f.style.left = (i + .5) / n * 100 + '%'; f.style.setProperty('--ph', (i % 3) * .33); f.style.setProperty('--rim', ['#7fff8c', '#ffb46b', '#a99bff'][i % 3]);
+      f.style.left = (i + .5) / n * 100 + '%'; f.style.width = Math.min(row ? 7.4 : 5.2, (row ? 96 : 94) / n) + '%';
+      if (name){ const nm = document.createElement('b'); nm.className = 'nm'; nm.textContent = name; f.appendChild(nm); } f.style.setProperty('--ph', (i % 3) * .33); f.style.setProperty('--rim', ['#7fff8c', '#ffb46b', '#a99bff'][i % 3]);
       c.appendChild(f);
     };
-    for (let i = 0; i < 16; i++) make(0, 16, i);
-    for (let i = 0; i < 12; i++) make(1, 12, i);
+    const total = Math.max(28, names.length), back = Math.max(16, Math.ceil(total * .57)), front = Math.max(12, total - back);
+    // 이름은 앞줄부터 고르게 흩어서 배치
+    const spots = []; for (let i = 0; i < front; i++) spots.push([1, i]); for (let i = 0; i < back; i++) spots.push([0, i]);
+    const step = (a, n) => { const out = [], used = new Set(); for (let j = 0; j < n; j++){ let x = Math.floor(((j * 0.618034) % 1) * n); while (used.has(x)) x = (x + 1) % n; used.add(x); out.push(x); } return out; };
+    const order = [...step(0, front).map(i => [1, i]), ...step(0, back).map(i => [0, i])];
+    const nameAt = new Map(); names.forEach((nm, j) => { if (order[j]) nameAt.set(order[j].join(':'), nm); });
+    for (let i = 0; i < back; i++) make(0, back, i, nameAt.get('0:' + i));
+    for (let i = 0; i < front; i++) make(1, front, i, nameAt.get('1:' + i));
     if (!document.getElementById('fanGlowDefs')) document.body.insertAdjacentHTML('beforeend', '<svg id="fanGlowDefs" width="0" height="0" style="position:absolute"><filter id="fanGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3"/></filter></svg>');
-  }
-  const fans = [...band.querySelectorAll('.bd-fan')], keys = $('bdKeys').children, bars = [...$('bdMeter').children];
+  };
+  buildCrowd();
+  let fans = [...band.querySelectorAll('.bd-fan')]; const keys = $('bdKeys').children, bars = [...$('bdMeter').children];
+  let crowdKey = null;
+  window.__crowd = names => { const key = names.join('\u0001'); if (key === crowdKey) return; crowdKey = key; buildCrowd(names); fans = [...band.querySelectorAll('.bd-fan')]; };
+  if (window.crowdNames) window.__crowd(crowdNames());
 
   // 박자표: 120 BPM, 첫 박 0.155초 (곡 분석 결과)
   const BPM = 152, BEAT = 60 / BPM, OFFSET = 0.305;   // 새 배경음악 기준
