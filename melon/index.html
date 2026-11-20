@@ -2205,7 +2205,7 @@ live();
 
 // ===== 배경음악: 올려주신 곡 (bgm.mp3, 끊김 없이 반복) =====
 const Music = (() => {
-  const SRC = 'bgm.mp3', VOL = .8;
+  const SRC = 'bgm.mp3?v=3', VOL = .8;
   let ctx = null, master = null, buffer = null, src = null, playing = false, muted = false, offset = 0, startedAt = 0, want = false;
   // 페이지가 열리자마자 파일을 미리 받아둠 (입장 버튼을 누르면 바로 나오게)
   const fileP = fetch(SRC).then(r => { if (!r.ok) throw new Error('음악 파일을 불러오지 못했어요'); return r.arrayBuffer(); }).catch(e => { console.error(e); return null; });
