@@ -67,40 +67,45 @@
   .cue i{width:1px;height:28px;background:linear-gradient(#86868b,transparent);animation:cue 2s ease-in-out infinite}
   @keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
   /* 첫 화면: 갤러리 사진 상영 + 포스트잇 */
-  .hero{justify-content:flex-start;padding:clamp(78px,10vh,104px) 22px 56px}
-  .hero::after{background:radial-gradient(ellipse 85% 75% at 50% 48%,rgba(0,0,0,.42) 0%,rgba(0,0,0,.82) 100%)}
-  .hero .drift,.hero .cue,.hero .dday{display:none}
+  .hero{justify-content:flex-start;padding:clamp(104px,13vh,124px) 22px 64px}
+  .hero::after{background:radial-gradient(ellipse 90% 80% at 50% 50%,rgba(0,0,0,.38) 0%,rgba(0,0,0,.84) 100%)}
+  .hero .drift,.hero .cue,.hero .dday,.hero .status,.hero .melon{display:none}
   .film-bg{position:absolute;inset:-60px;z-index:0;pointer-events:none}
-  .film-bg i{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(48px) saturate(1.25);transform:scale(1.08);opacity:0;transition:opacity 2.2s var(--ease)}
-  .film-bg i.on{opacity:.6}
-  .hero .melon{font-size:34px;margin-bottom:8px}
-  .hero h1{font-size:clamp(28px,4vw,50px);line-height:1.15}
-  .hero h1 .l2{display:inline}
-  .film{position:relative;z-index:2;width:min(1320px,100%);margin-top:clamp(16px,3vh,30px);display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:clamp(18px,2.6vw,40px);align-items:center}
-  .film-frame{margin:0;position:relative;width:min(58vw,880px);height:clamp(260px,50vh,600px)}
-  .film-frame img{position:absolute;left:50%;top:50%;max-width:100%;max-height:100%;border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.6);
-    opacity:0;transform:translate(-50%,-50%) scale(1);transition:opacity 1.6s var(--ease),transform 9s linear}
-  .film-frame img.on{opacity:1;transform:translate(-50%,-50%) scale(1.04)}
-  .film-ph[hidden],.upload-toggle[hidden],.upload[hidden]{display:none!important}
+  .film-bg i{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(56px) saturate(1.3);transform:scale(1.1);opacity:0;transition:opacity 2.4s var(--ease)}
+  .film-bg i.on{opacity:.55}
+  .hero h1{font-size:clamp(24px,2.9vw,38px);line-height:1.2;font-weight:700;letter-spacing:-.035em;color:#f5f5f7}
+  .hero h1 .l2{display:inline;color:#86868b}
+  .film{position:relative;z-index:2;width:min(1440px,100%);margin-top:clamp(18px,2.6vh,28px);display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);column-gap:clamp(20px,2.4vw,40px);row-gap:18px;align-items:stretch}
+  #filmL{grid-column:1;grid-row:1} #filmR{grid-column:3;grid-row:1} .film-frame{grid-column:2;grid-row:1}
+  .film-frame{margin:0;position:relative;width:min(56vw,1000px);height:clamp(300px,64vh,760px)}
+  .film-frame img{position:absolute;left:50%;top:50%;max-width:100%;max-height:100%;border-radius:20px;box-shadow:0 40px 100px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);
+    opacity:0;transform:translate(-50%,-50%) scale(1);transition:opacity 1.8s var(--ease),transform 10s linear}
+  .film-frame img.on{opacity:1;transform:translate(-50%,-50%) scale(1.035)}
   .film-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#86868b;font-size:15px}
-  .film-side{position:relative;grid-row:1;height:100%;min-height:180px;display:grid;place-items:center}
-  .fp{grid-area:1/1;width:min(230px,100%);padding:20px 18px 16px;border-radius:4px 4px 18px 4px;color:#1d1d1f;box-shadow:0 22px 50px rgba(0,0,0,.5);text-align:left;
-    opacity:0;transform:translateY(22px) rotate(var(--r,0deg));filter:blur(8px);transition:opacity 1.8s var(--ease),transform 1.8s var(--ease),filter 1.8s var(--ease)}
+  .film-ph[hidden],.upload-toggle[hidden],.upload[hidden]{display:none!important}
+  .film-side{position:relative;display:grid;min-width:0}
+  #filmL{justify-items:end;align-items:end;padding-bottom:6%}
+  #filmR{justify-items:start;align-items:start;padding-top:6%}
+  .fp{grid-area:1/1;width:min(270px,100%);padding:24px 22px 18px;border-radius:3px 3px 22px 3px;color:#1d1d1f;box-shadow:0 28px 60px rgba(0,0,0,.5);text-align:left;
+    opacity:0;transform:translateY(24px) rotate(var(--r,0deg));filter:blur(10px);transition:opacity 2s var(--ease),transform 2s var(--ease),filter 2s var(--ease)}
   .fp.in{opacity:1;transform:translateY(0) rotate(var(--r,0deg));filter:none}
-  .fp.out{opacity:0;transform:translateY(-16px) rotate(var(--r,0deg));filter:blur(6px)}
-  .fp p{margin:0;font-family:'Nanum Pen Script',cursive;font-size:25px;line-height:1.2;word-break:keep-all}
-  .fp span{display:block;margin-top:10px;font-size:12px;font-weight:600;color:rgba(0,0,0,.55)}
-  #filmL{grid-column:1} #filmR{grid-column:3} .film-frame{grid-column:2;grid-row:1}
-  .film-cap{grid-column:2;grid-row:2;margin-top:-4px;min-height:44px;text-align:center}
-  .film-cap b{display:block;font-size:17px;font-weight:600;color:#f5f5f7;transition:opacity .6s}
-  .film-cap span{display:block;margin-top:4px;font-size:13px;color:#a1a1a6;font-variant-numeric:tabular-nums}
-  .hero-meta{position:relative;z-index:2;margin-top:clamp(10px,2vh,22px);display:flex;flex-direction:column;align-items:center;text-align:center}
-  .hero .timer{margin-top:0}
-  .hero .status{margin-top:14px}
+  .fp.out{opacity:0;transform:translateY(-18px) rotate(var(--r,0deg));filter:blur(8px)}
+  .fp p{margin:0;font-family:'Nanum Pen Script',cursive;font-size:clamp(25px,2vw,30px);line-height:1.18;word-break:keep-all;overflow-wrap:anywhere}
+  .fp span{display:block;margin-top:14px;font-size:13px;font-weight:600;letter-spacing:-.01em;color:rgba(0,0,0,.5)}
+  .film-cap{grid-column:2;grid-row:2;min-height:48px;text-align:center}
+  .film-cap b{display:block;font-size:19px;font-weight:600;letter-spacing:-.022em;color:#f5f5f7;transition:opacity .6s}
+  .film-cap span{display:block;margin-top:6px;font-size:13px;letter-spacing:-.01em;color:#86868b;font-variant-numeric:tabular-nums}
+  .hero-meta{position:relative;z-index:2;margin-top:clamp(18px,3vh,30px);display:flex;flex-direction:column;align-items:center;text-align:center}
+  .hero .timer{margin-top:0;font-size:clamp(18px,1.7vw,22px);font-weight:600;letter-spacing:-.02em}
+  .hero .when{margin-top:6px;font-size:15px;letter-spacing:-.01em;color:#86868b}
   @media (max-width:760px){
-    .film{grid-template-columns:1fr;gap:14px}
-    .film-frame{width:100%;height:clamp(220px,38vh,440px);order:1}
-    #filmL,.film-frame,.film-cap{grid-column:1;grid-row:auto} #filmL{order:3;min-height:170px} #filmR{display:none} .film-cap{order:2;margin-top:0}
+    .hero{padding-top:104px}
+    .film{grid-template-columns:1fr}
+    #filmL,.film-frame,.film-cap{grid-column:1;grid-row:auto}
+    .film-frame{width:100%;height:clamp(280px,54vh,560px);order:1}
+    .film-cap{order:2}
+    #filmL{order:3;justify-items:center;align-items:start;padding:0;min-height:190px} #filmR{display:none}
+    .fp{width:min(320px,90%)}
   }
   @media (prefers-reduced-motion: reduce){ .film-frame img,.film-frame img.on{transition:opacity .01s;transform:translate(-50%,-50%)} .fp{transition:opacity .4s} }
   /* 한 번의 등장 연출 */
@@ -243,8 +248,18 @@
   .lb button{position:absolute;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:20px;cursor:pointer}
   .lb .x{top:18px;right:18px}.lb .p{left:14px;top:50%;transform:translateY(-50%)}.lb .n{right:14px;top:50%;transform:translateY(-50%)}
 
-  .toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,140px);background:rgba(29,29,31,.92);backdrop-filter:blur(12px);color:#fff;font-size:15px;font-weight:500;
-    padding:13px 22px;border-radius:999px;transition:transform .45s var(--ease);z-index:300;max-width:90vw;text-align:center}
+  .toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,180px);background:rgba(29,29,31,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;font-size:15px;font-weight:500;letter-spacing:-.01em;line-height:1.4;
+    padding:13px 22px;border-radius:22px;transition:transform .45s var(--ease);z-index:900;width:max-content;max-width:min(560px,calc(100vw - 32px));text-align:center;word-break:keep-all;overflow-wrap:anywhere;white-space:normal}
+  .lnote{position:fixed;top:102px;right:16px;z-index:880;width:min(380px,calc(100vw - 24px));padding:14px 16px 15px;border-radius:20px;background:rgba(250,250,252,.86);color:#1d1d1f;
+    -webkit-backdrop-filter:saturate(180%) blur(24px);backdrop-filter:saturate(180%) blur(24px);box-shadow:0 18px 50px rgba(0,0,0,.22),0 0 0 .5px rgba(0,0,0,.08);
+    transform:translateY(-16px) scale(.97);opacity:0;transition:transform .5s var(--ease),opacity .5s var(--ease);pointer-events:none}
+  .lnote.show{transform:none;opacity:1}
+  .lnote .h{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#6e6e73;letter-spacing:-.005em}
+  .lnote .h i{width:8px;height:8px;border-radius:50%;background:#e0352b}
+  .lnote .h em{margin-left:auto;font-style:normal;font-weight:500}
+  .lnote p{margin-top:5px;font-size:15px;font-weight:600;line-height:1.38;letter-spacing:-.015em;word-break:keep-all;overflow-wrap:anywhere}
+  .lnote small{display:block;margin-top:4px;font-size:13px;color:#6e6e73}
+  @media (max-width:640px){ .lnote{left:12px;right:12px;width:auto} }
   .toast.show{transform:translate(-50%,0)}
   .confetti{position:fixed;top:-40px;font-size:26px;pointer-events:none;z-index:250;animation:fall linear forwards}
   @keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
@@ -720,6 +735,24 @@
   .admbox .btn{padding:10px 18px;font-size:15px}
   .admbox .btn.gray{background:#e8e8ed;color:var(--ink)}
   .admbox .err{color:#d8432a;font-size:14px;margin-top:8px;min-height:20px}
+  .admbox.wide{width:min(760px,100%)}
+  .admadd{display:grid;grid-template-columns:auto 1fr 1fr auto;gap:8px;margin-top:16px;align-items:center}
+  .admadd .field{margin-top:0;padding:10px 12px;font-size:14px}
+  .admadd .btn{padding:10px 16px;font-size:14px;white-space:nowrap}
+  .pickbtn{position:relative;display:inline-flex;align-items:center;height:42px;padding:0 14px;border-radius:12px;background:#e8e8ed;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+  .pickbtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .admph{list-style:none;margin-top:6px}
+  .admph li{display:grid;grid-template-columns:auto 72px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--hair)}
+  .admph .no{font-size:13px;color:var(--mute);width:22px;text-align:right;font-variant-numeric:tabular-nums}
+  .admph img{width:72px;height:72px;object-fit:cover;border-radius:12px;background:#f5f5f7}
+  .admph .f{display:grid;gap:6px}
+  .admph .f .field{margin-top:0;padding:8px 10px;font-size:14px}
+  .admph .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .admph .acts button{border:0;border-radius:999px;padding:7px 11px;font-size:13px;font-weight:700;cursor:pointer;background:#e8e8ed;color:var(--ink)}
+  .admph .acts button:disabled{opacity:.35;cursor:default}
+  .admph .acts .ok{background:var(--ink);color:#fff}
+  .admph .acts .del{background:#d8432a;color:#fff}
+  @media (max-width:640px){ .admadd{grid-template-columns:1fr 1fr} .admadd .pickbtn,.admadd .btn{grid-column:span 2;justify-content:center} .admph li{grid-template-columns:56px 1fr} .admph .no{display:none} .admph img{width:56px;height:56px} .admph .acts{grid-column:1/-1} }
   .admlist{list-style:none;margin-top:12px}
   .admlist li{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--hair);font-size:14px}
   .admlist li span{flex:1;overflow-wrap:anywhere}
@@ -830,14 +863,6 @@
   <div class="progress" id="dots"></div>
   <div class="thumbs" id="thumbs"></div>
   <div class="msg" id="galleryMsg">사진을 불러오는 중이에요.</div>
-  <div class="upload-toggle" hidden><button class="btn" id="openUpload" aria-expanded="false">사진 올리기</button></div>
-  <form class="upload" id="uploadForm" hidden>
-    <label class="pick"><span id="pickLabel">사진 고르기 · 한 번에 5장까지</span><input type="file" id="photoInput" accept="image/*" multiple></label>
-    <div class="previews" id="previews"></div>
-    <input class="field" id="caption" maxlength="60" placeholder="한 줄 설명 (예: 2024 워크숍, 노래방 98점)">
-    <input class="field" id="photoAuthor" maxlength="20" placeholder="올린 사람 (비워두면 익명)">
-    <div class="row2"><span class="hint" id="uploadHint">큰 사진은 자동으로 줄여서 올려요.</span><button class="btn" type="submit" id="uploadBtn">올리기</button></div>
-  </form>
 </section>
 
 <section class="wall-sec" id="wall">
@@ -1325,10 +1350,10 @@
     <div class="rank-foot"><span id="rankAnon"></span><span id="rankTotal"></span></div>
   </div>
 </div>
-<div class="admbar" id="admbar">🔧 관리자 모드 <button id="admLive">실황 제보 관리</button><button id="admOut">나가기</button></div>
+<div class="admbar" id="admbar">🔧 관리자 모드 <button id="admPh">사진 관리</button><button id="admLive">실황 제보 관리</button><button id="admOut">나가기</button></div>
 <div class="admdlg" id="admLogin" role="dialog" aria-modal="true" aria-label="관리자 로그인">
   <form class="admbox" id="admLoginForm">
-    <h4>관리자 모드</h4><p>비밀번호를 입력하면 포스트잇 수정·삭제와 장난 글 정리를 할 수 있어요.</p>
+    <h4>관리자 모드</h4><p>비밀번호를 입력하면 포스트잇과 사진을 관리하고 장난 글을 정리할 수 있어요.</p>
     <input class="field" type="password" id="admPw" placeholder="비밀번호" autocomplete="current-password">
     <div class="err" id="admErr"></div>
     <div class="row"><button class="btn gray" type="button" id="admCancel">취소</button><button class="btn" type="submit">들어가기</button></div>
@@ -1343,11 +1368,24 @@
     <div class="row"><button class="btn gray" type="button" id="admEditCancel">취소</button><button class="btn" type="submit">저장</button></div>
   </form>
 </div>
+<div class="admdlg" id="admPhDlg" role="dialog" aria-modal="true" aria-label="사진 관리">
+  <div class="admbox wide"><h4>사진 관리</h4><p>여기서 정한 순서대로 첫 화면과 갤러리에 나와요. 일반 방문자는 사진을 올리거나 지울 수 없어요.</p>
+    <form class="admadd" id="admPhAdd">
+      <label class="pickbtn"><span id="admPhPick">사진 고르기</span><input type="file" id="admPhFile" accept="image/*" multiple></label>
+      <input class="field" id="admPhCap" maxlength="60" placeholder="설명 (선택)">
+      <input class="field" id="admPhAuth" maxlength="20" placeholder="올린 사람 (선택)">
+      <button class="btn" type="submit" id="admPhUp">맨 앞에 추가</button>
+    </form>
+    <div class="err" id="admPhErr"></div>
+    <ul class="admph" id="admPhList"></ul>
+    <div class="row"><button class="btn gray" type="button" id="admPhClose">닫기</button></div></div>
+</div>
 <div class="admdlg" id="admLiveDlg" role="dialog" aria-modal="true" aria-label="실황 제보 관리">
   <div class="admbox"><h4>실황 제보 관리</h4><p>장난 제보를 지우면 속보 띠에서 바로 사라져요.</p><ul class="admlist" id="admLiveList"></ul>
     <div class="row"><button class="btn gray" type="button" id="admLiveClose">닫기</button></div></div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="lnote" id="lnote" role="status" aria-live="polite"><div class="h"><i></i><span id="lnTag">LIVE</span><em>방금</em></div><p id="lnText"></p><small id="lnBy"></small></div>
 
 <script>
 const $ = id => document.getElementById(id);
@@ -1463,7 +1501,7 @@ const ADM = (() => {
     const { error } = await sb.rpc('admin_delete', { pw, tbl, row_id: id });
     if (error){ console.error(error); return toast('삭제하지 못했어요: ' + errText(error)); }
     toast('삭제했어요');
-    if (tbl === 'notes') loadNotes(); else if (tbl === 'photos') loadPhotos(); else if (tbl === 'live'){ window.__liveLoad && window.__liveLoad(); renderLive(); } else if (tbl === 'job_reqs') window.__jobLoad && window.__jobLoad();
+    if (tbl === 'notes') loadNotes(); else if (tbl === 'photos') loadPhotos().then(() => { if ($('admPhDlg').classList.contains('open')) phRender(); }); else if (tbl === 'live'){ window.__liveLoad && window.__liveLoad(); renderLive(); } else if (tbl === 'job_reqs') window.__jobLoad && window.__jobLoad();
   }
   // 브라우저 확인창은 막힐 수 있어 두 번 누르기 방식으로 확인
   let pending = null;
@@ -1477,6 +1515,63 @@ const ADM = (() => {
     data.forEach(it => { const li = document.createElement('li'); const sp = document.createElement('span'); sp.textContent = `[${it.tag || '속보'}] ${it.text}` + (it.author ? ` (${it.author})` : '');
       const b = document.createElement('button'); b.type = 'button'; b.textContent = '삭제'; b.onclick = () => del('live', it.id, '이 제보를 지울까요?'); li.append(sp, b); ul.appendChild(li); });
   }
+  // 사진 관리: 순서, 설명, 올린 사람, 추가, 삭제
+  let phList = [];
+  function phRender(){
+    const ul = $('admPhList'); ul.innerHTML = ''; phList = photos.slice();
+    if (!phList.length){ const li = document.createElement('li'); li.textContent = '아직 사진이 없어요.'; ul.appendChild(li); return; }
+    phList.forEach((p, k) => {
+      const li = document.createElement('li');
+      const no = document.createElement('span'); no.className = 'no'; no.textContent = k + 1;
+      const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; im.src = url(p.path);
+      const f = document.createElement('div'); f.className = 'f';
+      const c = document.createElement('input'); c.className = 'field'; c.maxLength = 60; c.placeholder = '설명'; c.value = p.caption || '';
+      const a = document.createElement('input'); a.className = 'field'; a.maxLength = 20; a.placeholder = '올린 사람 (비우면 익명)'; a.value = p.author || '';
+      f.append(c, a);
+      const acts = document.createElement('div'); acts.className = 'acts';
+      const mk = (t, fn, cls, label) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = t; if (cls) b.className = cls; if (label) b.setAttribute('aria-label', label); b.onclick = fn; acts.appendChild(b); return b; };
+      mk('↑', () => phMove(k, -1), '', '앞으로').disabled = k === 0;
+      mk('↓', () => phMove(k, 1), '', '뒤로').disabled = k === phList.length - 1;
+      mk('저장', () => phSave(p, c.value, a.value), 'ok');
+      mk('삭제', () => del('photos', p.id, '이 사진을 지울까요?'), 'del');
+      li.append(no, im, f, acts); ul.appendChild(li);
+    });
+  }
+  const phOpen = () => { $('admPhErr').textContent = ''; $('admPhDlg').classList.add('open'); phRender(); };
+  async function phSave(p, cap, au){
+    const { error } = await sb.rpc('admin_edit_photo', { pw, photo_id: p.id, new_caption: cap.trim().slice(0, 60) || null, new_author: au.trim().slice(0, 20) || null });
+    if (error){ console.error(error); return toast('저장하지 못했어요: ' + errText(error)); }
+    toast('사진 정보를 저장했어요'); await loadPhotos(); phRender();
+  }
+  async function phMove(k, d){
+    const arr = phList.slice(), j = k + d; if (j < 0 || j >= arr.length) return;
+    [arr[k], arr[j]] = [arr[j], arr[k]];
+    const { error } = await sb.rpc('admin_order_photos', { pw, ids: arr.map(p => p.id) });
+    if (error){ console.error(error); return toast('순서를 바꾸지 못했어요: ' + errText(error)); }
+    await loadPhotos(); phRender();
+  }
+  $('admPhFile').addEventListener('change', e => { const n = e.target.files.length; $('admPhPick').textContent = n ? n + '장 골랐어요' : '사진 고르기'; });
+  $('admPhAdd').addEventListener('submit', async e => {
+    e.preventDefault();
+    const files = [...$('admPhFile').files].filter(f => f.type.startsWith('image/')).slice(0, 10);
+    if (!files.length) return $('admPhErr').textContent = '사진을 먼저 골라주세요.';
+    const caption = $('admPhCap').value.trim().slice(0, 60) || null, author = $('admPhAuth').value.trim().slice(0, 20) || null;
+    $('admPhUp').disabled = true; let ok = 0, err = null;
+    for (let i = files.length - 1; i >= 0; i--){   // 고른 순서대로 맨 앞에 오도록 뒤에서부터
+      $('admPhErr').textContent = `올리는 중 ${files.length - i}/${files.length}`;
+      try {
+        const blob = await shrink(files[i]), path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+        const up = await sb.storage.from('gallery').upload(path, blob, { contentType: 'image/jpeg', upsert: false }); if (up.error) throw up.error;
+        const r = await sb.rpc('admin_add_photo', { pw, new_path: path, new_caption: caption, new_author: author }); if (r.error) throw r.error;
+        ok++;
+      } catch(x){ console.error(x); err = x; }
+    }
+    $('admPhUp').disabled = false;
+    $('admPhErr').textContent = err ? '일부를 올리지 못했어요: ' + errText(err) : '';
+    if (ok){ $('admPhFile').value = ''; $('admPhPick').textContent = '사진 고르기'; $('admPhCap').value = ''; $('admPhAuth').value = ''; toast(`사진 ${ok}장을 맨 앞에 추가했어요`); await loadPhotos(); phRender(); }
+  });
+  $('admPh').onclick = phOpen;
+  $('admPhClose').onclick = () => $('admPhDlg').classList.remove('open');
   $('admLive').onclick = () => { $('admLiveDlg').classList.add('open'); renderLive(); };
   $('admLiveClose').onclick = () => $('admLiveDlg').classList.remove('open');
   $('admOut').onclick = exit;
@@ -1489,7 +1584,7 @@ const ADM = (() => {
   // 새로고침해도 같은 탭이면 유지 (비밀번호는 서버에서 다시 확인)
   if (pw) check(pw).then(ok => { if (ok){ document.body.classList.add('admin'); renderNotes(); } else { pw = null; try { sessionStorage.removeItem('melon-adm'); } catch(e){} } }).catch(() => {});
   setTimeout(maybeOpen, 300);
-  return { btns, edit, del, hide };
+  return { btns, edit, del, hide, photos: phOpen };
 })();
 window.ADM = ADM;
 
@@ -1588,6 +1683,7 @@ function renderGallery(){
   const th=$('thumbs'); th.innerHTML='';
   photos.forEach((p,i)=>{ const b=document.createElement('button'); b.type='button'; b.setAttribute('aria-label',(p.caption||'사진')+' 보기');
     const im=document.createElement('img'); im.loading='lazy'; im.alt=''; im.src=url(p.path); b.appendChild(im); b.onclick=()=>show(i,true);
+    if (window.ADM) b.appendChild(ADM.btns([['설정', () => ADM.photos()], ['삭제', () => ADM.del('photos', p.id, '이 사진을 지울까요?')]], true));
     th.appendChild(b); });
   const dots=$('dots'); dots.innerHTML='';
   if(photos.length>1 && photos.length<=30) photos.forEach((_,i)=>{ const d=document.createElement('i'); d.onclick=()=>show(i,true); dots.appendChild(d); });
@@ -1626,7 +1722,8 @@ document.addEventListener('visibilitychange',()=>{ if(document.hidden) clearTime
 
 async function loadPhotos(){
   if(!sb) return;
-  const {data,error}=await sb.from('photos').select('*').order('created_at',{ascending:false}).limit(300);
+  let {data,error}=await sb.from('photos').select('*').order('pos',{ascending:true,nullsFirst:false}).order('created_at',{ascending:false}).limit(300);
+  if(error) ({data,error}=await sb.from('photos').select('*').order('created_at',{ascending:false}).limit(300));  // 순서 칸이 아직 없을 때
   if(error){ console.error(error); $('galleryMsg').textContent='사진을 불러오지 못했어요 ('+errText(error)+').'; return; }
   const keep = photos[cur] && photos[cur].id;
   photos=data;
@@ -1634,6 +1731,12 @@ async function loadPhotos(){
   renderGallery();
   if (window.Film) Film.update();
 }
+
+function shrink(file,max=1800){ return new Promise((res,rej)=>{ const img=new Image(), u=URL.createObjectURL(file);
+  img.onload=()=>{ const r=Math.min(1,max/Math.max(img.width,img.height)); const c=document.createElement('canvas'); c.width=Math.round(img.width*r); c.height=Math.round(img.height*r);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(u); c.toBlob(b=>b?res(b):rej(new Error('변환 실패')),'image/jpeg',.86); };
+  img.onerror=()=>{ URL.revokeObjectURL(u); rej(new Error('이 사진 형식은 열 수 없어요. HEIC라면 JPG로 바꿔서 올려주세요')); };
+  img.src=u; }); }
 
 // ===== 첫 화면: 갤러리 사진을 순서대로 상영하고, 옆에 포스트잇이 한 장씩 =====
 window.Film = (() => {
@@ -1646,8 +1749,7 @@ window.Film = (() => {
     const n = ns[ni++ % ns.length], narrow = innerWidth <= 760, box = narrow ? L : (side++ % 2 ? R : L);
     [...box.children].forEach(o => { o.classList.remove('in'); o.classList.add('out'); setTimeout(() => o.remove(), 1900); });
     const d = document.createElement('div'); d.className = 'fp'; d.style.background = colorOf(n);
-    d.style.setProperty('--r', (Math.random() * 6 - 3).toFixed(1) + 'deg');
-    if (!narrow) d.style.marginTop = Math.round((Math.random() * 2 - 1) * 70) + 'px';
+    d.style.setProperty('--r', (box === R ? 1 : -1) * (1 + Math.random() * 1.6) .toFixed(1) + 'deg');
     const tx = String(n.text).trim(), p = document.createElement('p'), a = document.createElement('span');
     p.textContent = tx.length > 90 ? tx.slice(0, 90) + '…' : tx; a.textContent = n.author || '익명의 동료';
     d.append(p, a); box.appendChild(d);
@@ -1668,7 +1770,7 @@ window.Film = (() => {
       bgI = 1 - bgI; bgs[bgI].style.backgroundImage = `url("${src}")`; bgs[bgI].classList.add('on'); bgs[1 - bgI].classList.remove('on');
       const b = cap.querySelector('b'); b.style.opacity = 0;
       setTimeout(() => { b.textContent = p.caption || ''; b.style.opacity = 1; }, 400);
-      cap.querySelector('span').textContent = `${n + 1} / ${photos.length}` + (p.author ? `  ·  📷 ${p.author}` : '');
+      cap.querySelector('span').textContent = `${n + 1} / ${photos.length}` + (p.author ? `   ${p.author} 님이 올린 사진` : '');
       postIt();
       if (photos.length > 1) new Image().src = url(photos[(n + 1) % photos.length].path);
     };
@@ -1682,37 +1784,6 @@ window.Film = (() => {
   return { start, update };
 })();
 
-$('openUpload').onclick=()=>{ const f=$('uploadForm'), o=!f.classList.contains('open'); f.classList.toggle('open',o); $('openUpload').setAttribute('aria-expanded',o); $('openUpload').textContent=o?'닫기':'사진 올리기'; };
-$('photoInput').addEventListener('change',e=>{
-  picked=[...e.target.files].filter(f=>f.type.startsWith('image/')).slice(0,5);
-  if(e.target.files.length>5) toast('한 번에 5장까지 올릴 수 있어요');
-  const pv=$('previews'); pv.innerHTML=''; picked.forEach(f=>{ const im=document.createElement('img'); im.alt=''; im.src=URL.createObjectURL(f); pv.appendChild(im); });
-  $('pickLabel').textContent = picked.length ? picked.length+'장 골랐어요 · 다시 고르기' : '사진 고르기 · 한 번에 5장까지';
-});
-function shrink(file,max=1800){ return new Promise((res,rej)=>{ const img=new Image(), u=URL.createObjectURL(file);
-  img.onload=()=>{ const r=Math.min(1,max/Math.max(img.width,img.height)); const c=document.createElement('canvas'); c.width=Math.round(img.width*r); c.height=Math.round(img.height*r);
-    c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(u); c.toBlob(b=>b?res(b):rej(new Error('변환 실패')),'image/jpeg',.86); };
-  img.onerror=()=>{ URL.revokeObjectURL(u); rej(new Error('이 사진 형식은 열 수 없어요. HEIC라면 JPG로 바꿔서 올려주세요')); };
-  img.src=u; }); }
-$('uploadForm').addEventListener('submit', async e=>{
-  e.preventDefault();
-  if(!sb||uploading||GALLERY_LOCKED) return;
-  if(!picked.length) return toast('사진을 먼저 골라주세요');
-  const caption=$('caption').value.trim().slice(0,60)||null, author=$('photoAuthor').value.trim().slice(0,20)||null;
-  try{ localStorage.setItem('melon-author',author||''); }catch(e){}
-  uploading=true; $('uploadBtn').disabled=true; let ok=0, err=null;
-  for(let i=0;i<picked.length;i++){
-    $('uploadHint').textContent=`올리는 중 ${i+1}/${picked.length}`;
-    try{ const blob=await shrink(picked[i]); const path=`${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
-      const up=await sb.storage.from('gallery').upload(path,blob,{contentType:'image/jpeg',upsert:false}); if(up.error) throw up.error;
-      const ins=await sb.from('photos').insert({path,caption,author}); if(ins.error) throw ins.error; ok++;
-    }catch(x){ console.error(x); err=x; }
-  }
-  uploading=false; $('uploadBtn').disabled=false;
-  if(ok){ picked=[]; $('photoInput').value=''; $('previews').innerHTML=''; $('caption').value=''; $('pickLabel').textContent='사진 고르기 · 한 번에 5장까지';
-    $('uploadHint').textContent='큰 사진은 자동으로 줄여서 올려요.'; confetti(16); toast(`사진 ${ok}장을 올렸어요`); cur=-1; await loadPhotos(); show(0,true); }
-  if(err){ $('uploadHint').textContent='올리지 못했어요: '+errText(err); }
-});
 
 // 크게 보기
 let lbI=0;
@@ -1841,9 +1912,16 @@ $('certSave').onclick = async () => {
     lastAt = Date.now(); $('liveText').value = ''; $('liveCnt').textContent = '0/60'; panel.classList.remove('open'); tip.setAttribute('aria-expanded', false);
     toast('제보가 접수됐어요. 곧 속보로 나가요 📺'); load();
   });
+  // 새 제보는 잘리지 않게 알림 카드로 한 번 더 보여주기
+  let nt;
+  function notify(it){
+    if (!it || !it.text) return;
+    $('lnTag').textContent = 'LIVE · ' + (it.tag || '속보'); $('lnText').textContent = it.text; $('lnBy').textContent = it.author ? '제보 ' + it.author : '';
+    const n = $('lnote'); n.classList.add('show'); clearTimeout(nt); nt = setTimeout(() => n.classList.remove('show'), 6500);
+  }
   window.__liveLoad = load; window.__liveItems = () => items;
   render(); load();
-  if (sb) sb.channel('live-feed').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'live' }, ({ new: it }) => { freshLive = it.id; items = [it, ...items.filter(x => x.id !== it.id)].slice(0, 20); render(); })
+  if (sb) sb.channel('live-feed').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'live' }, ({ new: it }) => { freshLive = it.id; items = [it, ...items.filter(x => x.id !== it.id)].slice(0, 20); render(); notify(it); })
     .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'live' }, () => load()).subscribe();
 })();
 
